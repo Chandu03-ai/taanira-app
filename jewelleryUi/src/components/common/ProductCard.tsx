@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, ChevronLeft, ChevronRight, Plus, Minus, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Minus } from 'lucide-react';
 import { Product } from '../../types';
 import { useCartStore } from '../../store/cartStore';
 import { useAuthStore } from '../../store/authStore';
@@ -78,7 +78,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showQuickView = true
   return (
     <>
       <article className="group relative bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-200 ease-in-out border border-subtle-beige overflow-hidden transform hover:scale-[1.02] w-full max-w-sm mx-auto">
-        {/* ...all your existing JSX unchanged, including Add to Cart button... */}
+        {/* ...all your existing JSX unchanged, including Preorder button... */}
 
         <Link to={`/product/${product.slug || product.id}`}>
           <div
@@ -195,7 +195,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showQuickView = true
             <button
               onClick={handleAddToCart}
               className="w-full py-3 text-xs font-serif font-semibold italic border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md"
-              title="Add to Cart"
+              title="Preorder"
             >
               Preorder 
             </button>

@@ -1,5 +1,6 @@
+//ProductDetailPage.tsx
 import React, { useEffect, useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom'; // ✅ Added useNavigate
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Minus, Plus } from 'lucide-react';
 import { Product } from '../types';
 import { apiService } from '../services/api';
@@ -10,14 +11,22 @@ import SEOHead from '../components/seo/SEOHead';
 import { staticImageBaseUrl } from '../constants/siteConfig';
 import LoginPromptModal from '../components/common/LoginPromptModal';
 
+// Assuming SITE_CONFIG is defined somewhere and imported,
+// or you can define it inline for the purpose of this component if not globally available.
+// For example:
+const SITE_CONFIG = {
+  currencySymbol: '₹',
+};
+
+
 const ProductDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
-  const navigate = useNavigate(); // ✅ Required for navigation
+  const navigate = useNavigate();
   const [product, setProduct] = useState<Product | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [currentTab, setTab] = useState<'About' | 'Details'>('About');
-  const [showLoginPrompt, setShowLoginPrompt] = useState(false); // ✅ Correct state
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   const {
     addItem,
@@ -53,7 +62,7 @@ const ProductDetailPage: React.FC = () => {
     e.stopPropagation();
 
     if (!isAuthenticated) {
-      setShowLoginPrompt(true); // ✅ Shows modal
+      setShowLoginPrompt(true);
       return;
     }
 
@@ -62,17 +71,19 @@ const ProductDetailPage: React.FC = () => {
       const button = e.currentTarget as HTMLButtonElement;
       const originalText = button.textContent;
       button.textContent = 'ADDED!';
-      button.style.backgroundColor = '#10b981';
+      button.style.backgroundColor = '#10b981'; // Tailwind 'emerald-500' or similar green
+      button.style.borderColor = '#10b981';
       setTimeout(() => {
         button.textContent = originalText!;
-        button.style.backgroundColor = '';
+        button.style.backgroundColor = ''; // Revert to default or rich-brown
+        button.style.borderColor = ''; // Revert border
       }, 1200);
     }
   };
 
   const handleLogin = () => {
-    setShowLoginPrompt(false);      // ✅ Hide modal first
-    navigate('/login');             // ✅ Go to login page
+    setShowLoginPrompt(false);
+    navigate('/login');
   };
 
   const handleQuantityChange = (e: React.MouseEvent, change: number) => {
@@ -159,10 +170,10 @@ const ProductDetailPage: React.FC = () => {
                 </div>
                 {productImages.length > 1 && (
                   <>
-                    <button onClick={prevImage} className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md hover:shadow-lg">
+                    <button onClick={prevImage} className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md hover:shadow-lg focus:outline-none">
                       <ChevronLeft className="h-6 w-6" />
                     </button>
-                    <button onClick={nextImage} className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md hover:shadow-lg">
+                    <button onClick={nextImage} className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md hover:shadow-lg focus:outline-none">
                       <ChevronRight className="h-6 w-6" />
                     </button>
                   </>
@@ -172,67 +183,89 @@ const ProductDetailPage: React.FC = () => {
 
             {/* Product Info */}
             <div className="space-y-6">
-              <h1 className="text-2xl font-light text-gray-800">{product.name}</h1>
+              <h1 className="text-2xl font-serif font-light italic text-rich-brown">{product.name}</h1>
               <div className="flex items-center space-x-4 mb-4">
-                <div className="text-2xl font-medium text-gray-900">
-                  ₹ {product.price.toLocaleString()}
+                <div className="text-2xl font-serif font-semibold text-rich-brown">
+                  {SITE_CONFIG.currencySymbol} {product.price.toLocaleString()}
                 </div>
                 {product.comparePrice && product.comparePrice > product.price && (
-                  <div className="text-lg text-gray-500 line-through">
-                    ₹ {product.comparePrice.toLocaleString()}
+                  <div className="text-lg text-mocha/60 line-through font-serif italic">
+                    {SITE_CONFIG.currencySymbol} {product.comparePrice.toLocaleString()}
                   </div>
                 )}
               </div>
 
+              {/* Quantity Controls (Only if inCart and stock available) */}
               {product.stock && inCart && (
-                <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center justify-start space-x-4 py-3 relative">
                   <button
                     onClick={(e) => handleQuantityChange(e, -1)}
-                    className="w-8 h-8 border border-gray-300 flex items-center justify-center hover:bg-gray-50"
+                    className="w-8 h-8 flex items-center justify-center border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-110 active:scale-95 shadow-sm hover:shadow-md focus:outline-none"
+                    aria-label="Decrease quantity"
+                    title="Decrease quantity"
                   >
-                    <Minus className="h-4 w-4" />
+                    <Minus className="w-3 h-3" />
                   </button>
-                  <span className="w-8 text-center">{productQuantity}</span>
+
+                  <span className="text-base font-serif font-semibold text-rich-brown min-w-[2rem] text-center">
+                    {productQuantity}
+                  </span>
+
                   <button
                     onClick={(e) => handleQuantityChange(e, 1)}
-                    className="w-8 h-8 border border-gray-300 flex items-center justify-center hover:bg-gray-50"
+                    className="w-8 h-8 flex items-center justify-center border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-110 active:scale-95 shadow-sm hover:shadow-md focus:outline-none"
+                    aria-label="Increase quantity"
+                    title="Increase quantity"
                   >
-                    <Plus className="h-4 w-4" />
+                    <Plus className="w-3 h-3" />
                   </button>
                 </div>
               )}
 
-              <button
-                onClick={handleAddToCart}
-                disabled={!product.stock}
-                className="w-full mt-4 bg-black text-white py-3 px-6 font-medium hover:bg-gray-800 transition-colors disabled:opacity-50"
-              >
-                {product.stock
-                  ? inCart ? 'CONFIRM ADD TO CART' : 'ADD TO CART'
-                  : 'OUT OF STOCK'}
-              </button>
+              {/* Add to Cart / Preorder Button */}
+              {!product.stock ? (
+                <button
+                  disabled
+                  className="w-full py-3 text-xs font-serif font-semibold italic border-2 border-gray-400 text-gray-400 rounded-xl cursor-not-allowed focus:outline-none"
+                >
+                  OUT OF STOCK
+                </button>
+              ) : inCart ? (
+                <button
+                  onClick={handleAddToCart} // Keep the animation for "ADDED!"
+                  className="w-full py-3 text-xs font-serif font-semibold italic border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md focus:outline-none"
+                  title="Confirm to Preorder"
+                >
+                  CONFIRM TO PREORDER
+                </button>
+              ) : (
+                <button
+                  onClick={handleAddToCart}
+                  className="w-full sm:w-60 px-6 py-3 text-xs font-serif font-semibold italic border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md focus:outline-none"
+                  title="Preorder"
+                >
+                  PREORDER
+                </button>
+              )}
 
-              <div className="pt-6 border-t border-gray-200">
-                <div className="flex space-x-6 border-b border-gray-200 mb-4">
+              <div className="pt-6 border-t border-subtle-beige">
+                <div className="flex space-x-6 border-b border-subtle-beige mb-4">
                   {['About', 'Details'].map((tab) => (
                     <button
                       key={tab}
                       onClick={() => setTab(tab as 'About' | 'Details')}
-                      className={`pb-2 font-medium uppercase tracking-wide text-sm ${currentTab === tab ? 'border-b-2 border-black text-black' : 'text-gray-500 hover:text-black'}`}
+                      className={`pb-2 font-serif uppercase tracking-wide text-sm ${currentTab === tab ? 'border-b-2 border-rich-brown text-rich-brown' : 'text-mocha/60 hover:text-rich-brown'} focus:outline-none`}
                     >
                       {tab}
                     </button>
                   ))}
                 </div>
 
-                <div className="text-sm text-gray-700 leading-relaxed">
+                <div className="text-sm text-mocha leading-relaxed font-serif italic">
                   {currentTab === 'About' && <p>{product.description}</p>}
                   {currentTab === 'Details' && (
                     <p>
-                      Net Weight: 16oz (1 lb) / 454g<br />
-                      Shelf Life: 12 months from manufacturing date<br />
-                      Storage: Keep in a cool, dry place<br />
-                      Allergen info: Contains wheat
+                      {product.details}
                     </p>
                   )}
                 </div>

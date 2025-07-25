@@ -1,0 +1,42 @@
+# Node modules - don't copy dependencies
+node_modules
+**/node_modules
+
+# Logs
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Build output
+dist
+build
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage
+
+# Env files (optional - include only if not needed in image)
+.env
+.env.local
+.env.development
+.env.production
+
+# Git
+.git
+.gitignore
+
+# Docker files (optional)
+Dockerfile.dev
+docker-compose.yml
+
+# IDEs
+.vscode
+.idea
+
+# Misc
+*.tgz
+*.log

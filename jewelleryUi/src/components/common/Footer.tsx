@@ -36,7 +36,7 @@ const Footer: React.FC = () => {
 
             {/* Quick Links */}
             <div>
-              <h4 className="text-sm sm:text-base font-serif italic font-semibold mb-3">
+              <h4 className="text-sm sm:text-base font-serif italic font-semibold mb-1">
                 Quick Links
               </h4>
               <ul className="space-y-2 text-xs sm:text-sm font-serif">
