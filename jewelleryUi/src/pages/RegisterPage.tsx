@@ -70,7 +70,7 @@ const RegisterPage: React.FC = () => {
   };
 
   const floatingLabelVariants = {
-    active: { y: -24, scale: 0.8, transition: { duration: 0.2 } },
+    active: { y: -28, scale: 0.8, transition: { duration: 0.2 } },
     inactive: { y: 0, scale: 1, transition: { duration: 0.2 } },
   };
 
@@ -82,7 +82,7 @@ const RegisterPage: React.FC = () => {
     <div className="relative">
       <motion.label
         htmlFor={name}
-        className="absolute left-0 text-[#4A3F36] text-base italic font-light pointer-events-none origin-left"
+        className="absolute left-0 text-[#4A3F36] text-base italic font-light pointer-events-none origin-left top-8"
         animate={focusedField === name || formData[name] ? 'active' : 'inactive'}
         variants={floatingLabelVariants}
       >
@@ -97,8 +97,8 @@ const RegisterPage: React.FC = () => {
         onChange={handleChange}
         onFocus={() => setFocusedField(name)}
         onBlur={() => setFocusedField(null)}
-        className="w-full bg-transparent border-b border-[#4A3F36] text-[#4A3F36] placeholder-transparent focus:outline-none pt-5 pb-1"
-        placeholder={label}
+        className="w-full bg-transparent border-b border-[#4A3F36] text-[#4A3F36] placeholder-transparent focus:outline-none pt-8 pb-2" // Increased pt to 8, pb to 2
+        placeholder={label} // Keep placeholder for initial visual cue before JS kicks in
       />
     </div>
   );
@@ -110,7 +110,7 @@ const RegisterPage: React.FC = () => {
 
         <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
           {error && (
-            <div className="bg-red-100 border border-red-300 text-red-800 px-3 sm:px-4 py-2 rounded text-sm">
+            <div className="bg-red-100 border border-red-300 text-red-800 px-3 sm:px-4 py-2 mb-8 rounded text-sm">
               {error}
             </div>
           )}
@@ -127,7 +127,7 @@ const RegisterPage: React.FC = () => {
           <div className="relative">
             <motion.label
               htmlFor="password"
-              className="absolute left-0 text-[#4A3F36] text-sm sm:text-base italic font-light pointer-events-none origin-left"
+              className="absolute left-0 text-[#4A3F36] text-sm sm:text-base italic font-light pointer-events-none origin-left top-8" // Adjusted top-8
               animate={focusedField === 'password' || formData.password ? 'active' : 'inactive'}
               variants={floatingLabelVariants}
             >
@@ -142,11 +142,11 @@ const RegisterPage: React.FC = () => {
               onChange={handleChange}
               onFocus={() => setFocusedField('password')}
               onBlur={() => setFocusedField(null)}
-              className="w-full bg-transparent border-b border-[#4A3F36] text-[#4A3F36] placeholder-transparent focus:outline-none pt-4 sm:pt-5 pb-1 text-sm sm:text-base"
+              className="w-full bg-transparent border-b border-[#4A3F36] text-[#4A3F36] placeholder-transparent focus:outline-none pt-8 pb-2 text-sm sm:text-base" // Increased pt to 8, pb to 2
               placeholder="Password"
             />
             <div
-              className="absolute right-0 top-4 sm:top-5 cursor-pointer text-[#4A3F36] p-1"
+              className="absolute right-0 top-9 sm:top-10 cursor-pointer text-[#4A3F36] p-1" // Adjusted top to align with new input padding
               onClick={() => setShowPassword(prev => !prev)}
             >
               {showPassword ? <EyeOff size={16} className="sm:w-[18px] sm:h-[18px]" /> : <Eye size={16} className="sm:w-[18px] sm:h-[18px]" />}

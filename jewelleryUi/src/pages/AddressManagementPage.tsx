@@ -1,13 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Plus } from 'lucide-react';
 import AddressSelector from '../components/address/AddressSelector';
+import AddressForm from '../components/address/AddressForm';
 import SEOHead from '../components/seo/SEOHead';
 import { SITE_CONFIG } from '../constants/siteConfig';
 import Header from '../components/common/Header';
+import { AddressFormData } from '../types/address';
 
 const AddressManagementPage: React.FC = () => {
   const navigate = useNavigate();
+  const [isAddressFormOpen, setIsAddressFormOpen] = useState(false);
+  const [isSavingAddress, setIsSavingAddress] = useState(false);
+
+  const handleAddAddressClick = () => {
+    setIsAddressFormOpen(true);
+  };
+
+  const handleCloseAddressForm = () => {
+    setIsAddressFormOpen(false);
+  };
+
+  const handleSaveAddress = async (addressData: AddressFormData) => {
+    setIsSavingAddress(true);
+    console.log('Saving address:', addressData);
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    setIsSavingAddress(false);
+    setIsAddressFormOpen(false); // Close modal after successful save
+    // In a real app, you would dispatch an action to save to your backend
+    // and then refresh the address list in AddressSelector.
+    alert('Address saved successfully!');
+  };
 
   return (
     <>
@@ -34,7 +58,18 @@ const AddressManagementPage: React.FC = () => {
               Manage Addresses
             </h1>
 
-            <div className="w-6 h-6" /> {/* spacer for symmetry */}
+            {/* Add New Address Button */}
+            <button
+              onClick={handleAddAddressClick}
+              className="
+                flex items-center px-4 py-2 bg-[#AA732F] text-white rounded-lg shadow-md
+                hover:bg-[#8f5c20] transition-colors duration-200
+                text-sm font-serif italic
+              "
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add New Address
+            </button>
           </div>
 
           {/* Address Selector */}
@@ -43,6 +78,15 @@ const AddressManagementPage: React.FC = () => {
           </div>
         </div>
       </main>
+
+      {/* Address Form Modal */}
+      <AddressForm
+        isOpen={isAddressFormOpen}
+        onClose={handleCloseAddressForm}
+        onSave={handleSaveAddress}
+        loading={isSavingAddress}
+        address={null} // For adding a new address, pass null
+      />
     </>
   );
 };

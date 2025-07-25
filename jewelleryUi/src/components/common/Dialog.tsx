@@ -47,11 +47,11 @@ const Dialog: React.FC<DialogProps> = ({
 
   return (
     <div 
-      className="modal-overlay"
+      className="fixed inset-0 z-100 bg-rich-brown/0 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6"
       onClick={handleBackdropClick}
     >
-      <div className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl border border-subtle-beige w-full ${maxWidthClasses[maxWidth]} mx-4 max-h-[90vh] transform transition-all`}>
-        <div className="flex items-center justify-between p-6 border-b border-subtle-beige">
+      <div className={`bg-white rounded-2xl shadow-2xl border border-subtle-beige w-full ${maxWidthClasses[maxWidth]} max-h-[90vh] transform transition-all flex flex-col`}>
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-subtle-beige flex-shrink-0">
           <h2 className="text-xl font-serif font-semibold italic text-rich-brown">{title}</h2>
           <button
             onClick={onClose}
@@ -60,7 +60,7 @@ const Dialog: React.FC<DialogProps> = ({
             <X className="h-6 w-6" />
           </button>
         </div>
-        <div className="p-6 font-serif text-rich-brown">
+        <div className="p-4 sm:p-6 font-serif text-rich-brown overflow-y-auto flex-grow">
           {children}
         </div>
       </div>

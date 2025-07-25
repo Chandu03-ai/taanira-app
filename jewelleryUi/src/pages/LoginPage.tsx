@@ -35,6 +35,10 @@ const LoginPage: React.FC = () => {
         navigate(user?.role === 'Admin' ? '/admin' : '/');
       } else {
         setError('Invalid credentials. Please try again.');
+      (async () => {
+          // Asynchronous operation for sending email confirmation
+          // (example: await sendEmailConfirmation(email);)
+      })(); // Self-invoking async function
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -42,8 +46,11 @@ const LoginPage: React.FC = () => {
     }
   };
 
+  // Adjust y position to move the label higher, creating more space below it.
+  // The 'active' y value should be negative enough to clear the input's text.
+  // The 'top' position on the label itself (e.g., top-8) should align it with the input's default text start.
   const floatingLabelVariants = {
-    active: { y: -24, scale: 0.8, transition: { duration: 0.2 } },
+    active: { y: -28, scale: 0.8, transition: { duration: 0.2 } }, // Adjusted from -24
     inactive: { y: 0, scale: 1, transition: { duration: 0.2 } },
   };
 
@@ -56,16 +63,16 @@ const LoginPage: React.FC = () => {
 
           <form className="space-y-5 sm:space-y-6" onSubmit={handleSubmit}>
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-xl text-sm font-serif italic">
+              <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-xl text-sm font-serif italic mb-4"> {/* Added mb-4 for extra space */}
                 {error}
               </div>
             )}
 
-            {/* Email Field */}
+            {/* Username Field (Email) */}
             <div className="relative">
               <motion.label
                 htmlFor="username"
-                className="absolute left-0 text-rich-brown text-sm sm:text-base font-serif italic font-light pointer-events-none origin-left"
+                className="absolute left-0 text-rich-brown text-sm sm:text-base font-serif italic font-light pointer-events-none origin-left top-8" // Adjusted top-8
                 animate={focusedField === 'username' || formData.username ? 'active' : 'inactive'}
                 variants={floatingLabelVariants}
               >
@@ -80,7 +87,8 @@ const LoginPage: React.FC = () => {
                 onChange={handleChange}
                 onFocus={() => setFocusedField('username')}
                 onBlur={() => setFocusedField(null)}
-                className="w-full bg-transparent border-b-2 border-rich-brown text-rich-brown placeholder-transparent focus:outline-none focus:border-soft-gold pt-4 sm:pt-5 pb-2 text-sm sm:text-base font-serif transition-all duration-200 ease-in-out"
+                // Crucial: Increased pt (padding-top) for space
+                className="w-full bg-transparent border-b-2 border-rich-brown text-rich-brown placeholder-transparent focus:outline-none focus:border-soft-gold pt-8 pb-2 text-sm sm:text-base font-serif transition-all duration-200 ease-in-out" // Adjusted pt-8
                 placeholder="Email"
               />
             </div>
@@ -89,7 +97,7 @@ const LoginPage: React.FC = () => {
             <div className="relative">
               <motion.label
                 htmlFor="password"
-                className="absolute left-0 text-rich-brown text-sm sm:text-base font-serif italic font-light pointer-events-none origin-left"
+                className="absolute left-0 text-rich-brown text-sm sm:text-base font-serif italic font-light pointer-events-none origin-left top-8" // Adjusted top-8
                 animate={focusedField === 'password' || formData.password ? 'active' : 'inactive'}
                 variants={floatingLabelVariants}
               >
@@ -104,11 +112,12 @@ const LoginPage: React.FC = () => {
                 onChange={handleChange}
                 onFocus={() => setFocusedField('password')}
                 onBlur={() => setFocusedField(null)}
-                className="w-full bg-transparent border-b-2 border-rich-brown text-rich-brown placeholder-transparent focus:outline-none focus:border-soft-gold pt-4 sm:pt-5 pb-2 text-sm sm:text-base font-serif transition-all duration-200 ease-in-out"
+                // Crucial: Increased pt (padding-top) for space
+                className="w-full bg-transparent border-b-2 border-rich-brown text-rich-brown placeholder-transparent focus:outline-none focus:border-soft-gold pt-8 pb-2 text-sm sm:text-base font-serif transition-all duration-200 ease-in-out" // Adjusted pt-8
                 placeholder="Password"
               />
               <div
-                className="absolute right-0 top-4 sm:top-5 cursor-pointer text-rich-brown p-2 rounded-xl hover:bg-subtle-beige transition-all duration-200 ease-in-out"
+                className="absolute right-0 top-9 sm:top-10 cursor-pointer text-rich-brown p-2 rounded-xl hover:bg-subtle-beige transition-all duration-200 ease-in-out" // Adjusted top-9/10 to align with new input padding
                 onClick={() => setShowPassword(prev => !prev)}
               >
                 {showPassword ? <EyeOff size={16} className="sm:w-[18px] sm:h-[18px]" /> : <Eye size={16} className="sm:w-[18px] sm:h-[18px]" />}
@@ -145,7 +154,7 @@ const LoginPage: React.FC = () => {
             Get exclusive updates on new collections and special offers.
           </p>
           <p className="text-xs sm:text-sm font-serif font-semibold italic text-mocha max-w-lg mx-auto leading-relaxed px-4">
-            {SITE_CONFIG.name} may use your email address to send updates and offers. 
+            {SITE_CONFIG.name} may use your email address to send updates and offers.
             You can always unsubscribe from marketing messages. Learn more via our Privacy Policy.
           </p>
         </div>
