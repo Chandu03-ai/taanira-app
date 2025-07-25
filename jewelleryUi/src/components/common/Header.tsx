@@ -89,7 +89,7 @@ const Header: React.FC = () => {
                   }`}
                   title="Open Menu"
                 >
-                  <Menu className="h-5 w-5 sm:h-6 sm:w-6" />
+                  <Menu className="h-6 w-6 sm:h-7 sm:w-7" />
                 </button>
                 <div className="hidden lg:flex items-center space-x-4 xl:space-x-6 text-xs tracking-widest">
                   <Link
@@ -122,7 +122,7 @@ const Header: React.FC = () => {
                 title={`${SITE_CONFIG.name} - Home`}
               >
                 {isHomePage ? (
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 flex items-center justify-center">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-10 lg:h-10 flex items-center justify-center">
                     <img
                       src={Taanira}
                       alt="Logo"
@@ -131,9 +131,9 @@ const Header: React.FC = () => {
                     />
                   </div>
                 ) : (
-                  <div className="flex items-center justify-center h-6 sm:h-8 lg:h-10">
+                  <div className="flex items-center justify-center h-8 sm:h-10 lg:h-10">
                     <span
-                      className="text-base sm:text-lg lg:text-xl xl:text-2xl font-serif italic font-semibold tracking-wide whitespace-nowrap"
+                      className="text-lg sm:text-xl lg:text-xl xl:text-2xl font-serif italic font-semibold tracking-wide whitespace-nowrap"
                       style={{ color: styles.textColor, fontWeight: styles.fontWeight }}
                     >
                       {SITE_CONFIG.shortName}
@@ -146,7 +146,7 @@ const Header: React.FC = () => {
             {/* Right */}
             <div className="flex items-center justify-end">
               <div
-                className={`flex items-center space-x-1 sm:space-x-2 lg:space-x-3 ${
+                className={`flex items-center space-x-3 sm:space-x-4 lg:space-x-6 ${
                   showText ? 'opacity-100 animate-fadeInSlow' : 'opacity-0'
                 }`}
               >
@@ -163,7 +163,7 @@ const Header: React.FC = () => {
                     CART
                   </span>
                   <div className="relative flex items-center">
-                    <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" style={{ color: styles.textColor }} />
+                    <ShoppingBag className="w-6 h-6 sm:w-6 sm:h-6 lg:w-6 lg:h-6" style={{ color: styles.textColor }} />
                     {cartItemCount > 0 && (
                       <span className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-red-500 text-white text-[10px] sm:text-xs rounded-full h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 flex items-center justify-center font-medium">
                         {cartItemCount > 99 ? '99+' : cartItemCount}
