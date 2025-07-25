@@ -43,6 +43,7 @@ export interface Product {
   images: string[];
   stock: boolean;
   createdAt: string;
+  details: string;
 }
 
 export interface Category {

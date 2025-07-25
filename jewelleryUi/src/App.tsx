@@ -7,7 +7,6 @@ import ProductsPage from './pages/ProductsPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import CategoryPage from './pages/CategoryPage';
 import CartPage from './pages/CartPage';
-import WishlistPage from './pages/WishlistPage';
 import UserProfile from './components/user/UserProfile';
 import OrderConfirmationPage from './pages/OrderConfirmationPage';
 import LoginPage from './pages/LoginPage';
@@ -37,7 +36,6 @@ function App() {
               <Route path="/product/:slug" element={<ProductDetailPage />} />
               <Route path="/category/:category" element={<CategoryPage />} />
               <Route path="/cart" element={<CartPage />} />
-              <Route path="/wishlist" element={<WishlistPage />} />
               <Route path="/profile" element={<UserProfile />} />
               <Route path="/user/orders" element={<UserOrdersPage />} />
               <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
