@@ -27,6 +27,7 @@ const ProductDetailPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [currentTab, setTab] = useState<'About' | 'Details'>('About');
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null); // New state for selected size
 
   const {
     addItem,
@@ -46,9 +47,16 @@ const ProductDetailPage: React.FC = () => {
     try {
       const productData = await apiService.getProductBySlug(slug!);
       setProduct(productData);
+      // Set initial selected size if available
+      if (productData.sizeOptions && productData.sizeOptions.length > 0) {
+        setSelectedSize(productData.sizeOptions[0]);
+      } else {
+        setSelectedSize(null);
+      }
     } catch (error) {
       console.error('Error loading product:', error);
       setProduct(null);
+      setSelectedSize(null);
     } finally {
       setLoading(false);
     }
@@ -67,6 +75,8 @@ const ProductDetailPage: React.FC = () => {
     }
 
     if (product && product.stock) {
+      // NOTE: For a full implementation, you'd likely pass `selectedSize` to `addItem`
+      // and your cart store would need to be updated to handle product variations (e.g., id + size).
       addItem(product, 1);
       const button = e.currentTarget as HTMLButtonElement;
       const originalText = button.textContent;
@@ -100,9 +110,25 @@ const ProductDetailPage: React.FC = () => {
     const newQuantity = productQuantity + change;
 
     if (newQuantity <= 0) {
+      // NOTE: If cart store handles variations, `removeItem` would also need `selectedSize`
       removeItem(product.id);
     } else {
+      // NOTE: If cart store handles variations, `updateQuantity` would also need `selectedSize`
       updateQuantity(product.id, change);
+    }
+  };
+
+  const handleRemoveFromCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!isAuthenticated) {
+      setShowLoginPrompt(true);
+      return;
+    }
+
+    if (product) {
+      removeItem(product.id);
     }
   };
 
@@ -195,57 +221,96 @@ const ProductDetailPage: React.FC = () => {
                 )}
               </div>
 
-              {/* Quantity Controls (Only if inCart and stock available) */}
-              {product.stock && inCart && (
-                <div className="flex items-center justify-start space-x-4 py-3 relative">
-                  <button
-                    onClick={(e) => handleQuantityChange(e, -1)}
-                    className="w-8 h-8 flex items-center justify-center border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-110 active:scale-95 shadow-sm hover:shadow-md focus:outline-none"
-                    aria-label="Decrease quantity"
-                    title="Decrease quantity"
-                  >
-                    <Minus className="w-3 h-3" />
-                  </button>
-
-                  <span className="text-base font-serif font-semibold text-rich-brown min-w-[2rem] text-center">
-                    {productQuantity}
-                  </span>
-
-                  <button
-                    onClick={(e) => handleQuantityChange(e, 1)}
-                    className="w-8 h-8 flex items-center justify-center border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-110 active:scale-95 shadow-sm hover:shadow-md focus:outline-none"
-                    aria-label="Increase quantity"
-                    title="Increase quantity"
-                  >
-                    <Plus className="w-3 h-3" />
-                  </button>
+              {/* Size Selector */}
+              {product.sizeOptions && product.sizeOptions.length > 0 && (
+                <div className="flex items-center space-x-2 py-3">
+                  <span className="text-sm font-serif font-semibold text-rich-brown mr-2">Size:</span>
+                  {product.sizeOptions.map((size) => (
+                    <button
+                      key={size}
+                      onClick={() => setSelectedSize(size)}
+                      className={`
+                        w-10 h-10 flex items-center justify-center border-2 rounded-xl text-sm font-serif font-semibold
+                        ${selectedSize === size
+                          ? 'border-rich-brown bg-rich-brown text-white shadow-md'
+                          : 'border-gray-300 text-gray-700 hover:border-rich-brown hover:text-rich-brown transition-colors duration-200'
+                        }
+                        focus:outline-none transform hover:scale-105 active:scale-95
+                      `}
+                      aria-label={`Select size ${size}`}
+                      title={`Select size ${size}`}
+                    >
+                      {size}
+                    </button>
+                  ))}
                 </div>
               )}
 
-              {/* Add to Cart / Preorder Button */}
+              {/* Conditional Buttons based on stock and cart status */}
               {!product.stock ? (
+                // OUT OF STOCK
                 <button
                   disabled
                   className="w-full py-3 text-xs font-serif font-semibold italic border-2 border-gray-400 text-gray-400 rounded-xl cursor-not-allowed focus:outline-none"
                 >
                   OUT OF STOCK
                 </button>
-              ) : inCart ? (
-                <button
-                  onClick={handleAddToCart} // Keep the animation for "ADDED!"
-                  className="w-full py-3 text-xs font-serif font-semibold italic border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md focus:outline-none"
-                  title="Confirm to Preorder"
-                >
-                  CONFIRM TO PREORDER
-                </button>
-              ) : (
-                <button
-                  onClick={handleAddToCart}
-                  className="w-full sm:w-60 px-6 py-3 text-xs font-serif font-semibold italic border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md focus:outline-none"
-                  title="Preorder"
-                >
-                  PREORDER
-                </button>
+              ) : ( // Product is in stock
+                inCart ? (
+                  // Product is IN CART
+                  <div className="flex flex-col sm:flex-row items-center gap-4 py-3">
+                    {/* Quantity Controls */}
+                    <div className="flex items-center space-x-4">
+                      <button
+                        onClick={(e) => handleQuantityChange(e, -1)}
+                        className="w-8 h-8 flex items-center justify-center border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-110 active:scale-95 shadow-sm hover:shadow-md focus:outline-none"
+                        aria-label="Decrease quantity"
+                        title="Decrease quantity"
+                      >
+                        <Minus className="w-3 h-3" />
+                      </button>
+                      <span className="text-base font-serif font-semibold text-rich-brown min-w-[2rem] text-center">
+                        {productQuantity}
+                      </span>
+                      <button
+                        onClick={(e) => handleQuantityChange(e, 1)}
+                        className="w-8 h-8 flex items-center justify-center border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-110 active:scale-95 shadow-sm hover:shadow-md focus:outline-none"
+                        aria-label="Increase quantity"
+                        title="Increase quantity"
+                      >
+                        <Plus className="w-3 h-3" />
+                      </button>
+                    </div>
+
+                    {/* Remove and View Cart buttons */}
+                    <button
+                      onClick={handleRemoveFromCart}
+                      className="w-full sm:w-auto px-6 py-3 text-xs font-serif font-semibold italic border-2 border-red-500 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md focus:outline-none"
+                      title="Remove from Cart"
+                    >
+                      REMOVE FROM CART
+                    </button>
+                    <Link
+                      to="/cart"
+                      className="w-full sm:w-auto px-6 py-3 text-xs font-serif font-semibold italic border-2 border-gray-700 text-gray-700 rounded-xl hover:bg-gray-700 hover:text-white transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md focus:outline-none text-center"
+                    >
+                      GO TO CART
+                    </Link>
+                  </div>
+                ) : (
+                  // Product is NOT IN CART
+                  <button
+                    onClick={handleAddToCart}
+                    className="w-full sm:w-60 px-6 py-3 text-xs font-serif font-semibold italic border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md focus:outline-none"
+                    title="Preorder"
+                    disabled={product.sizeOptions && product.sizeOptions.length > 0 && selectedSize === null}
+                  >
+                    PREORDER
+                  </button>
+                )
+              )}
+              {product.sizeOptions && product.sizeOptions.length > 0 && selectedSize === null && !inCart && product.stock && (
+                <p className="text-red-500 text-sm italic">Please select a size.</p>
               )}
 
               <div className="pt-6 border-t border-subtle-beige">

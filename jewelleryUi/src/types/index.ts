@@ -44,6 +44,7 @@ export interface Product {
   stock: boolean;
   createdAt: string;
   details: string;
+  sizeOptions?: string[];
 }
 
 export interface Category {
