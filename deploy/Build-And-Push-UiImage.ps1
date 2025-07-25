@@ -30,25 +30,25 @@ if (-not $registryPort) {
     }
 }
 
-# Prompt for image name and build context
-$imageName = Read-Host "Enter the image name (default: taanira-api:latest)"
+# Prompt for image name and context path
+$imageName = Read-Host "Enter the image name (default: taanira-ui:latest)"
 if ([string]::IsNullOrWhiteSpace($imageName)) {
-    $imageName = "taanira-api:latest"
+    $imageName = "taanira-ui:latest"
 }
 
-$buildContextPath = Read-Host "Enter the Docker build context path (default: ../jewelleryApi)"
+$buildContextPath = Read-Host "Enter the Docker build context path (default: ../jewelleryUi)"
 if ([string]::IsNullOrWhiteSpace($buildContextPath)) {
-    $buildContextPath = "../jewelleryApi"
+    $buildContextPath = "../jewelleryUi"
 }
 
-# Final image tag with registry
+# Final registry image tag
 $registryImage = "${registryHost}:${registryPort}/$imageName"
 
 Write-Info "Using registry: ${registryHost}:${registryPort}"
-Write-Info "Building image: $registryImage"
+Write-Info "Building image: ${registryImage}"
 Write-Info "Build context path: $buildContextPath"
 
-# Step 1: Check if registry is reachable unless already checked
+# Step 1: Check if registry is reachable (unless already checked)
 if (-not $registryAlreadyChecked) {
     Write-Info "Checking if Docker registry is reachable at http://${registryHost}:${registryPort}..."
     try {
@@ -62,7 +62,7 @@ if (-not $registryAlreadyChecked) {
         Write-ErrorAndExit "Failed to reach Docker registry at ${registryHost}:${registryPort}"
     }
 } else {
-    Write-Info "Skipping registry reachability check (already verified earlier)."
+    Write-Info "Skipping registry check (already verified earlier)."
 }
 
 # Step 2: Build image directly with full registry tag
@@ -80,6 +80,6 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 # Final output
-Write-Info "API image build & push successful!"
+Write-Info "UI image build & push successful!"
 Write-Host "Pull it using:" -ForegroundColor Green
 Write-Host "docker pull $registryImage" -ForegroundColor Yellow

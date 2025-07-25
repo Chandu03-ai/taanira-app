@@ -68,7 +68,7 @@ async def createCategories(client, cookies, uploadedImages):
     for idx, cat in enumerate(categories):
         imageName = uploadedImages[idx % len(uploadedImages)]
         slug = cat["slug"].lower()
-        payload = {"name": cat["name"], "slug": slug, "image": imageName, "sizeOptions": random.choice([["S", "M"], ["M", "L", "XL"], ["Free Size"]]), "categoryType": getCategoryType(slug)}
+        payload = {"name": cat["name"], "slug": slug, "image": imageName, "sizeOptions": random.choice([["S", "M"], ["M", "L", "XL"]]), "categoryType": getCategoryType(slug)}
         try:
             res = await client.post(CATEGORY_URL, cookies=cookies, json=payload)
             data = res.json()
@@ -86,13 +86,13 @@ async def createCategories(client, cookies, uploadedImages):
     return created
 
 
-def getProductDetails(slug: str):
+def getProductDetails(slug: str) -> str:
     if slug == "sarees":
-        return json.dumps({"fabric": "Silk", "shelfLife": "2 years", "careInstructions": "Dry clean only"})
+        return "Fabric: Silk | Shelf Life: 2 years | Care: Dry clean only"
     elif slug == "bags":
-        return json.dumps({"material": "Jute", "capacity": "5kg", "handmade": True})
+        return "Material: Jute | Capacity: 5kg | Handmade: Yes"
     else:
-        return json.dumps({"material": "Gold", "purity": "22K", "weight": "6.5g", "stoneType": "Diamond"})
+        return "Material: Gold | Purity: 22K | Weight: 6.5g | Stone: Diamond"
 
 
 async def createProducts(client, cookies, categorySlugs, uploadedImages):

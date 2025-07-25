@@ -1,0 +1,90 @@
+services:
+  taanira_postgres:
+    image: postgres:15
+    container_name: taanira_postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: pdb
+    ports:
+      - "8212:5432"
+    restart: always
+    networks:
+      - yensi_docker_network
+    volumes:
+      - ./volumes/postgres/data:/var/lib/postgresql/data
+
+  taanira_keycloak:
+    image: quay.io/keycloak/keycloak:26.0.1
+    container_name: taanira_keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://taanira_postgres/pdb
+      KC_DB_USERNAME: admin
+      KC_DB_PASSWORD: admin
+    ports:
+      - "8080:8080"
+    command:
+      - start-dev
+      - "--features=docker,token-exchange,admin-fine-grained-authz"
+      - "--import-realm"
+    restart: always
+    depends_on:
+      - taanira_postgres
+    networks:
+      - yensi_docker_network
+    volumes:
+      - ./volumes/keycloak-config:/opt/keycloak/keycloak-config
+      - ./KeycloakTheme:/opt/keycloak/themes/
+      - ./realm-export.json:/opt/keycloak/data/import/realm-export.json
+
+  taanira_mongodb:
+    image: mongo:6
+    container_name: taanira_mongodb
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+      MONGO_INITDB_DATABASE: localApi
+    command: mongod --auth
+    ports:
+      - "57057:27017"
+    networks:
+      - yensi_docker_network
+    volumes:
+      - ./volumes/mongo/data:/data/db
+      - ./volumes/mongo/config:/data/configdb
+
+  taanira_api:
+    image: 192.168.0.104:5000/taanira-api:latest
+    container_name: taanira_api
+    restart: always
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - taanira_mongodb
+      - taanira_keycloak
+    networks:
+      - yensi_docker_network
+      
+  taanira_ui:
+    image: 192.168.0.104:5000/taanira-ui:latest
+    container_name: taanira_ui
+    restart: always
+    ports:
+      - "5173:5173"
+    env_file:
+      - .env
+    networks:
+      - yensi_docker_network
+    depends_on:
+      - taanira_api
+  
+
+networks:
+  yensi_docker_network:
+    external: true

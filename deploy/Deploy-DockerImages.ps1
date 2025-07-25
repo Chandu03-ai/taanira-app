@@ -56,6 +56,14 @@ if (Test-Path $apiScript) {
     Write-ErrorAndExit "API deployment script not found: $apiScript"
 }
 
+# --- Run UI deployment ---
+Write-Info "Starting UI image build and push..."
+$uiScript = Join-Path $scriptDir 'Build-And-Push-UiImage.ps1'
+if (Test-Path $uiScript) {
+    & $uiScript -registryHost $registryHost -registryPort $registryPort -registryAlreadyChecked $true
+} else {
+    Write-ErrorAndExit "UI deployment script not found: $uiScript"
+}
 
 # --- Check if .env file exists before running containers ---
 if (-not (Test-Path $envFilePath)) {
@@ -66,19 +74,25 @@ if (-not (Test-Path $envFilePath)) {
 Write-Host ""
 $runLocal = (Read-Host "Do you want to run both images locally now? (yes/no)").Trim().ToLower()
 if ($runLocal -eq "yes" -or $runLocal -eq "y") {
-    $apiImage = "${registryHost}:${registryPort}/jewellery-inventory-api:latest"
+    $apiImage = "${registryHost}:${registryPort}/taanira-api:latest"
+    $uiImage  = "${registryHost}:${registryPort}/taanira-ui:latest"
 
     Write-Info "Pulling latest images..."
     docker pull $apiImage
+    docker pull $uiImage
 
     Write-Info "Stopping and removing existing containers (if any)..."
-    docker rm -f jewellery-api -ErrorAction SilentlyContinue
+    docker rm -f taanira-api -ErrorAction SilentlyContinue
+    docker rm -f taanira-ui -ErrorAction SilentlyContinue
 
     Write-Info "Running API container using .env..."
-    docker run -d --name jewellery-api --env-file "$envFilePath" -p 8000:8000 $apiImage
+    docker run -d --name taanira-api --env-file "$envFilePath" -p 8000:8000 $apiImage
 
+    Write-Info "Running UI container..."
+    docker run -d --name taanira-ui --env-file "$envFilePath" -p 5173:5173 $uiImage
 
     Write-Info "Both containers are running!"
+    Write-Host "UI is available at: http://localhost:5173/"
     Write-Host "API is available at: http://localhost:8000/"
 } else {
     Write-Info "Skipped running images locally."
