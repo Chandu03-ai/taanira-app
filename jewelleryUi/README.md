@@ -1,2 +1,0 @@
-# jewellery-inventory
-for business
