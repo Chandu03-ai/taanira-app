@@ -14,6 +14,7 @@ from Router import (
     adminUserState,
     addressRouter,
     shipmentTrackRouter,
+    reviewRouter,
 )
 from fastapi.middleware.cors import CORSMiddleware
 from yensiAuthentication.authenticate import KeycloakMiddleware
@@ -59,6 +60,7 @@ app.include_router(adminUserState.router)
 app.include_router(addressRouter.router)
 app.include_router(shipmentTrackRouter.router)
 app.include_router(emailRouter.router)
+app.include_router(reviewRouter.router)
 
 
 # run the FastAPI application

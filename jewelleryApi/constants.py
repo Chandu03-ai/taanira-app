@@ -29,7 +29,7 @@ mongoCartCollection = os.getenv("MONGO_CART_COLLECTION_NAME", "cartCollection")
 mongoWishlistCollection = os.getenv("MONGO_WISHLIST_COLLECTION_NAME", "wishlistCollection")
 mongoShippingCollection = os.getenv("MONGO_SHIPPING_COLLECTION_NAME", "shippingCollection")
 mongoAddressesCollection = os.getenv("MONGO_ADDRESS_COLLECTION_NAME", "addressCollection")
-
+mongoReviewCollection = os.getenv("MONGO_REVIEW_COLLECTION_NAME", "reviewCollection")
 
 
 # ======================
@@ -39,7 +39,7 @@ frontendUrl = os.getenv("FRONTEND_URL", "http://localhost:5173")
 staticImagesPath = os.getenv("STATIC_IMAGES_PATH", "static/images")
 staticOriginalPath = os.getenv("STATIC_ORIGINAL_PATH", "static/originalImages/")
 isExchangeToken = os.getenv("IS_EXCHANGE_TOKEN", "false").lower() == "true"
-staticFilesPath = 'static'
+staticFilesPath = "static"
 
 
 # ==== Razor Pay Configuration ====

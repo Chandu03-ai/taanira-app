@@ -82,3 +82,16 @@ async def getProductBySlug(slug: str):
     except Exception as e:
         logger.error(f"Error fetching product by slug: {e}")
         return returnResponse(2004)
+
+
+@router.get("/products/{categoryId}")
+async def getProducts(categoryId: str):
+    try:
+        logger.debug("Fetching products")
+        query = {"isDeleted": False, "categoryId": categoryId}
+        products = list(getProductsFromDb(query))
+        logger.info(f"Fetched {len(products)} product(s) successfully")
+        return returnResponse(2158, result=products if products else [])
+    except Exception as e:
+        logger.error(f"[PRODUCT_FETCH_ERROR] {str(e)}")
+        return returnResponse(2159)
