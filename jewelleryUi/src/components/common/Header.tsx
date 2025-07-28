@@ -150,7 +150,7 @@ const Header: React.FC = () => {
                   showText ? 'opacity-100 animate-fadeInSlow' : 'opacity-0'
                 }`}
               >
-                <UserMenu />
+                <UserMenu dropdownPosition="bottom"/>
                 <button
                   onClick={() => setShowCartSidebar(true)}
                   className="flex items-center gap-1 sm:gap-2 hover:opacity-70 transition-opacity relative h-8 sm:h-10 lg:h-12 min-w-0"

@@ -26,7 +26,7 @@ const letter = {
 };
 
 const HomePage: React.FC = () => {
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasAnimated, setHasAnimated] = useState(false);
@@ -159,49 +159,49 @@ const HomePage: React.FC = () => {
             </div>
 
             {/* Optimized Product Grid */}
-         <div className="w-full flex justify-center">
-  <div className="max-w-7xl w-full px-2 sm:px-4 lg:px-6">
-    
-    <div className="
+            <div className="w-full flex justify-center">
+              <div className="max-w-7xl w-full px-2 sm:px-4 lg:px-6">
+
+                <div className="
       grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 
       xl:flex xl:flex-wrap xl:justify-center 
       gap-4 xl:gap-6"
-    >
-      {products.map((product) => (
-        <Link
-          to={`/product/${product.slug}`}
-          key={product.id}
-          className="group block w-full max-w-[220px] xl:mx-3 xl:mb-6"
-        >
-          {/* Product Image Container */}
-          <div className="relative w-full aspect-[3/4] border border-[#d4b896] rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 bg-white">
-            <img
-              src={`${staticImageBaseUrl}/${product.images[0]}`}
-              alt={product.name}
-              className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-300"
-            />
-            {/* Badge */}
-            <div className="absolute top-2 left-2">
-              <span className="bg-[#D4B896] text-[#1C1A17] text-[10px] sm:text-xs px-2 py-1 rounded-full font-medium">
-                PreOrder
-              </span>
-            </div>
-          </div>
+                >
+                  {products.map((product) => (
+                    <Link
+                      to={`/product/${product.slug}`}
+                      key={product.id}
+                      className="group block w-full max-w-[220px] xl:mx-3 xl:mb-6"
+                    >
+                      {/* Product Image Container */}
+                      <div className="relative w-full aspect-[3/4] border border-[#d4b896] rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 bg-white">
+                        <img
+                          src={`${staticImageBaseUrl}/${product.images[0]}`}
+                          alt={product.name}
+                          className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-300"
+                        />
+                        {/* Badge */}
+                        <div className="absolute top-2 left-2">
+                          <span className="bg-[#D4B896] text-[#1C1A17] text-[10px] sm:text-xs px-2 py-1 rounded-full font-medium">
+                            PreOrder
+                          </span>
+                        </div>
+                      </div>
 
-          {/* Product Info */}
-          <div className="text-center mt-2 px-1">
-            <h3 className="text-xs sm:text-sm text-[#aa732f] font-medium leading-tight mb-1 line-clamp-2 min-h-[2rem]">
-              {product.name}
-            </h3>
-            <p className="text-xs sm:text-sm text-[#aa732f] font-semibold">
-              ₹{product.price}
-            </p>
-          </div>
-        </Link>
-      ))}
-    </div>
-  </div>
-</div>
+                      {/* Product Info */}
+                      <div className="text-center mt-2 px-1">
+                        <h3 className="text-xs sm:text-sm text-[#aa732f] font-medium leading-tight mb-1 line-clamp-2 min-h-[2rem]">
+                          {product.name}
+                        </h3>
+                        <p className="text-xs sm:text-sm text-[#aa732f] font-semibold">
+                          ₹{product.price}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
 
 
             <div className="text-center mt-6 sm:mt-8 md:mt-12">

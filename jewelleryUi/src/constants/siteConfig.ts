@@ -3,7 +3,7 @@ export const staticImageBaseUrl = '/api/static/images/';
 
 export const SITE_CONFIG = {
   name: process.env.VITE_SITE_NAME || 'Taanira',
-  shortName: process.env.VITE_SITE_SHORT_NAME || ' 𝒯𝒶𝒶𝓃𝒾𝓇𝒶',
+  shortName: process.env.VITE_SITE_SHORT_NAME || '𝒯𝒶𝒶𝓃𝒾𝓇𝒶',
   description: process.env.VITE_SITE_DESCRIPTION || 'Handmade treasures with heart, history, and harmony.',
   tagline: process.env.VITE_SITE_TAGLINE || 'Each piece is made with love and care — a touch of tradition, a bit of art, and a lot of heart.',
   domain: process.env.VITE_SITE_DOMAIN || 'Taanira.com',

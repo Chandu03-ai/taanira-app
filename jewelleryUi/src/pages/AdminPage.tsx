@@ -4,7 +4,6 @@ import {
   Package,
   Users,
   ShoppingCart,
-  Settings,
   FileText,
   Menu,
   X,
