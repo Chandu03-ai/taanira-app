@@ -42,7 +42,7 @@ async def updateAddressApi(request: Request, addressId: str, payload: dict):
 
         payload["updatedAt"] = formatDateTime()
         updateAddress({"id": addressId}, payload)
-        updated = getAddressById({"id", addressId})
+        updated = getAddressById({"id": addressId})
         return returnResponse(2137, result=updated)
     except Exception as e:
         logger.error(f"Error updating address [{addressId}]: {str(e)}")

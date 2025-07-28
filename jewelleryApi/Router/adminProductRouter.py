@@ -74,10 +74,21 @@ async def updateProductByIdEndpoint(request: Request, productId: str, payload: P
             return returnResponse(2003)
 
         updatePayload = payload.model_dump()
+        category = getCategoryFromDb({"id": payload.category, "isDeleted": False})
+        if not category:
+            logger.warning(f"Category not found for ID: {payload.category}")
+            return returnResponse(2025)
+
+        slug = slugify(payload.slug or payload.name)
+
         updatePayload.update(
             {
                 "id": productId,
-                "slug": slugify(payload.slug or payload.name),
+                "slug": slug,
+                "categoryId": payload.category,
+                "category": category.get("name"),  # store readable name
+                "sizeOptions": category.get("sizeOptions", []),
+                "images": payload.images,  # Overwrite image
                 "updatedAt": formatDateTime(),
                 "createdBy": existing.get("createdBy", userId),
                 "createdAt": existing.get("createdAt", formatDateTime()),

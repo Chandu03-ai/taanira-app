@@ -29,19 +29,13 @@ async def createCategory(request: Request, payload: CategoryModel):
         existing = getCategoryFromDb({"slug": slug})
         if existing:
             if existing.get("isDeleted"):
-                updateCategoryInDb(
-                    existing["id"],
-                    {
-                        "$set": {
-                            "name": payload.name,
-                            "image": payload.image,
-                            "sizeOptions": payload.sizeOptions,
-                            "isDeleted": False,
-                            "categoryType": payload.categoryType,
-                            "updatedAt": formatDateTime(),
-                        }
-                    },
-                )
+                updateData = {"name": payload.name, "image": payload.image, "categoryType": payload.categoryType, "updatedAt": formatDateTime(), "isDeleted": False}
+                # Only update sizeOptions if category is Bangles
+                if payload.name.lower() == "bangles":
+                    updateData["sizeOptions"] = payload.sizeOptions
+                else:
+                    updateData["sizeOptions"] = []
+                updateCategoryInDb(existing["id"], {"$set": updateData})
                 logger.info(f"Category restored: {payload.name}")
                 return returnResponse(2020)
             else:
@@ -53,13 +47,16 @@ async def createCategory(request: Request, payload: CategoryModel):
             "name": payload.name,
             "slug": slug,
             "image": payload.image,
-            "sizeOptions": payload.sizeOptions,
             "categoryType": payload.categoryType,
             "createdAt": formatDateTime(),
             "updatedAt": formatDateTime(),
             "isDeleted": False,
         }
-
+        # Only include sizeOptions for Bangles
+        if payload.name.lower() == "bangles":
+            categoryData["sizeOptions"] = payload.sizeOptions
+        else:
+            categoryData["sizeOptions"] = []
         insertCategoryIfNotExists(categoryData)
         categoryData.pop("_id", None)
         logger.info(f"Category created successfully: {payload.name}")
