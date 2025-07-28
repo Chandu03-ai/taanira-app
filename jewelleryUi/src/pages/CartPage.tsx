@@ -11,6 +11,7 @@ import { staticImageBaseUrl } from '../constants/siteConfig';
 const CartPage: React.FC = () => {
   const { items, removeItem, updateQuantity, getTotalPrice } = useCartStore();
   const { isAuthenticated } = useAuthStore();
+  const [agreedToTerms, setAgreedToTerms] = React.useState(false);
   const { selectedAddress } = useAddressStore();
   const navigate = useNavigate();
   const [showAddressSelector, setShowAddressSelector] = React.useState(false);
@@ -71,185 +72,189 @@ const CartPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-subtle-beige pt-16 sm:pt-20 font-serif">
-    <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-6 sm:py-8 max-w-7xl">
-      {!showAddressSelector ? (
-        <>
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4">
-            <h1 className="text-lg sm:text-xl lg:text-2xl font-serif font-semibold italic text-rich-brown">
-              MY BAG ({items.length})
-            </h1>
-            <button 
-              onClick={() => navigate('/')} 
-              className="text-rich-brown hover:text-mocha p-2 rounded-xl hover:bg-soft-gold transition-all duration-200 ease-in-out shadow-sm"
-              title="Close and continue shopping"
-            >
-              <X className="h-6 w-6" />
-            </button>
-          </div>
-
-          {/* Main Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
-            {/* Cart Items */}
-            <div className="lg:col-span-2 order-2 lg:order-1 space-y-4">
-              {items.map((item) => (
-                <div key={item.id} className="flex items-start space-x-4 pb-4 border-b border-soft-gold/30 last:border-b-0">
-                  <img
-                    src={
-                      item.product.images[0]?.startsWith('http')
-                        ? item.product.images[0]
-                        : `${staticImageBaseUrl}/${item.product.images[0]}`
-                    }
-                    alt={item.product.name}
-                    className="w-20 h-20 lg:w-24 lg:h-24 object-cover rounded-xl shadow-sm"
-                  />
-                  <div className="flex-1 text-rich-brown">
-                    <h3 className="text-base font-serif font-semibold italic mb-1 line-clamp-2">{item.product.name}</h3>
-                    {item.selectedSize && (
-                      <p className="text-sm font-serif font-light text-mocha mb-1">Size: {item.selectedSize}</p>
-                    )}
-                    <div className="text-base font-serif font-light mb-3">
-                      {item.quantity} x Rs. {item.product.price.toLocaleString()}
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                      {/* Quantity */}
-                      <div className="flex items-center space-x-2">
-                        <button
-                          onClick={() => handleQuantityChange(item.id, -1)}
-                          className="w-8 h-8 border border-soft-gold rounded-xl flex items-center justify-center hover:bg-soft-gold transition-all duration-200 ease-in-out shadow-sm hover:shadow-md"
-                          title="Decrease quantity"
-                        >
-                          <Minus className="h-3 w-3" />
-                        </button>
-                        <span className="w-8 text-center text-base font-serif font-semibold">{item.quantity}</span>
-                        <button
-                          onClick={() => handleQuantityChange(item.id, 1)}
-                          className="w-8 h-8 border border-soft-gold rounded-xl flex items-center justify-center hover:bg-soft-gold transition-all duration-200 ease-in-out shadow-sm hover:shadow-md"
-                          title="Increase quantity"
-                        >
-                          <Plus className="h-3 w-3" />
-                        </button>
-                      </div>
-
-                      <button
-                        onClick={() => handleRemoveItem(item.id, item.product.name)}
-                        className="text-sm font-serif italic text-rich-brown hover:text-red-500 transition-all duration-200 ease-in-out"
-                        title={`Remove ${item.product.name} from cart`}
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
+      <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-6 sm:py-8 max-w-7xl">
+        {!showAddressSelector ? (
+          <>
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4">
+              <h1 className="text-lg sm:text-xl lg:text-2xl font-serif font-semibold italic text-rich-brown">
+                MY BAG ({items.length})
+              </h1>
+              <button
+                onClick={() => navigate('/')}
+                className="text-rich-brown hover:text-mocha p-2 rounded-xl hover:bg-soft-gold transition-all duration-200 ease-in-out shadow-sm"
+                title="Close and continue shopping"
+              >
+                <X className="h-6 w-6" />
+              </button>
             </div>
 
-            {/* Order Summary */}
-            <div className="lg:col-span-1 order-1 lg:order-2">
-              <div className="card-elegant sticky top-24 lg:top-28">
-                <h2 className="text-lg font-serif font-semibold italic text-rich-brown mb-4">Order Summary</h2>
-
-                <div className="space-y-3 mb-6">
-                  <div className="flex justify-between">
-                    <span className="text-sm font-serif italic text-rich-brown">SUBTOTAL:</span>
-                    <span className="text-sm font-serif font-semibold">Rs. {getTotalPrice().toLocaleString()}</span>
-                  </div>
-                  <div className="text-xs font-serif italic text-mocha">
-                    Taxes and shipping will be calculated at checkout.
-                  </div>
-                  <div className="flex items-start text-xs font-serif italic text-rich-brown space-x-2">
-                    <input type="checkbox" className="mr-2 mt-0.5 accent-soft-gold rounded" />
-                    <span>I agree with the Terms and Conditions.</span>
-                  </div>
-                </div>
-
-                {selectedAddress ? (
-                  <>
-                    <div className="mb-4 p-4 bg-subtle-beige border border-soft-gold/30 rounded-xl text-sm font-serif">
-                      <p className="font-semibold italic text-rich-brown">Delivering to:</p>
-                      <p className="text-rich-brown font-light">{selectedAddress.fullName}</p>
-                      <p className="text-rich-brown font-light">{selectedAddress.city}, {selectedAddress.state}</p>
-                      <button
-                        onClick={() => setShowAddressSelector(true)}
-                        className="text-mocha underline text-xs mt-1 hover:text-rich-brown transition-all duration-200 ease-in-out font-serif italic"
-                        title="Change delivery address"
-                      >
-                        Change Address
-                      </button>
-                    </div>
-                    <PaymentHandler
-                      onSuccess={(orderId) => navigate(`/order-confirmation/${orderId}`)}
-                      onError={(error) => alert(`Payment failed: ${error}`)}
+            {/* Main Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
+              {/* Cart Items */}
+              <div className="lg:col-span-2 order-2 lg:order-1 space-y-4">
+                {items.map((item) => (
+                  <div key={item.id} className="flex items-start space-x-4 pb-4 border-b border-soft-gold/30 last:border-b-0">
+                    <img
+                      src={
+                        item.product.images[0]?.startsWith('http')
+                          ? item.product.images[0]
+                          : `${staticImageBaseUrl}/${item.product.images[0]}`
+                      }
+                      alt={item.product.name}
+                      className="w-20 h-20 lg:w-24 lg:h-24 object-cover rounded-xl shadow-sm"
                     />
-                  </>
-                ) : (
-                  <button
-                    onClick={() => setShowAddressSelector(true)}
-                    className="btn-primary w-full"
-                    title="Select delivery address"
-                  >
-                    SELECT DELIVERY ADDRESS
-                  </button>
-                )}
+                    <div className="flex-1 text-rich-brown">
+                      <h3 className="text-base font-serif font-semibold italic mb-1 line-clamp-2">{item.product.name}</h3>
+                      {item.selectedSize && (
+                        <p className="text-sm font-serif font-light text-mocha mb-1">Size: {item.selectedSize}</p>
+                      )}
+                      <div className="text-base font-serif font-light mb-3">
+                        {item.quantity} x Rs. {item.product.price.toLocaleString()}
+                      </div>
 
-                {/* Features */}
-                <div className="mt-6 space-y-3 text-xs font-serif text-rich-brown">
-                  <div className="flex items-center space-x-2">
-                    <span>🔄</span>
-                    <div>
-                      <div className="font-semibold italic">NO RETURNS/EXCHANGES</div>
-                      <div>ONCE SOLD</div>
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                        {/* Quantity */}
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => handleQuantityChange(item.id, -1)}
+                            className="w-8 h-8 border border-soft-gold rounded-xl flex items-center justify-center hover:bg-soft-gold transition-all duration-200 ease-in-out shadow-sm hover:shadow-md"
+                            title="Decrease quantity"
+                          >
+                            <Minus className="h-3 w-3" />
+                          </button>
+                          <span className="w-8 text-center text-base font-serif font-semibold">{item.quantity}</span>
+                          <button
+                            onClick={() => handleQuantityChange(item.id, 1)}
+                            className="w-8 h-8 border border-soft-gold rounded-xl flex items-center justify-center hover:bg-soft-gold transition-all duration-200 ease-in-out shadow-sm hover:shadow-md"
+                            title="Increase quantity"
+                          >
+                            <Plus className="h-3 w-3" />
+                          </button>
+                        </div>
+
+                        <button
+                          onClick={() => handleRemoveItem(item.id, item.product.name)}
+                          className="text-sm font-serif italic text-rich-brown hover:text-red-500 transition-all duration-200 ease-in-out"
+                          title={`Remove ${item.product.name} from cart`}
+                        >
+                          Remove
+                        </button>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <span>🛡️</span>
-                    <div className="font-semibold italic">PURE SILVER</div>
+                ))}
+              </div>
+
+              {/* Order Summary */}
+              <div className="lg:col-span-1 order-1 lg:order-2">
+                <div className="card-elegant sticky top-24 lg:top-28">
+                  <h2 className="text-lg font-serif font-semibold italic text-rich-brown mb-4">Order Summary</h2>
+
+                  <div className="space-y-3 mb-6">
+                    <div className="flex justify-between">
+                      <span className="text-sm font-serif italic text-rich-brown">SUBTOTAL:</span>
+                      <span className="text-sm font-serif font-semibold">Rs. {getTotalPrice().toLocaleString()}</span>
+                    </div>
+                    <div className="text-xs font-serif italic text-mocha">
+                      Taxes and shipping will be calculated at checkout.
+                    </div>
+                    <div className="flex items-start text-xs font-serif italic text-rich-brown space-x-2">
+                      <input
+                        type="checkbox"
+                        id="terms"
+                        className="mr-2 mt-0.5 accent-soft-gold rounded"
+                        checked={agreedToTerms}
+                        onChange={(e) => setAgreedToTerms(e.target.checked)}
+                      />
+                      <label htmlFor="terms">I agree with the Terms and Conditions.</label>
+                    </div>
+
+
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <span>🚚</span>
-                    <div className="font-semibold italic">FREE SHIPPING WITHIN INDIA</div>
+
+                  {selectedAddress ? (
+                    <>
+                      <div className="mb-4 p-4 bg-subtle-beige border border-soft-gold/30 rounded-xl text-sm font-serif">
+                        <p className="font-semibold italic text-rich-brown">Delivering to:</p>
+                        <p className="text-rich-brown font-light">{selectedAddress.fullName}</p>
+                        <p className="text-rich-brown font-light">{selectedAddress.city}, {selectedAddress.state}</p>
+                        <button
+                          onClick={() => setShowAddressSelector(true)}
+                          className="text-mocha underline text-xs mt-1 hover:text-rich-brown transition-all duration-200 ease-in-out font-serif italic"
+                          title="Change delivery address"
+                        >
+                          Change Address
+                        </button>
+                      </div>
+                      <PaymentHandler
+                        onSuccess={(orderId) => navigate(`/order-confirmation/${orderId}`)}
+                        onError={(error) => alert(`Payment failed: ${error}`)}
+                      />
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => setShowAddressSelector(true)}
+                      className={`btn-primary w-full mt-4 ${!agreedToTerms ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
+                      disabled={!agreedToTerms}
+                      title="Select delivery address"
+                    >
+                      SELECT DELIVERY ADDRESS
+                    </button>
+                  )}
+
+                  {/* Features */}
+                  <div className="mt-6 space-y-3 text-xs font-serif text-rich-brown">
+                    <div className="flex items-center space-x-2">
+                      <span>🔄</span>
+                      <div>
+                        <div className="font-semibold italic">NO RETURNS/EXCHANGES</div>
+                        <div>ONCE SOLD</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span>🚚</span>
+                      <div className="font-semibold italic">FREE SHIPPING WITHIN INDIA</div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </>
-      ) : (
-        // Address Selector View (just style buttons below)
-        <div>
-          <div className="flex items-center mb-6">
-            <button
-              onClick={() => setShowAddressSelector(false)}
-              className="flex items-center space-x-2 text-rich-brown hover:text-mocha mr-4 p-2 rounded-xl hover:bg-soft-gold transition-all duration-200 ease-in-out font-serif italic"
-              title="Back to cart"
-            >
-              <X className="h-5 w-5" />
-              <span>Back to Cart</span>
-            </button>
-            <h1 className="text-xl font-serif font-semibold italic text-rich-brown">Select Delivery Address</h1>
-          </div>
-
-          <AddressSelector
-            onAddressSelect={() => setShowAddressSelector(false)}
-          />
-
-          {selectedAddress && (
-            <div className="mt-6 text-center">
+          </>
+        ) : (
+          // Address Selector View (just style buttons below)
+          <div>
+            <div className="flex items-center mb-6">
               <button
                 onClick={() => setShowAddressSelector(false)}
-                className="btn-primary px-8"
-                title="Continue to payment"
+                className="flex items-center space-x-2 text-rich-brown hover:text-mocha mr-4 p-2 rounded-xl hover:bg-soft-gold transition-all duration-200 ease-in-out font-serif italic"
+                title="Back to cart"
               >
-                Continue to Payment
+                <X className="h-5 w-5" />
+                <span>Back to Cart</span>
               </button>
+              <h1 className="text-xl font-serif font-semibold italic text-rich-brown">Select Delivery Address</h1>
             </div>
-          )}
-        </div>
-      )}
+
+            <AddressSelector />
+
+            {selectedAddress && (
+              <div className="mt-6 text-center">
+                <button
+                  onClick={() => setShowAddressSelector(false)}
+                  className="btn-primary px-8"
+                  title="Continue to payment"
+                >
+                  Continue to Payment
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
 
 };
 

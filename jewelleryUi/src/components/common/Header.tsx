@@ -100,14 +100,14 @@ const Header: React.FC = () => {
                   >
                     SHOP
                   </Link>
-                  <Link
+                  {/* <Link
                     to="/about"
                     style={{ color: styles.textColor, fontWeight: styles.fontWeight }}
                     className="hover:opacity-70 transition-all duration-200 ease-in-out whitespace-nowrap font-serif italic"
                     title="About Us"
                   >
                     ABOUT
-                  </Link>
+                  </Link> */}
                 </div>
               </div>
             </div>
@@ -122,14 +122,7 @@ const Header: React.FC = () => {
                 title={`${SITE_CONFIG.name} - Home`}
               >
                 {isHomePage ? (
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-10 lg:h-10 flex items-center justify-center">
-                    <img
-                      src={Taanira}
-                      alt="Logo"
-                      className="w-full h-full object-contain transition-all duration-200 ease-in-out"
-                      style={{ filter: 'brightness(0) invert(1)' }}
-                    />
-                  </div>
+                 <></>
                 ) : (
                   <div className="flex items-center justify-center h-8 sm:h-10 lg:h-10">
                     <span

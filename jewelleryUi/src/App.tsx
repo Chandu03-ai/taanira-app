@@ -18,6 +18,9 @@ import AddressManagementPage from './pages/AddressManagementPage';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import RouteGuard from './components/common/RouteGuard';
 import NotificationToast from './components/common/NotificationToast';
+import PrivacyPage from './pages/PrivacyPage';
+import TermsPage from './pages/TermsPage';
+import SitemapPage from './pages/SitemapPage';
 
 function App() {
   const { isAuthenticated, user, initialize } = useAuthStore();
@@ -42,6 +45,9 @@ function App() {
                 <Route path="/cart" element={<CartPage />} />
                 <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
                 <Route path="/login" element={<LoginPage />} />
+                <Route path="/privacy" element={<PrivacyPage />} />
+                <Route path="/terms" element={<TermsPage />} />
+                <Route path="/sitemap" element={<SitemapPage  />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/order-confirmation/:orderId" element={<OrderConfirmationPage />} />
                 

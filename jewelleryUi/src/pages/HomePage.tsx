@@ -127,7 +127,20 @@ const HomePage: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: hasAnimated ? 1.5 : 0, duration: 1 }}
               >
-                {SITE_CONFIG.description}
+                {/* Catalog Section */}
+                  <div className="relative z-10 w-full max-w-4xl px-4 sm:px-6 pb-6 sm:pb-8 md:pb-0 text-left">
+                    <div className="space-y-2 sm:space-y-3 md:space-y-4 lg:space-y-6">
+                      <p className="text-sm sm:text-base md:text-lg font-light leading-relaxed text-white">
+                        {SITE_CONFIG.name} is more than jewelry - it's a celebration of craftsmanship.
+                      </p>
+                      <p className="text-sm sm:text-base md:text-lg font-light leading-relaxed text-white">
+                        Each piece is handcrafted with 92.5% pure silver, ensuring lasting quality and timeless beauty.
+                      </p>
+                      <p className="text-sm sm:text-base md:text-lg font-light leading-relaxed text-white">
+                        From traditional designs to contemporary styles, our collection celebrates the art of silver jewelry making.
+                      </p>
+                    </div>
+                  </div>
               </motion.p>
             </div>
           </div>
@@ -216,30 +229,6 @@ const HomePage: React.FC = () => {
           </div>
         </section>
 
-        {/* Catalog Section */}
-        <section className="relative h-[60vh] sm:h-[70vh] md:h-screen flex items-end md:items-center">
-          <div className="absolute inset-0">
-            <img
-              src={catalog}
-              alt="Brand Catalog"
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-[#1C1A17]/40"></div>
-          </div>
-          <div className="relative z-10 w-full max-w-4xl px-4 sm:px-6 pb-6 sm:pb-8 md:pb-0 text-left">
-            <div className="space-y-2 sm:space-y-3 md:space-y-4 lg:space-y-6">
-              <p className="text-sm sm:text-base md:text-lg font-light leading-relaxed text-white">
-                {SITE_CONFIG.name} is more than jewelry - it's a celebration of craftsmanship.
-              </p>
-              <p className="text-sm sm:text-base md:text-lg font-light leading-relaxed text-white">
-                Each piece is handcrafted with 92.5% pure silver, ensuring lasting quality and timeless beauty.
-              </p>
-              <p className="text-sm sm:text-base md:text-lg font-light leading-relaxed text-white">
-                From traditional designs to contemporary styles, our collection celebrates the art of silver jewelry making.
-              </p>
-            </div>
-          </div>
-        </section>
 
         {/* Footer */}
         <section className="py-6 sm:py-8 md:py-10 px-3 sm:px-4 text-center bg-subtle-beige">

@@ -8,7 +8,7 @@ const Footer: React.FC = () => {
     <footer className="text-rich-brown font-serif font-light bg-subtle-beige">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-center">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 w-full max-w-6xl text-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 sm:gap-8 w-full max-w-6xl text-center">
             
             {/* Company Info */}
             <div>
@@ -25,9 +25,6 @@ const Footer: React.FC = () => {
                 <a href={SITE_CONFIG.social.instagram} target="_blank" rel="noopener noreferrer">
                   <Instagram className="h-4 w-4 sm:h-5 sm:w-5 text-[#E4405F] hover:text-[#C13584] transition-all duration-200 ease-in-out" />
                 </a>
-                <a href={SITE_CONFIG.social.twitter} target="_blank" rel="noopener noreferrer">
-                  <Twitter className="h-4 w-4 sm:h-5 sm:w-5 text-[#1DA1F2] hover:text-[#0d8ddb] transition-all duration-200 ease-in-out" />
-                </a>
                 <a href={SITE_CONFIG.social.youtube} target="_blank" rel="noopener noreferrer">
                   <Youtube className="h-4 w-4 sm:h-5 sm:w-5 text-[#FF0000] hover:text-[#CC0000] transition-all duration-200 ease-in-out" />
                 </a>
@@ -40,7 +37,7 @@ const Footer: React.FC = () => {
                 Quick Links
               </h4>
               <ul className="space-y-2 text-xs sm:text-sm font-serif">
-                <li>
+                {/* <li>
                   <Link to="/about" className="hover:text-mocha font-light italic transition-all duration-200 ease-in-out">
                     About Us
                   </Link>
@@ -49,7 +46,7 @@ const Footer: React.FC = () => {
                   <Link to="/contact" className="hover:text-mocha font-light italic transition-all duration-200 ease-in-out">
                     Contact Us
                   </Link>
-                </li>
+                </li> */}
                 <li>
                   <Link to="/stores" className="hover:text-mocha font-light italic transition-all duration-200 ease-in-out">
                     FAQ
@@ -59,7 +56,7 @@ const Footer: React.FC = () => {
             </div>
 
             {/* Contact Info */}
-            <div>
+            {/* <div>
               <h4 className="text-sm sm:text-base font-serif italic font-semibold mb-3">
                 Contact Info
               </h4>
@@ -69,7 +66,7 @@ const Footer: React.FC = () => {
                 <p>📍 {SITE_CONFIG.address}</p>
                 <p>🕒 {SITE_CONFIG.workingHours}</p>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 

@@ -42,7 +42,7 @@ const ProductDetailPage: React.FC = () => {
           const categories = await apiService.getCategories();
           const productCategory = categories.find(cat => cat.name === product.category);
           setCategory(productCategory);
-          
+
         } catch (error) {
           console.error('Error loading category:', error);
         }
@@ -113,14 +113,14 @@ const ProductDetailPage: React.FC = () => {
     const newQuantity = productQuantity + change;
 
     if (newQuantity <= 0) {
-      const item = useCartStore.getState().items.find(item => 
+      const item = useCartStore.getState().items.find(item =>
         item.productId === product.id && item.selectedSize === selectedSize
       );
       if (item) {
         removeItem(item.id);
       }
     } else {
-      const item = useCartStore.getState().items.find(item => 
+      const item = useCartStore.getState().items.find(item =>
         item.productId === product.id && item.selectedSize === selectedSize
       );
       if (item) {
@@ -182,8 +182,8 @@ const ProductDetailPage: React.FC = () => {
         }}
       />
 
-      <div className="min-h-screen bg-white">
-        <div className="container mx-auto mt-[150px] px-4 py-8">
+      <div className="min-h-screen ">
+        <div className="container mx-auto mt-[83px] px-4 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Product Images */}
             <div className="space-y-4">
@@ -229,11 +229,10 @@ const ProductDetailPage: React.FC = () => {
                       <button
                         key={size}
                         onClick={() => setSelectedSize(size)}
-                        className={`py-2 px-3 border rounded-md text-sm font-medium transition-colors ${
-                          selectedSize === size
+                        className={`py-2 px-3 border rounded-md text-sm font-medium transition-colors ${selectedSize === size
                             ? 'border-black bg-black text-white'
                             : 'border-gray-300 text-gray-700 hover:border-gray-400'
-                        }`}
+                          }`}
                       >
                         {size}
                       </button>
