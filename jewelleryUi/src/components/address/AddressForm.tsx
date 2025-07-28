@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Home, Building, MapPin, X, Loader } from 'lucide-react';
+import { Home, Building, MapPin, Loader } from 'lucide-react';
 import { AddressFormData, Address } from '../../types/address';
 import { pincodeService } from '../../services/pincodeService';
 import Dialog from '../common/Dialog';
@@ -225,7 +225,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
               name="fullName"
               value={formData.fullName}
               onChange={handleInputChange}
-              placeholder="e.g., Priya Sharma"
+              placeholder="Enter Your Full Name"
               className={`${inputClasses} ${errors.fullName ? errorClasses : 'border-[#d6cdbf]'}`}
               aria-invalid={errors.fullName ? "true" : "false"}
               aria-describedby={errors.fullName ? "fullName-error" : undefined}

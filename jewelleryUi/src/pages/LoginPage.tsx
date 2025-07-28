@@ -77,7 +77,7 @@ const LoginPage: React.FC = () => {
                 animate={focusedField === 'username' || formData.username ? 'active' : 'inactive'}
                 variants={floatingLabelVariants}
               >
-                Email
+                Email Or Username
               </motion.label>
               <input
                 id="username"

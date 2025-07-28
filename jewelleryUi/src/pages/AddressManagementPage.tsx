@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus } from 'lucide-react';
 import AddressSelector from '../components/address/AddressSelector';
@@ -6,31 +6,59 @@ import AddressForm from '../components/address/AddressForm';
 import SEOHead from '../components/seo/SEOHead';
 import { SITE_CONFIG } from '../constants/siteConfig';
 import Header from '../components/common/Header';
-import { AddressFormData } from '../types/address';
+import { AddressFormData, Address } from '../types/address';
+import { useAddressStore } from '../store/addressStore'; // Import the address store
 
 const AddressManagementPage: React.FC = () => {
   const navigate = useNavigate();
   const [isAddressFormOpen, setIsAddressFormOpen] = useState(false);
-  const [isSavingAddress, setIsSavingAddress] = useState(false);
+  const [editingAddress, setEditingAddress] = useState<Address | null>(null); // State to hold address being edited
+
+  // Get store actions and state
+  const { addAddress, updateAddress, loadAddresses, loading: storeLoading } = useAddressStore();
+
+  // Use a local loading state for form submission to avoid conflicts with global store loading
+  const [formLoading, setFormLoading] = useState(false);
+
+  useEffect(() => {
+    // Load addresses when the component mounts
+    loadAddresses();
+  }, [loadAddresses]);
 
   const handleAddAddressClick = () => {
+    setEditingAddress(null); // Ensure we're adding a new address
+    setIsAddressFormOpen(true);
+  };
+
+  const handleEditAddressClick = (address: Address) => {
+    setEditingAddress(address);
     setIsAddressFormOpen(true);
   };
 
   const handleCloseAddressForm = () => {
     setIsAddressFormOpen(false);
+    setEditingAddress(null); // Clear editing address when form closes
   };
 
   const handleSaveAddress = async (addressData: AddressFormData) => {
-    setIsSavingAddress(true);
-    console.log('Saving address:', addressData);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setIsSavingAddress(false);
-    setIsAddressFormOpen(false); // Close modal after successful save
-    // In a real app, you would dispatch an action to save to your backend
-    // and then refresh the address list in AddressSelector.
-    alert('Address saved successfully!');
+    setFormLoading(true);
+    try {
+      if (editingAddress) {
+        // Update existing address
+        await updateAddress(editingAddress.id, addressData);
+        alert('Address updated successfully!');
+      } else {
+        // Add new address
+        await addAddress(addressData);
+        alert('Address added successfully!');
+      }
+      handleCloseAddressForm(); // Close modal after successful save
+    } catch (error) {
+      console.error('Failed to save address:', error);
+      alert(`Failed to save address: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setFormLoading(false);
+    }
   };
 
   return (
@@ -74,7 +102,7 @@ const AddressManagementPage: React.FC = () => {
 
           {/* Address Selector */}
           <div className="bg-white/90 backdrop-blur-md border border-gray-100 rounded-2xl shadow-md p-5 sm:p-8">
-            <AddressSelector showTitle={false} />
+            <AddressSelector showTitle={false} onEditAddress={handleEditAddressClick} />
           </div>
         </div>
       </main>
@@ -84,8 +112,8 @@ const AddressManagementPage: React.FC = () => {
         isOpen={isAddressFormOpen}
         onClose={handleCloseAddressForm}
         onSave={handleSaveAddress}
-        loading={isSavingAddress}
-        address={null} // For adding a new address, pass null
+        loading={formLoading} // Use local loading state for the form
+        address={editingAddress} // Pass the address for editing, or null for new
       />
     </>
   );
