@@ -122,7 +122,7 @@ const HomePage: React.FC = () => {
                 {renderLetters(SITE_CONFIG.shortName)}
               </motion.h1>
               <motion.p
-                className="text-sm sm:text-base md:text-lg lg:text-xl font-serif font-light italic tracking-wide text-soft-gold max-w-xs sm:max-w-md lg:max-w-lg mx-auto leading-relaxed"
+                className="text-sm sm:text-base md:text-lg lg:text-xl font-serif font-light italic tracking-wide text-soft-gold mx-auto leading-relaxed"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: hasAnimated ? 1.5 : 0, duration: 1 }}
