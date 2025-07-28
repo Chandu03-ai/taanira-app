@@ -15,6 +15,9 @@ import AdminPage from './pages/AdminPage';
 import UserOrdersPage from './pages/UserOrdersPage';
 import { useAuthStore } from './store/authStore';
 import AddressManagementPage from './pages/AddressManagementPage';
+import ProtectedRoute from './components/common/ProtectedRoute';
+import RouteGuard from './components/common/RouteGuard';
+import NotificationToast from './components/common/NotificationToast';
 
 function App() {
   const { isAuthenticated, user, initialize } = useAuthStore();
@@ -27,33 +30,68 @@ function App() {
   return (
     <HelmetProvider>
       <Router>
-        <div className="min-h-screen bg-gray-50">
-          <Header />
-          <main className="flex-1">
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/products" element={<ProductsPage />} />
-              <Route path="/product/:slug" element={<ProductDetailPage />} />
-              <Route path="/category/:category" element={<CategoryPage />} />
-              <Route path="/cart" element={<CartPage />} />
-              <Route path="/profile" element={<UserProfile />} />
-              <Route path="/user/orders" element={<UserOrdersPage />} />
-              <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              <Route path="/addresses" element={<AddressManagementPage />} />
-              <Route path="/order-confirmation/:orderId" element={<OrderConfirmationPage />} />
-              
-              {/* Protected Admin Route */}
-              {isAuthenticated && user?.role === 'Admin' && (
-                <Route path="/admin" element={<AdminPage />} />
-              )}
-              
-              {/* Fallback for unknown routes */}
-              <Route path="*" element={<HomePage />} />
-            </Routes>
-          </main>
-        </div>
+        <RouteGuard>
+          <div className="min-h-screen bg-gray-50">
+            <Header />
+            <main className="flex-1">
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/products" element={<ProductsPage />} />
+                <Route path="/product/:slug" element={<ProductDetailPage />} />
+                <Route path="/category/:category" element={<CategoryPage />} />
+                <Route path="/cart" element={<CartPage />} />
+                <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/order-confirmation/:orderId" element={<OrderConfirmationPage />} />
+                
+                {/* Protected Routes */}
+                <Route 
+                  path="/profile" 
+                  element={
+                    <ProtectedRoute>
+                      <UserProfile />
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                {/* User-only routes */}
+                <Route 
+                  path="/user/orders" 
+                  element={
+                    <ProtectedRoute allowedRoles={['User']}>
+                      <UserOrdersPage />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/addresses" 
+                  element={
+                    <ProtectedRoute allowedRoles={['User']}>
+                      <AddressManagementPage />
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                {/* Admin-only routes */}
+                <Route 
+                  path="/admin" 
+                  element={
+                    <ProtectedRoute allowedRoles={['Admin']}>
+                      <AdminPage />
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                {/* Fallback for unknown routes */}
+                <Route path="*" element={<HomePage />} />
+              </Routes>
+            </main>
+            
+            {/* Global notification system */}
+            <NotificationToast />
+          </div>
+        </RouteGuard>
       </Router>
     </HelmetProvider>
   );

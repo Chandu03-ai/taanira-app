@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp, UserCircle } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import LogoutButton from './LogoutButton';
@@ -9,8 +9,9 @@ interface UserMenuProps {
 }
 
 const UserMenu: React.FC<UserMenuProps> = ({ dropdownPosition = 'bottom' }) => {
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated, logout } = useAuthStore();
   const location = useLocation();
+  const navigate = useNavigate();
   const isHomePage = location.pathname === '/';
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -31,6 +32,45 @@ const UserMenu: React.FC<UserMenuProps> = ({ dropdownPosition = 'bottom' }) => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Define menu items based on user role
+  const getMenuItems = () => {
+    const currentPath = location.pathname;
+    const userRole = user?.role || 'User';
+    
+    let menuItems = [];
+    
+    if (userRole === 'Admin') {
+      // Admin menu items
+      const adminItems = [
+        { label: 'Profile', path: '/profile' },
+        { label: 'Shop', path: '/products' },
+        { label: 'Admin Panel', path: '/admin' },
+      ];
+      
+      // Filter out current page
+      menuItems = adminItems.filter(item => currentPath !== item.path);
+    } else {
+      // User menu items
+      const userItems = [
+        { label: 'Profile', path: '/profile' },
+        { label: 'Shop', path: '/products' },
+        { label: 'Orders', path: '/user/orders' },
+        { label: 'Addresses', path: '/addresses' },
+      ];
+      
+      // Filter out current page
+      menuItems = userItems.filter(item => currentPath !== item.path);
+    }
+    
+    return menuItems;
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+    setIsOpen(false);
+  };
 
   if (!isAuthenticated) {
     return (
@@ -86,51 +126,29 @@ const UserMenu: React.FC<UserMenuProps> = ({ dropdownPosition = 'bottom' }) => {
             <div className="font-semibold italic truncate">{user?.firstname} {user?.lastname}</div>
             <div className="text-xs text-mocha/70 font-light truncate mt-1">{user?.email}</div>
           </div>
-          <Link
-            to="/profile"
-            className="block px-3 sm:px-4 py-2 text-sm font-serif italic text-rich-brown hover:bg-subtle-beige transition-all duration-200 ease-in-out"
-            title="View Profile"
-          >
-            Profile
-          </Link>
-          {/* Admin Panel link, shown only if user is admin and not on the admin page */}
-          {isAdmin && location.pathname !== '/admin' && (
+          
+          {/* Dynamic menu items based on role and current route */}
+          {getMenuItems().map((item) => (
             <Link
-              to="/admin"
+              key={item.path}
+              to={item.path}
               className="block px-3 sm:px-4 py-2 text-sm font-serif italic text-rich-brown hover:bg-subtle-beige transition-all duration-200 ease-in-out"
-              title="Admin Panel"
+              title={item.label}
+              onClick={() => setIsOpen(false)}
             >
-              Admin Panel
+              {item.label}
             </Link>
-          )}
-          {/* Shop link - updated styling for consistency */}
-          <Link
-            to="/products"
-            className="block px-3 sm:px-4 py-2 text-sm font-serif italic text-rich-brown hover:bg-subtle-beige transition-all duration-200 ease-in-out"
-            title="View Shopping Products"
-          >
-            Shop
-          </Link>
-          {!isAdmin && (
-            <>
-              <Link
-                to="/user/orders"
-                className="block px-3 sm:px-4 py-2 text-sm font-serif italic text-rich-brown hover:bg-subtle-beige transition-all duration-200 ease-in-out"
-                title="View Shopping Products"
-              >
-                orders
-              </Link>
-              <Link
-                to="/addresses"
-                className="block px-3 sm:px-4 py-2 text-sm font-serif italic text-rich-brown hover:bg-subtle-beige transition-all duration-200 ease-in-out"
-                title="View Shopping Products"
-              >
-                addresses
-              </Link>
-            </>
-          )}
+          ))}
+          
           <div className="border-t border-gray-100 my-1 mx-2"></div>
-          <LogoutButton />
+          
+          <button
+            onClick={handleLogout}
+            className="block w-full text-left px-3 sm:px-4 py-2 text-sm font-serif italic text-rich-brown hover:bg-subtle-beige transition-all duration-200 ease-in-out"
+            title="Logout from account"
+          >
+            Logout
+          </button>
         </div>
       )}
     </div>

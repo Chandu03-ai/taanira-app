@@ -74,13 +74,7 @@ const AddressManagementPage: React.FC = () => {
         <div className="max-w-4xl mx-auto">
           {/* Top Row */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
-            <button
-              onClick={() => navigate(-1)}
-              className="flex items-center text-sm font-medium text-[#4A3F36] hover:text-gray-700 transition"
-            >
-              <ArrowLeft className="w-4 h-4 mr-1" />
-              <span>Back</span>
-            </button>
+
 
             <h1 className="text-xl sm:text-2xl font-semibold text-[#4A3F36] text-center sm:text-left">
               Manage Addresses
