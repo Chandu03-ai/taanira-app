@@ -29,16 +29,20 @@ const LoginPage: React.FC = () => {
     }
 
     try {
-      const success = await login(formData);
-      if (success) {
+      const res = await login(formData);
+      if (res.success) {
         const { user } = useAuthStore.getState();
         navigate(user?.role === 'Admin' ? '/admin' : '/');
       } else {
-        setError('Invalid credentials. Please try again.');
-      (async () => {
-          // Asynchronous operation for sending email confirmation
-          // (example: await sendEmailConfirmation(email);)
-      })(); // Self-invoking async function
+        if (res.reason === 'INVALID_CREDENTIALS') {
+          setError('Invalid username or password');
+        } else {
+          setError('Login failed. Please try again.');
+        }
+
+        (async () => {
+          // await sendEmailConfirmation(email);
+        })();
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -46,9 +50,6 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  // Adjust y position to move the label higher, creating more space below it.
-  // The 'active' y value should be negative enough to clear the input's text.
-  // The 'top' position on the label itself (e.g., top-8) should align it with the input's default text start.
   const floatingLabelVariants = {
     active: { y: -28, scale: 0.8, transition: { duration: 0.2 } }, // Adjusted from -24
     inactive: { y: 0, scale: 1, transition: { duration: 0.2 } },

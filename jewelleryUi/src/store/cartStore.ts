@@ -6,12 +6,10 @@ import { cartService } from '../services/cartService';
 
 interface CartState {
   items: CartItem[];
-
   addItem: (product: Product, quantity: number, selectedSize?: string) => void;
   removeItem: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number, selectedSize?: string) => void;
   updateItemSize: (productId: string, selectedSize: string) => void;
-
   clearCart: () => void;
   getTotalPrice: () => number;
   getItemCount: () => number;
@@ -32,7 +30,7 @@ export const useCartStore = create<CartState>()(
         if (!isAuthenticated) return;
 
         const state = get();
-        const existingItem = state.items.find(item => 
+        const existingItem = state.items.find(item =>
           item.productId === product.id && item.selectedSize === selectedSize
         );
 
@@ -87,7 +85,7 @@ export const useCartStore = create<CartState>()(
         }
       },
 
-      updateQuantity: (itemId, quantity, selectedSize) => {
+      updateQuantity: (itemId, quantity) => {
         const { isAuthenticated } = useAuthStore.getState();
         if (!isAuthenticated) return;
 
@@ -126,13 +124,12 @@ export const useCartStore = create<CartState>()(
           console.error(err);
         }
       },
-     clearCart: () => {
-  const { isAuthenticated } = useAuthStore.getState();
-  if (!isAuthenticated) {
-    set({ items: [] });
-  }
-}
-,
+      clearCart: () => {
+        const { isAuthenticated } = useAuthStore.getState();
+        if (!isAuthenticated) {
+          set({ items: [] });
+        }
+      },
 
 
       getTotalPrice: () => {
@@ -151,13 +148,13 @@ export const useCartStore = create<CartState>()(
       },
 
       getProductQuantity: (productId: string, selectedSize?: string) => {
-        return get().items.find(item => 
+        return get().items.find(item =>
           item.productId === productId && item.selectedSize === selectedSize
         )?.quantity || 0;
       },
 
       isProductInCart: (productId: string, selectedSize?: string) => {
-        return get().items.some(item => 
+        return get().items.some(item =>
           item.productId === productId && item.selectedSize === selectedSize
         );
       },

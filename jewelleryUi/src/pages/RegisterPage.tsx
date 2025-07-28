@@ -53,6 +53,11 @@ const RegisterPage: React.FC = () => {
       return;
     }
 
+    if (firstname.length > 12 || lastname.length > 12) {
+      setError('First name and last name must not exceed 12 characters');
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
@@ -62,7 +67,7 @@ const RegisterPage: React.FC = () => {
     const success = await register(registerData);
 
     if (success) {
-      await sendEmailConfirmation(email); // Automatically send email after registration
+      await sendEmailConfirmation(email);
       navigate('/');
     } else {
       setError('Registration failed. Please try again.');
@@ -94,11 +99,22 @@ const RegisterPage: React.FC = () => {
         type={type}
         required
         value={formData[name]}
-        onChange={handleChange}
+        onChange={(e) => {
+          const value = e.target.value;
+          if (name === 'contact') {
+            if (/^\d{0,10}$/.test(value)) {
+              handleChange(e);
+            }
+          } else {
+            handleChange(e);
+          }
+        }}
+
         onFocus={() => setFocusedField(name)}
         onBlur={() => setFocusedField(null)}
-        className="w-full bg-transparent border-b border-[#4A3F36] text-[#4A3F36] placeholder-transparent focus:outline-none pt-8 pb-2" // Increased pt to 8, pb to 2
-        placeholder={label} // Keep placeholder for initial visual cue before JS kicks in
+        maxLength={name === 'firstname' || name === 'lastname' ? 12 : undefined}
+        inputMode={name === 'contact' ? 'numeric' : undefined}
+        className="w-full bg-transparent border-b border-[#4A3F36] text-[#4A3F36] placeholder-transparent focus:outline-none pt-8 pb-2"
       />
     </div>
   );
@@ -121,7 +137,7 @@ const RegisterPage: React.FC = () => {
           </div>
 
           {renderInput('email', 'Email', 'email')}
-          {renderInput('contact', 'Contact', 'tel')}
+          {renderInput('contact', 'Contact (+91)', 'tel')}
           {renderInput('username', 'Username')}
 
           <div className="relative">

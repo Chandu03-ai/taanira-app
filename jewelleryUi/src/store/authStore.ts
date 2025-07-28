@@ -11,8 +11,7 @@ interface AuthState {
   isAuthenticated: boolean;
   loading: boolean;
   emailStatus: SendEmailResponse | null;
-
-  login: (credentials: { username: string; password: string }) => Promise<boolean>;
+  login: (credentials: { username: string; password: string }) => Promise<{ success: boolean; reason?: string }>;
   register: (userData: any) => Promise<boolean>;
   sendEmailConfirmation: (email: string) => Promise<void>;
   logout: () => void;
@@ -34,15 +33,15 @@ export const useAuthStore = create<AuthState>()(
         try {
           const response = await authService.login(credentials);
 
-          if (response && (response.code === RESPONSE_CODES.LOGIN_SUCCESS || response.success)) {
+          if (response && response.code === RESPONSE_CODES.LOGIN_SUCCESS) {
             const user: User = {
-              id: response.result?.id || response.data?.id,
-              email: response.result?.email || response.data?.email,
-              firstname: response.result?.firstname || response.data?.firstname,
-              lastname: response.result?.lastname || response.data?.lastname,
-              contact: response.result?.contact || response.data?.contact,
-              username: response.result?.username || response.data?.username,
-              role: (response.result?.role || response.data?.role) as 'Admin' | 'User' | undefined,
+              id: response.result?.id,
+              email: response.result?.email,
+              firstname: response.result?.firstname,
+              lastname: response.result?.lastname,
+              contact: response.result?.contact,
+              username: response.result?.username,
+              role: response.result?.role as 'Admin' | 'User' | undefined,
             };
 
             set({
@@ -55,16 +54,21 @@ export const useAuthStore = create<AuthState>()(
             await cartStore.syncWithServer();
             cartStore.resetCartStore();
 
-            return true;
+            return { success: true };
+          }
+
+          set({ loading: false });
+
+          if (response.code === RESPONSE_CODES.INVALID_CREDENTIALS) {
+            return { success: false, reason: 'INVALID_CREDENTIALS' };
           }
 
           console.error('Login failed:', response);
-          set({ loading: false });
-          return false;
+          return { success: false };
         } catch (error) {
-          console.error('Login failed:', error);
+          console.error('Login error:', error);
           set({ loading: false });
-          return false;
+          return { success: false };
         }
       },
 
@@ -86,7 +90,6 @@ export const useAuthStore = create<AuthState>()(
 
             set({
               user,
-              isAuthenticated: true,
               loading: false
             });
 
@@ -100,7 +103,7 @@ export const useAuthStore = create<AuthState>()(
           set({ loading: false });
           return false;
         } catch (error) {
-          console.error('Registration failed:', error);
+          console.error('Registration error:', error);
           set({ loading: false });
           return false;
         }

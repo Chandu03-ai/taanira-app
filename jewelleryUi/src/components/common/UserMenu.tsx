@@ -59,7 +59,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ dropdownPosition = 'bottom' }) => {
       >
         {isAdmin && <UserCircle className="h-6 w-6 sm:h-7 sm:w-7 flex-shrink-0" />}
         <span className="text-xs sm:text-sm lg:text-sm tracking-widest truncate max-w-[80px] sm:max-w-none">
-          {user?.firstname?.toUpperCase() || 'USER'}
+          {user?.username?.toUpperCase() || 'USER'}
         </span>
         {isOpen ? (
           <ChevronUp
@@ -111,6 +111,24 @@ const UserMenu: React.FC<UserMenuProps> = ({ dropdownPosition = 'bottom' }) => {
           >
             Shop
           </Link>
+          {!isAdmin && (
+            <>
+              <Link
+                to="/user/orders"
+                className="block px-3 sm:px-4 py-2 text-sm font-serif italic text-rich-brown hover:bg-subtle-beige transition-all duration-200 ease-in-out"
+                title="View Shopping Products"
+              >
+                order
+              </Link>
+              <Link
+                to="/addresses"
+                className="block px-3 sm:px-4 py-2 text-sm font-serif italic text-rich-brown hover:bg-subtle-beige transition-all duration-200 ease-in-out"
+                title="View Shopping Products"
+              >
+                addresses
+              </Link>
+            </>
+          )}
           <div className="border-t border-gray-100 my-1 mx-2"></div>
           <LogoutButton />
         </div>

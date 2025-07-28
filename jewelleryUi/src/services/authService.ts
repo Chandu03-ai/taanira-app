@@ -40,21 +40,21 @@ class AuthService extends BaseService {
     }
   }
 
-        async sendRegistrationEmail(email: string): Promise<SendEmailResponse> {
-          const url = API_ENDPOINTS.SEND_EMAIL;
+  async sendRegistrationEmail(email: string): Promise<SendEmailResponse> {
+    const url = API_ENDPOINTS.SEND_EMAIL;
 
-          try {
-            const response = await this.post<SendEmailResponse>(url, {
-              userName: email.split('@')[0],
-              email,
-            });
-           console.log('✅ Email sent successfully:', response);
-            return response.data;
-          } catch (error) {
-            console.error('❌ sendEmail API error:', error);
-            throw error;
-          }
-        }
+    try {
+      const response = await this.post<SendEmailResponse>(url, {
+        userName: email.split('@')[0],
+        email,
+      });
+      console.log('✅ Email sent successfully:', response);
+      return response.data;
+    } catch (error) {
+      console.error('❌ sendEmail API error:', error);
+      throw error;
+    }
+  }
 
 
 
