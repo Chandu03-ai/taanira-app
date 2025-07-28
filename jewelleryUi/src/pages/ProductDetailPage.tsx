@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom'; // ✅ Added useNavigate
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Minus, Plus } from 'lucide-react';
 import { Product } from '../types';
 import { apiService } from '../services/api';
@@ -12,12 +12,12 @@ import LoginPromptModal from '../components/common/LoginPromptModal';
 
 const ProductDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
-  const navigate = useNavigate(); // ✅ Required for navigation
+  const navigate = useNavigate();
   const [product, setProduct] = useState<Product | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [currentTab, setTab] = useState<'About' | 'Details'>('About');
-  const [showLoginPrompt, setShowLoginPrompt] = useState(false); // ✅ Correct state
+  const [currentTab, setTab] = useState<'About' | 'Details' | 'Shipping' | 'Reviews'>('About');
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [category, setCategory] = useState<any>(null);
 
@@ -42,7 +42,6 @@ const ProductDetailPage: React.FC = () => {
           const categories = await apiService.getCategories();
           const productCategory = categories.find(cat => cat.name === product.category);
           setCategory(productCategory);
-
         } catch (error) {
           console.error('Error loading category:', error);
         }
@@ -50,6 +49,7 @@ const ProductDetailPage: React.FC = () => {
     };
     loadCategory();
   }, [product, selectedSize]);
+
   const loadProduct = async () => {
     try {
       const productData = await apiService.getProductBySlug(slug!);
@@ -71,11 +71,10 @@ const ProductDetailPage: React.FC = () => {
     e.stopPropagation();
 
     if (!isAuthenticated) {
-      setShowLoginPrompt(true); // ✅ Shows modal
+      setShowLoginPrompt(true);
       return;
     }
 
-    // Check if size is required but not selected
     if (hasSizeOptions && !selectedSize) {
       alert('Please select a size before adding to cart');
       return;
@@ -95,8 +94,8 @@ const ProductDetailPage: React.FC = () => {
   };
 
   const handleLogin = () => {
-    setShowLoginPrompt(false);      // ✅ Hide modal first
-    navigate('/login');             // ✅ Go to login page
+    setShowLoginPrompt(false);
+    navigate('/login');
   };
 
   const handleQuantityChange = (e: React.MouseEvent, change: number) => {
@@ -112,20 +111,14 @@ const ProductDetailPage: React.FC = () => {
 
     const newQuantity = productQuantity + change;
 
-    if (newQuantity <= 0) {
-      const item = useCartStore.getState().items.find(item =>
-        item.productId === product.id && item.selectedSize === selectedSize
-      );
-      if (item) {
-        removeItem(item.id);
-      }
-    } else {
-      const item = useCartStore.getState().items.find(item =>
-        item.productId === product.id && item.selectedSize === selectedSize
-      );
-      if (item) {
-        updateQuantity(item.id, newQuantity, selectedSize);
-      }
+    const item = useCartStore.getState().items.find(item =>
+      item.productId === product.id && item.selectedSize === selectedSize
+    );
+
+    if (newQuantity <= 0 && item) {
+      removeItem(item.id);
+    } else if (item) {
+      updateQuantity(item.id, newQuantity, selectedSize);
     }
   };
 
@@ -147,11 +140,11 @@ const ProductDetailPage: React.FC = () => {
     return (
       <>
         <SEOHead title="Product Not Found - JI Jewelry" description="The product you're looking for doesn't exist." />
-        <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="min-h-screen bg-subtle-beige text-rich-brown font-serif flex items-center justify-center">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Product Not Found</h2>
-            <p className="text-gray-600 mb-8">The product you're looking for doesn't exist.</p>
-            <Link to="/products" className="bg-black text-white px-8 py-3 rounded font-semibold hover:bg-gray-800 transition-colors">
+            <h2 className="text-2xl font-bold italic mb-2">Product Not Found</h2>
+            <p className="italic mb-8">The product you're looking for doesn't exist.</p>
+            <Link to="/products" className="bg-rich-brown text-white px-8 py-3 rounded font-semibold italic hover:bg-opacity-90 transition-colors">
               Continue Shopping
             </Link>
           </div>
@@ -182,10 +175,9 @@ const ProductDetailPage: React.FC = () => {
         }}
       />
 
-      <div className="min-h-screen ">
+      <div className="min-h-screen bg-subtle-beige text-rich-brown font-serif">
         <div className="container mx-auto mt-[83px] px-4 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Product Images */}
             <div className="space-y-4">
               <div className="relative bg-gray-100 lg:ml-24">
                 <div className="aspect-square">
@@ -204,35 +196,28 @@ const ProductDetailPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Product Info */}
             <div className="space-y-6">
-              <h1 className="text-2xl font-light text-gray-800">{product.name}</h1>
+              <h1 className="text-3xl italic font-semibold text-rich-brown">{product.name}</h1>
               <div className="flex items-center space-x-4 mb-4">
-                <div className="text-2xl font-medium text-gray-900">
-                  ₹ {product.price.toLocaleString()}
-                </div>
+                <div className="text-xl font-medium">₹ {product.price.toLocaleString()}</div>
                 {product.comparePrice && product.comparePrice > product.price && (
-                  <div className="text-lg text-gray-500 line-through">
+                  <div className="text-lg line-through text-rich-brown/60">
                     ₹ {product.comparePrice.toLocaleString()}
                   </div>
                 )}
               </div>
 
-              {/* Size Selection */}
               {hasSizeOptions && (
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Size {hasSizeOptions && <span className="text-red-500">*</span>}
-                  </label>
+                  <label className="block text-sm italic">Size <span className="text-red-500">*</span></label>
                   <div className="grid grid-cols-4 gap-2">
                     {category.sizeOptions.map((size: string) => (
                       <button
                         key={size}
                         onClick={() => setSelectedSize(size)}
-                        className={`py-2 px-3 border rounded-md text-sm font-medium transition-colors ${selectedSize === size
-                            ? 'border-black bg-black text-white'
-                            : 'border-gray-300 text-gray-700 hover:border-gray-400'
-                          }`}
+                        className={`py-2 px-3 border rounded-md text-sm transition-colors italic ${selectedSize === size
+                            ? 'border-rich-brown bg-rich-brown text-white'
+                            : 'border-rich-brown/40 text-rich-brown hover:border-rich-brown'}`}
                       >
                         {size}
                       </button>
@@ -244,14 +229,14 @@ const ProductDetailPage: React.FC = () => {
                 <div className="flex items-center gap-2 mb-3">
                   <button
                     onClick={(e) => handleQuantityChange(e, -1)}
-                    className="w-8 h-8 border border-gray-300 flex items-center justify-center hover:bg-gray-50"
+                    className="w-8 h-8 border flex items-center justify-center"
                   >
                     <Minus className="h-4 w-4" />
                   </button>
                   <span className="w-8 text-center">{productQuantity}</span>
                   <button
                     onClick={(e) => handleQuantityChange(e, 1)}
-                    className="w-8 h-8 border border-gray-300 flex items-center justify-center hover:bg-gray-50"
+                    className="w-8 h-8 border flex items-center justify-center"
                   >
                     <Plus className="h-4 w-4" />
                   </button>
@@ -261,27 +246,25 @@ const ProductDetailPage: React.FC = () => {
               <button
                 onClick={handleAddToCart}
                 disabled={!product.stock}
-                className="w-full mt-4 bg-black text-white py-3 px-6 font-medium hover:bg-gray-800 transition-colors disabled:opacity-50"
+                className="w-full mt-4 bg-rich-brown text-white py-3 px-6 font-medium hover:bg-opacity-90 transition-colors disabled:opacity-50"
               >
-                {product.stock
-                  ? inCart ? 'CONFIRM ADD TO CART' : 'ADD TO CART'
-                  : 'OUT OF STOCK'}
+                {product.stock ? (inCart ? 'CONFIRM ADD TO CART' : 'ADD TO CART') : 'OUT OF STOCK'}
               </button>
 
-              <div className="pt-6 border-t border-gray-200">
-                <div className="flex space-x-6 border-b border-gray-200 mb-4">
-                  {['About', 'Details'].map((tab) => (
+              <div className="pt-6 border-t border-rich-brown/20">
+                <div className="flex space-x-6 border-b border-rich-brown/20 mb-4">
+                  {['About', 'Details', 'Shipping', 'Reviews'].map((tab) => (
                     <button
                       key={tab}
-                      onClick={() => setTab(tab as 'About' | 'Details')}
-                      className={`pb-2 font-medium uppercase tracking-wide text-sm ${currentTab === tab ? 'border-b-2 border-black text-black' : 'text-gray-500 hover:text-black'}`}
+                      onClick={() => setTab(tab as any)}
+                      className={`pb-2 italic font-semibold uppercase tracking-wide text-sm ${currentTab === tab ? 'border-b-2 border-rich-brown text-rich-brown' : 'text-rich-brown/70 hover:text-rich-brown'}`}
                     >
                       {tab}
                     </button>
                   ))}
                 </div>
 
-                <div className="text-sm text-gray-700 leading-relaxed">
+                <div className="text-sm leading-relaxed italic">
                   {currentTab === 'About' && <p>{product.description}</p>}
                   {currentTab === 'Details' && (
                     <p>
@@ -291,13 +274,23 @@ const ProductDetailPage: React.FC = () => {
                       Allergen info: Contains wheat
                     </p>
                   )}
+                  {currentTab === 'Shipping' && (
+                    <p>
+                      We offer free shipping across India. Estimated delivery time is 3–7 business days. International shipping is available with additional cost.
+                    </p>
+                  )}
+                  {currentTab === 'Reviews' && (
+                    <p>
+                      ★★★★★<br />
+                      "Absolutely stunning piece! Quality and craftsmanship exceeded my expectations."
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* 🔒 Login Modal */}
         <LoginPromptModal
           show={showLoginPrompt}
           onClose={() => setShowLoginPrompt(false)}

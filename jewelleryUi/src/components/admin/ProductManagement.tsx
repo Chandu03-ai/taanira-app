@@ -170,7 +170,7 @@ const ProductManagement: React.FC = () => {
                 </colgroup>
 
                 {/* Table Header */}
-                <thead className="bg-[#f5e9dc] sticky top-0 z-10">
+                <thead className="bg-[#f5e9dc] sticky top-0">
                   <tr>
                     <th className="px-2 py-3 text-left text-xs font-medium text-[#5f3c2c] uppercase tracking-wider">
                       <input
