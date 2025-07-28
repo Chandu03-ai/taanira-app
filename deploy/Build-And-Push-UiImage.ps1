@@ -15,9 +15,9 @@ function Write-ErrorAndExit($msg) {
 
 # Prompt for registry info if not provided
 if (-not $registryHost) {
-    $registryHost = Read-Host "Enter the registry host IP (default: 192.168.0.104)"
+    $registryHost = Read-Host "Enter the registry host IP (default: 192.168.0.189)"
     if ([string]::IsNullOrWhiteSpace($registryHost)) {
-        $registryHost = "192.168.0.104"
+        $registryHost = "192.168.0.189"
     }
 }
 
@@ -25,15 +25,16 @@ if (-not $registryPort) {
     $inputPort = Read-Host "Enter the registry port (default: 5000)"
     if ([string]::IsNullOrWhiteSpace($inputPort)) {
         $registryPort = 5000
-    } else {
+    }
+    else {
         $registryPort = [int]$inputPort
     }
 }
 
 # Prompt for image name and context path
-$imageName = Read-Host "Enter the image name (default: taanira-ui:latest)"
+$imageName = Read-Host "Enter the image name (default: taanira_ui:latest)"
 if ([string]::IsNullOrWhiteSpace($imageName)) {
-    $imageName = "taanira-ui:latest"
+    $imageName = "taanira_ui:latest"
 }
 
 $buildContextPath = Read-Host "Enter the Docker build context path (default: ../jewelleryUi)"
@@ -55,13 +56,16 @@ if (-not $registryAlreadyChecked) {
         $response = Invoke-WebRequest -Uri "http://${registryHost}:${registryPort}/v2/_catalog" -UseBasicParsing -TimeoutSec 5
         if ($response.StatusCode -eq 200) {
             Write-Info "Docker registry is reachable."
-        } else {
+        }
+        else {
             Write-ErrorAndExit "Registry responded with unexpected status code: $($response.StatusCode)"
         }
-    } catch {
+    }
+    catch {
         Write-ErrorAndExit "Failed to reach Docker registry at ${registryHost}:${registryPort}"
     }
-} else {
+}
+else {
     Write-Info "Skipping registry check (already verified earlier)."
 }
 

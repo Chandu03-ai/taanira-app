@@ -8,15 +8,16 @@ function Write-ErrorAndExit($msg) {
 }
 
 # Ask user for registry info once
-$registryHost = Read-Host "Enter the registry host IP (default: 192.168.0.104)"
+$registryHost = Read-Host "Enter the registry host IP (default: 192.168.0.189)"
 if ([string]::IsNullOrWhiteSpace($registryHost)) {
-    $registryHost = "192.168.0.104"
+    $registryHost = "192.168.0.189"
 }
 
 $registryPortInput = Read-Host "Enter the registry port (default: 5000)"
 if ([string]::IsNullOrWhiteSpace($registryPortInput)) {
     $registryPort = 5000
-} else {
+}
+else {
     $registryPort = [int]$registryPortInput
 }
 
@@ -52,7 +53,8 @@ Write-Info "Starting API image build and push..."
 $apiScript = Join-Path $scriptDir 'Build-And-Push-ApiImage.ps1'
 if (Test-Path $apiScript) {
     & $apiScript -registryHost $registryHost -registryPort $registryPort -registryAlreadyChecked $true
-} else {
+}
+else {
     Write-ErrorAndExit "API deployment script not found: $apiScript"
 }
 
@@ -61,7 +63,8 @@ Write-Info "Starting UI image build and push..."
 $uiScript = Join-Path $scriptDir 'Build-And-Push-UiImage.ps1'
 if (Test-Path $uiScript) {
     & $uiScript -registryHost $registryHost -registryPort $registryPort -registryAlreadyChecked $true
-} else {
+}
+else {
     Write-ErrorAndExit "UI deployment script not found: $uiScript"
 }
 
@@ -70,32 +73,3 @@ if (-not (Test-Path $envFilePath)) {
     Write-ErrorAndExit ".env file not found at: $envFilePath. Skipping local container run."
 }
 
-# --- Ask user if they want to run the images locally ---
-Write-Host ""
-$runLocal = (Read-Host "Do you want to run both images locally now? (yes/no)").Trim().ToLower()
-if ($runLocal -eq "yes" -or $runLocal -eq "y") {
-    $apiImage = "${registryHost}:${registryPort}/taanira-api:latest"
-    $uiImage  = "${registryHost}:${registryPort}/taanira-ui:latest"
-
-    Write-Info "Pulling latest images..."
-    docker pull $apiImage
-    docker pull $uiImage
-
-    Write-Info "Stopping and removing existing containers (if any)..."
-    docker rm -f taanira-api -ErrorAction SilentlyContinue
-    docker rm -f taanira-ui -ErrorAction SilentlyContinue
-
-    Write-Info "Running API container using .env..."
-    docker run -d --name taanira-api --env-file "$envFilePath" -p 8000:8000 $apiImage
-
-    Write-Info "Running UI container..."
-    docker run -d --name taanira-ui --env-file "$envFilePath" -p 5173:5173 $uiImage
-
-    Write-Info "Both containers are running!"
-    Write-Host "UI is available at: http://localhost:5173/"
-    Write-Host "API is available at: http://localhost:8000/"
-} else {
-    Write-Info "Skipped running images locally."
-}
-
-Write-Info "Deployment script completed!"
