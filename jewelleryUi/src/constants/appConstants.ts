@@ -55,6 +55,7 @@ export const API_ENDPOINTS = {
   UPDATE_CART: '/cart/update',
   REMOVE_FROM_CART: '/cart/remove',
   MERGE_CART: '/cart/merge',
+  UPDATE_CART_ITEM_SIZE: '/cart/update-size',
 
   // Wishlist endpoints
   ADD_TO_WISHLIST: '/user/wishlist',

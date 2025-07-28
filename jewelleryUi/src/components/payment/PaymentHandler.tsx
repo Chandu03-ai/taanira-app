@@ -77,6 +77,7 @@ const PaymentHandler: React.FC<PaymentHandlerProps> = ({ onSuccess, onError }) =
           quantity: item.quantity,
           price: item.product.price,
           name: item.product.name,
+          selectedSize: item.selectedSize,
           image: item.product.images[0] || ''
         })),
         shippingAddress: selectedAddress as AddressFormData,

@@ -1,6 +1,5 @@
-//ProductDetailPage.tsx
 import React, { useEffect, useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom'; // ✅ Added useNavigate
 import { ChevronLeft, ChevronRight, Minus, Plus } from 'lucide-react';
 import { Product } from '../types';
 import { apiService } from '../services/api';
@@ -11,23 +10,16 @@ import SEOHead from '../components/seo/SEOHead';
 import { staticImageBaseUrl } from '../constants/siteConfig';
 import LoginPromptModal from '../components/common/LoginPromptModal';
 
-// Assuming SITE_CONFIG is defined somewhere and imported,
-// or you can define it inline for the purpose of this component if not globally available.
-// For example:
-const SITE_CONFIG = {
-  currencySymbol: '₹',
-};
-
-
 const ProductDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // ✅ Required for navigation
   const [product, setProduct] = useState<Product | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [currentTab, setTab] = useState<'About' | 'Details'>('About');
-  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-  const [selectedSize, setSelectedSize] = useState<string | null>(null); // New state for selected size
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false); // ✅ Correct state
+  const [selectedSize, setSelectedSize] = useState<string>('');
+  const [category, setCategory] = useState<any>(null);
 
   const {
     addItem,
@@ -43,57 +35,68 @@ const ProductDetailPage: React.FC = () => {
     if (slug) loadProduct();
   }, [slug]);
 
+  useEffect(() => {
+    const loadCategory = async () => {
+      if (product) {
+        try {
+          const categories = await apiService.getCategories();
+          const productCategory = categories.find(cat => cat.name === product.category);
+          setCategory(productCategory);
+          
+        } catch (error) {
+          console.error('Error loading category:', error);
+        }
+      }
+    };
+    loadCategory();
+  }, [product, selectedSize]);
   const loadProduct = async () => {
     try {
       const productData = await apiService.getProductBySlug(slug!);
       setProduct(productData);
-      // Set initial selected size if available
-      if (productData.sizeOptions && productData.sizeOptions.length > 0) {
-        setSelectedSize(productData.sizeOptions[0]);
-      } else {
-        setSelectedSize(null);
-      }
     } catch (error) {
       console.error('Error loading product:', error);
       setProduct(null);
-      setSelectedSize(null);
     } finally {
       setLoading(false);
     }
   };
 
-  const productQuantity = product ? getProductQuantity(product.id) : 0;
-  const inCart = product ? isProductInCart(product.id) : false;
+  const productQuantity = product ? getProductQuantity(product.id, selectedSize) : 0;
+  const inCart = product ? isProductInCart(product.id, selectedSize) : false;
+  const hasSizeOptions = category?.sizeOptions?.length > 0;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
     if (!isAuthenticated) {
-      setShowLoginPrompt(true);
+      setShowLoginPrompt(true); // ✅ Shows modal
+      return;
+    }
+
+    // Check if size is required but not selected
+    if (hasSizeOptions && !selectedSize) {
+      alert('Please select a size before adding to cart');
       return;
     }
 
     if (product && product.stock) {
-      // NOTE: For a full implementation, you'd likely pass `selectedSize` to `addItem`
-      // and your cart store would need to be updated to handle product variations (e.g., id + size).
-      addItem(product, 1);
+      addItem(product, 1, selectedSize);
       const button = e.currentTarget as HTMLButtonElement;
       const originalText = button.textContent;
       button.textContent = 'ADDED!';
-      button.style.backgroundColor = '#10b981'; // Tailwind 'emerald-500' or similar green
-      button.style.borderColor = '#10b981';
+      button.style.backgroundColor = '#10b981';
       setTimeout(() => {
         button.textContent = originalText!;
-        button.style.backgroundColor = ''; // Revert to default or rich-brown
-        button.style.borderColor = ''; // Revert border
+        button.style.backgroundColor = '';
       }, 1200);
     }
   };
 
   const handleLogin = () => {
-    setShowLoginPrompt(false);
-    navigate('/login');
+    setShowLoginPrompt(false);      // ✅ Hide modal first
+    navigate('/login');             // ✅ Go to login page
   };
 
   const handleQuantityChange = (e: React.MouseEvent, change: number) => {
@@ -110,25 +113,19 @@ const ProductDetailPage: React.FC = () => {
     const newQuantity = productQuantity + change;
 
     if (newQuantity <= 0) {
-      // NOTE: If cart store handles variations, `removeItem` would also need `selectedSize`
-      removeItem(product.id);
+      const item = useCartStore.getState().items.find(item => 
+        item.productId === product.id && item.selectedSize === selectedSize
+      );
+      if (item) {
+        removeItem(item.id);
+      }
     } else {
-      // NOTE: If cart store handles variations, `updateQuantity` would also need `selectedSize`
-      updateQuantity(product.id, change);
-    }
-  };
-
-  const handleRemoveFromCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (!isAuthenticated) {
-      setShowLoginPrompt(true);
-      return;
-    }
-
-    if (product) {
-      removeItem(product.id);
+      const item = useCartStore.getState().items.find(item => 
+        item.productId === product.id && item.selectedSize === selectedSize
+      );
+      if (item) {
+        updateQuantity(item.id, newQuantity, selectedSize);
+      }
     }
   };
 
@@ -196,10 +193,10 @@ const ProductDetailPage: React.FC = () => {
                 </div>
                 {productImages.length > 1 && (
                   <>
-                    <button onClick={prevImage} className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md hover:shadow-lg focus:outline-none">
+                    <button onClick={prevImage} className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md hover:shadow-lg">
                       <ChevronLeft className="h-6 w-6" />
                     </button>
-                    <button onClick={nextImage} className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md hover:shadow-lg focus:outline-none">
+                    <button onClick={nextImage} className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md hover:shadow-lg">
                       <ChevronRight className="h-6 w-6" />
                     </button>
                   </>
@@ -209,128 +206,90 @@ const ProductDetailPage: React.FC = () => {
 
             {/* Product Info */}
             <div className="space-y-6">
-              <h1 className="text-2xl font-serif font-light italic text-rich-brown">{product.name}</h1>
+              <h1 className="text-2xl font-light text-gray-800">{product.name}</h1>
               <div className="flex items-center space-x-4 mb-4">
-                <div className="text-2xl font-serif font-semibold text-rich-brown">
-                  {SITE_CONFIG.currencySymbol} {product.price.toLocaleString()}
+                <div className="text-2xl font-medium text-gray-900">
+                  ₹ {product.price.toLocaleString()}
                 </div>
                 {product.comparePrice && product.comparePrice > product.price && (
-                  <div className="text-lg text-mocha/60 line-through font-serif italic">
-                    {SITE_CONFIG.currencySymbol} {product.comparePrice.toLocaleString()}
+                  <div className="text-lg text-gray-500 line-through">
+                    ₹ {product.comparePrice.toLocaleString()}
                   </div>
                 )}
               </div>
 
-              {/* Size Selector */}
-              {product.sizeOptions && product.sizeOptions.length > 0 && (
-                <div className="flex items-center space-x-2 py-3">
-                  <span className="text-sm font-serif font-semibold text-rich-brown mr-2">Size:</span>
-                  {product.sizeOptions.map((size) => (
-                    <button
-                      key={size}
-                      onClick={() => setSelectedSize(size)}
-                      className={`
-                        w-10 h-10 flex items-center justify-center border-2 rounded-xl text-sm font-serif font-semibold
-                        ${selectedSize === size
-                          ? 'border-rich-brown bg-rich-brown text-white shadow-md'
-                          : 'border-gray-300 text-gray-700 hover:border-rich-brown hover:text-rich-brown transition-colors duration-200'
-                        }
-                        focus:outline-none transform hover:scale-105 active:scale-95
-                      `}
-                      aria-label={`Select size ${size}`}
-                      title={`Select size ${size}`}
-                    >
-                      {size}
-                    </button>
-                  ))}
+              {/* Size Selection */}
+              {hasSizeOptions && (
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Size {hasSizeOptions && <span className="text-red-500">*</span>}
+                  </label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {category.sizeOptions.map((size: string) => (
+                      <button
+                        key={size}
+                        onClick={() => setSelectedSize(size)}
+                        className={`py-2 px-3 border rounded-md text-sm font-medium transition-colors ${
+                          selectedSize === size
+                            ? 'border-black bg-black text-white'
+                            : 'border-gray-300 text-gray-700 hover:border-gray-400'
+                        }`}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {product.stock && inCart && (
+                <div className="flex items-center gap-2 mb-3">
+                  <button
+                    onClick={(e) => handleQuantityChange(e, -1)}
+                    className="w-8 h-8 border border-gray-300 flex items-center justify-center hover:bg-gray-50"
+                  >
+                    <Minus className="h-4 w-4" />
+                  </button>
+                  <span className="w-8 text-center">{productQuantity}</span>
+                  <button
+                    onClick={(e) => handleQuantityChange(e, 1)}
+                    className="w-8 h-8 border border-gray-300 flex items-center justify-center hover:bg-gray-50"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </button>
                 </div>
               )}
 
-              {/* Conditional Buttons based on stock and cart status */}
-              {!product.stock ? (
-                // OUT OF STOCK
-                <button
-                  disabled
-                  className="w-full py-3 text-xs font-serif font-semibold italic border-2 border-gray-400 text-gray-400 rounded-xl cursor-not-allowed focus:outline-none"
-                >
-                  OUT OF STOCK
-                </button>
-              ) : ( // Product is in stock
-                inCart ? (
-                  // Product is IN CART
-                  <div className="flex flex-col sm:flex-row items-center gap-4 py-3">
-                    {/* Quantity Controls */}
-                    <div className="flex items-center space-x-4">
-                      <button
-                        onClick={(e) => handleQuantityChange(e, -1)}
-                        className="w-8 h-8 flex items-center justify-center border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-110 active:scale-95 shadow-sm hover:shadow-md focus:outline-none"
-                        aria-label="Decrease quantity"
-                        title="Decrease quantity"
-                      >
-                        <Minus className="w-3 h-3" />
-                      </button>
-                      <span className="text-base font-serif font-semibold text-rich-brown min-w-[2rem] text-center">
-                        {productQuantity}
-                      </span>
-                      <button
-                        onClick={(e) => handleQuantityChange(e, 1)}
-                        className="w-8 h-8 flex items-center justify-center border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-110 active:scale-95 shadow-sm hover:shadow-md focus:outline-none"
-                        aria-label="Increase quantity"
-                        title="Increase quantity"
-                      >
-                        <Plus className="w-3 h-3" />
-                      </button>
-                    </div>
+              <button
+                onClick={handleAddToCart}
+                disabled={!product.stock}
+                className="w-full mt-4 bg-black text-white py-3 px-6 font-medium hover:bg-gray-800 transition-colors disabled:opacity-50"
+              >
+                {product.stock
+                  ? inCart ? 'CONFIRM ADD TO CART' : 'ADD TO CART'
+                  : 'OUT OF STOCK'}
+              </button>
 
-                    {/* Remove and View Cart buttons */}
-                    <button
-                      onClick={handleRemoveFromCart}
-                      className="w-full sm:w-auto px-6 py-3 text-xs font-serif font-semibold italic border-2 border-red-500 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md focus:outline-none"
-                      title="Remove from Cart"
-                    >
-                      REMOVE FROM CART
-                    </button>
-                    <Link
-                      to="/cart"
-                      className="w-full sm:w-auto px-6 py-3 text-xs font-serif font-semibold italic border-2 border-gray-700 text-gray-700 rounded-xl hover:bg-gray-700 hover:text-white transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md focus:outline-none text-center"
-                    >
-                      GO TO CART
-                    </Link>
-                  </div>
-                ) : (
-                  // Product is NOT IN CART
-                  <button
-                    onClick={handleAddToCart}
-                    className="w-full sm:w-60 px-6 py-3 text-xs font-serif font-semibold italic border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md focus:outline-none"
-                    title="Preorder"
-                    disabled={product.sizeOptions && product.sizeOptions.length > 0 && selectedSize === null}
-                  >
-                    PREORDER
-                  </button>
-                )
-              )}
-              {product.sizeOptions && product.sizeOptions.length > 0 && selectedSize === null && !inCart && product.stock && (
-                <p className="text-red-500 text-sm italic">Please select a size.</p>
-              )}
-
-              <div className="pt-6 border-t border-subtle-beige">
-                <div className="flex space-x-6 border-b border-subtle-beige mb-4">
+              <div className="pt-6 border-t border-gray-200">
+                <div className="flex space-x-6 border-b border-gray-200 mb-4">
                   {['About', 'Details'].map((tab) => (
                     <button
                       key={tab}
                       onClick={() => setTab(tab as 'About' | 'Details')}
-                      className={`pb-2 font-serif uppercase tracking-wide text-sm ${currentTab === tab ? 'border-b-2 border-rich-brown text-rich-brown' : 'text-mocha/60 hover:text-rich-brown'} focus:outline-none`}
+                      className={`pb-2 font-medium uppercase tracking-wide text-sm ${currentTab === tab ? 'border-b-2 border-black text-black' : 'text-gray-500 hover:text-black'}`}
                     >
                       {tab}
                     </button>
                   ))}
                 </div>
 
-                <div className="text-sm text-mocha leading-relaxed font-serif italic">
+                <div className="text-sm text-gray-700 leading-relaxed">
                   {currentTab === 'About' && <p>{product.description}</p>}
                   {currentTab === 'Details' && (
                     <p>
-                      {product.details}
+                      Net Weight: 16oz (1 lb) / 454g<br />
+                      Shelf Life: 12 months from manufacturing date<br />
+                      Storage: Keep in a cool, dry place<br />
+                      Allergen info: Contains wheat
                     </p>
                   )}
                 </div>

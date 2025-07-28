@@ -41,7 +41,7 @@ const CartPage: React.FC = () => {
     if (newQty <= 0) {
       removeItem(cartItemId);
     } else {
-      updateQuantity(cartItemId, delta); // IMPORTANT: use `item.id` here
+      updateQuantity(cartItemId, newQty, item.selectedSize); // IMPORTANT: use `item.id` here
     }
   };
 
@@ -105,6 +105,9 @@ const CartPage: React.FC = () => {
                   />
                   <div className="flex-1 text-rich-brown">
                     <h3 className="text-base font-serif font-semibold italic mb-1 line-clamp-2">{item.product.name}</h3>
+                    {item.selectedSize && (
+                      <p className="text-sm font-serif font-light text-mocha mb-1">Size: {item.selectedSize}</p>
+                    )}
                     <div className="text-base font-serif font-light mb-3">
                       {item.quantity} x Rs. {item.product.price.toLocaleString()}
                     </div>

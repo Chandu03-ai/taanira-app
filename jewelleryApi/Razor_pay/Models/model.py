@@ -21,6 +21,7 @@ class Item(BaseModel):
     price: Optional[int] = None
     name: Optional[str] = None
     image: Optional[str] = None
+    selectedSize: Optional[str] = None
 
 
 class ShippingAddress(BaseModel):

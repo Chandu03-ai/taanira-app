@@ -23,6 +23,7 @@ class CartItemModel(BaseModel):
     productId: str
     quantity: int
     product: Optional[ProductModel] = None
+    selectedSize: Optional[str] = None
 
 
 class BulkCartRequest(BaseModel):

@@ -207,6 +207,9 @@ const OrderConfirmationPage: React.FC = () => {
                       />
                       <div className="flex-1">
                         <h3 className="font-medium text-gray-900">{item.name}</h3>
+                        {item.selectedSize && (
+                          <p className="text-sm text-gray-500">Size: {item.selectedSize}</p>
+                        )}
                         <p className="text-sm text-gray-500">Quantity: {item.quantity}</p>
                       </div>
                       <div className="text-right">

@@ -42,9 +42,9 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ onClose }) => {
 
     const newQuantity = item.quantity + delta;
     if (newQuantity <= 0) {
-      removeItem(item.productId);
+      removeItem(item.id);
     } else {
-      updateQuantity(item.productId, delta);
+      updateQuantity(item.id, newQuantity, item.selectedSize);
     }
   };
 
@@ -129,6 +129,9 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ onClose }) => {
                     <h3 className="text-sm font-medium text-gray-900 line-clamp-2 mb-1 leading-tight">
                       {item.product.name}
                     </h3>
+                    {item.selectedSize && (
+                      <p className="text-xs text-gray-500 mb-1">Size: {item.selectedSize}</p>
+                    )}
                     <p className="text-sm font-semibold text-gray-900 mb-2">
                       ₹{item.product.price.toLocaleString()}
                     </p>
@@ -151,7 +154,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ onClose }) => {
                         </button>
                       </div>
                       <button
-                        onClick={() => removeItem(item.productId)}
+                        onClick={() => removeItem(item.id)}
                         className="text-xs text-gray-400 hover:text-red-500 transition-colors"
                         title={`Remove ${item.product.name}`}
                       >

@@ -7,15 +7,16 @@ import { cartService } from '../services/cartService';
 interface CartState {
   items: CartItem[];
 
-  addItem: (product: Product, quantity: number) => void;
+  addItem: (product: Product, quantity: number, selectedSize?: string) => void;
   removeItem: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  updateQuantity: (productId: string, quantity: number, selectedSize?: string) => void;
+  updateItemSize: (productId: string, selectedSize: string) => void;
 
   clearCart: () => void;
   getTotalPrice: () => number;
   getItemCount: () => number;
-  getProductQuantity: (productId: string) => number;
-  isProductInCart: (productId: string) => boolean;
+  getProductQuantity: (productId: string, selectedSize?: string) => number;
+  isProductInCart: (productId: string, selectedSize?: string) => boolean;
   syncWithServer: () => Promise<void>;
   resetCartStore: () => void;
   getUniqueItemCount: () => number;
@@ -26,39 +27,42 @@ export const useCartStore = create<CartState>()(
     (set, get) => ({
       items: [],
 
-      addItem: async (product, quantity) => {
+      addItem: async (product, quantity, selectedSize) => {
         const { isAuthenticated } = useAuthStore.getState();
         if (!isAuthenticated) return;
 
         const state = get();
-        const existingItem = state.items.find(item => item.productId === product.id);
+        const existingItem = state.items.find(item => 
+          item.productId === product.id && item.selectedSize === selectedSize
+        );
 
         if (existingItem) {
           const updatedItems = state.items.map(item =>
-            item.productId === product.id
+            item.productId === product.id && item.selectedSize === selectedSize
               ? { ...item, quantity: item.quantity + quantity }
               : item
           );
           set({ items: updatedItems });
 
           try {
-            await cartService.updateCartItem(product.id, existingItem.quantity + quantity);
+            await cartService.updateCartItem(product.id, existingItem.quantity + quantity, selectedSize);
             await get().syncWithServer();
           } catch (err) {
             console.error(err);
           }
         } else {
           const newItem: CartItem = {
-            id: product.id,
+            id: `${product.id}-${selectedSize || 'no-size'}`,
             productId: product.id,
             quantity,
+            selectedSize,
             product,
           };
 
           set({ items: [...state.items, newItem] });
 
           try {
-            await cartService.addToCart(product.id, quantity);
+            await cartService.addToCart(product.id, quantity, selectedSize);
             await get().syncWithServer();
           } catch (err) {
             console.error(err);
@@ -66,36 +70,62 @@ export const useCartStore = create<CartState>()(
         }
       },
 
-      removeItem: async (productId) => {
+      removeItem: async (itemId) => {
         const { isAuthenticated } = useAuthStore.getState();
         if (!isAuthenticated) return;
 
-        set({ items: get().items.filter(item => item.productId !== productId) });
+        const item = get().items.find(item => item.id === itemId);
+        if (!item) return;
+
+        set({ items: get().items.filter(item => item.id !== itemId) });
 
         try {
-          await cartService.removeFromCart(productId);
+          await cartService.removeFromCart(item.productId, item.selectedSize);
           await get().syncWithServer();
         } catch (err) {
           console.error(err);
         }
       },
 
-      updateQuantity: (productId, quantity) => {
+      updateQuantity: (itemId, quantity, selectedSize) => {
         const { isAuthenticated } = useAuthStore.getState();
         if (!isAuthenticated) return;
 
+        const item = get().items.find(item => item.id === itemId);
+        if (!item) return;
+
         const prevItems = get().items;
         const newItems = prevItems.map(item =>
-          item.productId === productId ? { ...item, quantity } : item
+          item.id === itemId ? { ...item, quantity } : item
         );
 
         set({ items: newItems });
 
-        cartService.updateCartItem(productId, quantity)
+        cartService.updateCartItem(item.productId, quantity, item.selectedSize)
           .then(() => get().syncWithServer())
           .catch(err => console.error(err));
       },
 
+      updateItemSize: async (itemId, selectedSize) => {
+        const { isAuthenticated } = useAuthStore.getState();
+        if (!isAuthenticated) return;
+
+        const item = get().items.find(item => item.id === itemId);
+        if (!item) return;
+
+        const updatedItems = get().items.map(item =>
+          item.id === itemId ? { ...item, selectedSize, id: `${item.productId}-${selectedSize || 'no-size'}` } : item
+        );
+
+        set({ items: updatedItems });
+
+        try {
+          await cartService.updateCartItemSize(item.productId, selectedSize);
+          await get().syncWithServer();
+        } catch (err) {
+          console.error(err);
+        }
+      },
      clearCart: () => {
   const { isAuthenticated } = useAuthStore.getState();
   if (!isAuthenticated) {
@@ -120,12 +150,16 @@ export const useCartStore = create<CartState>()(
         return get().items.length;
       },
 
-      getProductQuantity: (productId: string) => {
-        return get().items.find(item => item.productId === productId)?.quantity || 0;
+      getProductQuantity: (productId: string, selectedSize?: string) => {
+        return get().items.find(item => 
+          item.productId === productId && item.selectedSize === selectedSize
+        )?.quantity || 0;
       },
 
-      isProductInCart: (productId: string) => {
-        return get().items.some(item => item.productId === productId);
+      isProductInCart: (productId: string, selectedSize?: string) => {
+        return get().items.some(item => 
+          item.productId === productId && item.selectedSize === selectedSize
+        );
       },
 
       resetCartStore: () => {

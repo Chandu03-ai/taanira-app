@@ -15,18 +15,21 @@ router = APIRouter(tags=["Cart & Wishlist"])
 async def addToCart(request: Request, payload: CartItemModel):
     try:
         userId = request.state.userMetadata.get("id")
-        logger.debug(f"Adding to cart for user:{userId}")
+        logger.debug(f"Adding to cart for user: {userId}")
         cartItem = payload.model_dump()
         productId = cartItem["productId"]
+        selectedSize = cartItem.get("selectedSize", "")
 
         product = getProductFromDb({"id": productId})
         if not product:
             logger.warning(f"Product with ID {productId} not found.")
             return returnResponse(2003)
-        cartItem.update({"id": str(ObjectId()), "userId": userId, "createdAt": formatDateTime(), "isDeleted": False, "productId": productId, "product": product})
+
+        cartItem.update({"id": str(ObjectId()), "userId": userId, "createdAt": formatDateTime(), "isDeleted": False, "productId": productId, "selectedSize": selectedSize, "product": product})
+
         addToCartDb(cartItem)
         cartItem.pop("_id", None)
-        logger.info(f"cartItem added sussessfully")
+        logger.info("cartItem added successfully")
         return returnResponse(2060, result=cartItem)
     except Exception as e:
         logger.error(f"Error adding to cart: {e}")
@@ -37,7 +40,7 @@ async def addToCart(request: Request, payload: CartItemModel):
 async def getCart(request: Request):
     try:
         userId = request.state.userMetadata.get("id")
-        logger.debug(f"feetching cart fo use :{userId}")
+        logger.debug(f"Fetching cart for user: {userId}")
         cart = list(getCartDb({"userId": userId, "isDeleted": False}))
         return returnResponse(2061, result=cart)
     except Exception as e:
@@ -45,58 +48,58 @@ async def getCart(request: Request):
         return returnResponse(2062)
 
 
-@router.put("/cart/update/{id}")
-async def updateCartItem(request: Request, id: str, quantity: int):
+@router.put("/cart/update/{productId}")
+async def updateCartItem(request: Request, productId: str, quantity: int, selectedSize: str):
     try:
         userId = request.state.userMetadata.get("id")
-        logger.debug(f"Attempting to update cart item [{id}] for user [{userId}]")
-        cartItem = getSingleCartDb({"id": id, "isDeleted": False})
+        logger.debug(f"Updating cart item for user {userId}, product {productId}, size {selectedSize}")
+
+        cartItem = getSingleCartDb({"productId": productId, "userId": userId, "selectedSize": selectedSize, "isDeleted": False})
+
         if not cartItem:
-            logger.info(f" cart checking with productId:{id}")
-            cartItem = getSingleCartDb({"productId": id, "userId": userId, "isDeleted": False})
-            if not cartItem:
-                logger.warning(f"cart Item not found to update with Id:{id}")
-                return returnResponse(2119)
-        cartId = cartItem["id"]
-        current_quantity = cartItem.get("quantity", 0)
-        newQuantity = current_quantity + quantity  # quantity = -1 here
+            logger.warning(f"No matching cart item for productId={productId}, size={selectedSize}")
+            return returnResponse(2119)
+
+        newQuantity = cartItem.get("quantity", 0) + quantity
         if newQuantity < 1:
-            logger.warning(f"cannot decrease. quantity already at minimum")
+            logger.warning(f"Cannot decrease below 1 for cart item")
             return returnResponse(2131)
-        query = {"id": cartId, "userId": userId, "isDeleted": False}
+
+        query = {"id": cartItem["id"], "userId": userId, "isDeleted": False}
         updateQuantityCartDb(query, {"$inc": {"quantity": quantity}})
-        cartData = getSingleCartDb({"id": cartId, "isDeleted": False})
-        logger.info(f"Quantity updated for cart item [{cartId}] for user [{userId}]")
-        return returnResponse(2120, result=cartData)
+
+        updatedItem = getSingleCartDb({"id": cartItem["id"], "isDeleted": False})
+        return returnResponse(2120, result=updatedItem)
+
     except Exception as e:
-        logger.error(f"Error updating quantity for cart item [{cartId}]: {e}", exc_info=True)
+        logger.error(f"Error updating quantity for cart item: {e}", exc_info=True)
         return returnResponse(2121)
 
 
-@router.delete("/cart/remove/{id}")
-async def removeCartItem(request: Request, id: str):
+@router.delete("/cart/remove/{productId}")
+async def removeCartItem(request: Request, productId: str, selectedSize: str):
     try:
         userId = request.state.userMetadata.get("id")
-        logger.debug(f"Attempting to remove cart item [{id}] for user [{userId}]")
-        cartItem = getSingleCartDb({"id": id, "userId": userId, "isDeleted": False})
+        logger.debug(f"Removing cart item for user {userId}, product {productId}, size {selectedSize}")
+
+        cartItem = getSingleCartDb({"productId": productId, "userId": userId, "selectedSize": selectedSize, "isDeleted": False})
+
         if not cartItem:
-            logger.info(f"cart checking with productId:{id}")
-            cartItem = getSingleCartDb({"productId": id, "userId": userId, "isDeleted": False})
-            if not cartItem:
-                logger.warning(f"No active cart item found with id or productId [{id}] for user [{userId}]")
-                return returnResponse(2116)
-        cartId = cartItem["id"]
-        query = {"id": cartId, "userId": userId, "isDeleted": False}
-        updateData = {"isDeleted": True, "deletedAt": formatDateTime()}
-        result = updateCartDb(query, updateData)
-        if result.modified_count == 0:
-            logger.warning(f"No active cart item found with id [{cartId}] for user [{userId}]")
+            logger.warning(f"No cart item found for user {userId}, product {productId}, size {selectedSize}")
             return returnResponse(2116)
 
-        logger.info(f"Cart item [{cartId}] marked as deleted for user [{userId}]")
+        query = {"id": cartItem["id"], "userId": userId, "isDeleted": False}
+        updateData = {"isDeleted": True, "deletedAt": formatDateTime()}
+        result = updateCartDb(query, updateData)
+
+        if result.modified_count == 0:
+            logger.warning(f"No active cart item found with id [{cartItem['id']}]")
+            return returnResponse(2116)
+
+        logger.info(f"Cart item [{cartItem['id']}] removed successfully")
         return returnResponse(2117)
     except Exception as e:
-        logger.error(f"Error deleting cart item [{cartId}]: {e}", exc_info=True)
+        logger.error(f"Error deleting cart item: {e}", exc_info=True)
         return returnResponse(2118)
 
 
@@ -104,15 +107,13 @@ async def removeCartItem(request: Request, id: str):
 async def mergeToCart(request: Request, payload: BulkCartRequest):
     try:
         userId = request.state.userMetadata.get("id")
-        logger.debug(f"Bulk cart add started by user [{userId}]")
+        logger.debug(f"Bulk merge cart for user [{userId}]")
         cartItems = []
 
         for item in payload.items:
-            # If product is not embedded in request, fetch from DB
             product = item.product or getProductFromDb({"id": item.productId, "isDeleted": False})
-
             if not product:
-                logger.warning(f"Product with ID [{item.productId}] not found. Skipping item.")
+                logger.warning(f"Product [{item.productId}] not found. Skipping.")
                 continue
 
             cartItem = {
@@ -120,6 +121,7 @@ async def mergeToCart(request: Request, payload: BulkCartRequest):
                 "userId": userId,
                 "productId": item.productId,
                 "quantity": item.quantity,
+                "selectedSize": item.selectedSize or "",
                 "product": product.model_dump() if hasattr(product, "model_dump") else product,
                 "isDeleted": False,
                 "createdAt": formatDateTime(),
@@ -127,15 +129,15 @@ async def mergeToCart(request: Request, payload: BulkCartRequest):
             cartItems.append(cartItem)
 
         if not cartItems:
-            logger.warning(f"No valid cart items to add for user [{userId}].")
+            logger.warning(f"No valid items to merge for user [{userId}]")
             return returnResponse(2134)
 
         addBulkToCartDb(cartItems)
-        logger.info(f" cart items added successfully for user [{userId}]")
+        logger.info(f"Bulk cart merge successful for user [{userId}]")
         return returnResponse(2132)
 
     except Exception as e:
-        logger.error(f"Error adding cart items in bulk for user [{userId}]: {e}", exc_info=True)
+        logger.error(f"Error in bulk cart merge: {e}", exc_info=True)
         return returnResponse(2133)
 
 
@@ -143,19 +145,19 @@ async def mergeToCart(request: Request, payload: BulkCartRequest):
 async def clearAllCartItems(request: Request):
     try:
         userId = request.state.userMetadata.get("id")
-        logger.debug(f"Attempting to clear all cart items for user [{userId}]")
+        logger.debug(f"Clearing all cart items for user [{userId}]")
 
         query = {"userId": userId, "isDeleted": False}
         updateData = {"isDeleted": True, "deletedAt": formatDateTime()}
         result = updateCartManyDb(query, updateData)
 
         if result.modified_count == 0:
-            logger.warning(f"No active cart items found to clear for user [{userId}]")
+            logger.warning(f"No items found to clear for user [{userId}]")
             return returnResponse(2116)
 
-        logger.info(f"{result.modified_count} cart items cleared for user [{userId}]")
+        logger.info(f"Cleared {result.modified_count} cart items for user [{userId}]")
         return returnResponse(2070)
 
     except Exception as e:
-        logger.error(f"Error clearing cart items for user [{userId}]: {e}", exc_info=True)
+        logger.error(f"Error clearing cart for user: {e}", exc_info=True)
         return returnResponse(2071)

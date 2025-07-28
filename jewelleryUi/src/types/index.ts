@@ -43,8 +43,6 @@ export interface Product {
   images: string[];
   stock: boolean;
   createdAt: string;
-  details: string;
-  sizeOptions?: string[];
 }
 
 export interface Category {
@@ -63,12 +61,14 @@ export interface CartItem {
   id: string;
   productId: string;
   quantity: number;
+  selectedSize?: string;
   product: Product;
 }
 export interface GuestCartItem {
   id:string,
   productId: string;
   quantity: number;
+  selectedSize?: string;
   product: Product;
 }
 export interface WishlistItem {
@@ -82,6 +82,7 @@ export interface OrderItem {
   name: string;
   price: number;
   quantity: number;
+  selectedSize?: string;
   image: string;
   description?: string; // Added description property
 }
