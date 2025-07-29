@@ -176,7 +176,7 @@ const ProductDetailPage: React.FC = () => {
         }}
       />
 
-      <div className="min-h-screen bg-subtle-beige text-rich-brown font-serif">
+      <div className="min-h-screen bg-[#FAF9F6] text-rich-brown font-serif">
         <div className="container mx-auto mt-[83px] px-4 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <div className="space-y-4">

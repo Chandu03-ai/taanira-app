@@ -49,7 +49,7 @@ export const API_ENDPOINTS = {
   ADMIN_REVIEWS: '/admin/reviews',
   MODERATE_REVIEW: '/admin/reviews',
   CREATE_REVIEW: '/review/create',
-  GET_PRODUCT_REVIEWS: '/review/product',
+  GET_PRODUCT_REVIEWS: '/public/review/product',
   GET_REVIEW_BY_ID: '/review',
   DELETE_REVIEW: '/review',
 

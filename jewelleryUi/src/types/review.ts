@@ -7,6 +7,7 @@ export interface Review {
   createdAt: string;
   updatedAt: string;
   isDeleted: boolean;
+  userName: string;
 }
 
 export interface ReviewFormData {

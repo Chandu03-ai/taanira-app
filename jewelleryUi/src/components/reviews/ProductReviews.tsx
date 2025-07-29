@@ -18,6 +18,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
   const [loading, setLoading] = useState(true);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [editingReview, setEditingReview] = useState<Review | null>(null);
+  const [showAllReviews, setShowAllReviews] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState<{
     isOpen: boolean;
     reviewId: string;
@@ -123,8 +124,8 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
               Customer Reviews
             </h3>
             {stats.totalReviews > 0 ? (
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-x-2 sm:gap-x-4 flex-wrap sm:flex-nowrap">
+                <div className="flex items-center gap-x-1 sm:gap-x-2">
                   <StarRating rating={stats.averageRating} size="md" />
                   <span className="text-lg font-serif font-semibold text-rich-brown">
                     {stats.averageRating.toFixed(1)}
@@ -214,6 +215,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
       )}
 
       {/* Reviews List */}
+      {/* Reviews List */}
       <div className="space-y-4">
         {reviews.length === 0 ? (
           <div className="bg-white border border-subtle-beige rounded-xl p-8 text-center">
@@ -226,57 +228,122 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
             </p>
           </div>
         ) : (
-          reviews.map((review) => (
-            <div key={review.id} className="bg-white border border-subtle-beige rounded-xl p-4 sm:p-6">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center space-x-3">
-                  <div className="h-8 w-8 bg-soft-gold rounded-full flex items-center justify-center">
-                    <User className="h-4 w-4 text-rich-brown" />
-                  </div>
-                  <div>
-                    <p className="font-serif font-semibold italic text-rich-brown">
-                      User {review.reviewedBy.slice(-6)}
-                    </p>
-                    <p className="text-xs text-mocha font-serif italic">
-                      {formatReadableDate(review.createdAt)}
-                    </p>
-                  </div>
-                </div>
+          <>
+            {/* Scrollable container when showing all reviews */}
+            {showAllReviews ? (
+              <div className="max-h-[320px] overflow-y-auto pr-2 space-y-4">
+                {reviews.map((review) => (
+                  <div key={review.id} className="bg-subtle-beige border border-rich-brown rounded-xl p-4 sm:p-6">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center space-x-3">
+                        <div className="h-8 w-8 bg-soft-gold rounded-full flex items-center justify-center">
+                          <User className="h-4 w-4 text-rich-brown" />
+                        </div>
+                        <div>
+                          <p className="font-serif font-semibold italic text-rich-brown">
+                            {review.userName}
+                          </p>
+                          <p className="text-xs text-mocha font-serif italic">
+                            {formatReadableDate(review.createdAt)}
+                          </p>
+                        </div>
+                      </div>
+                      {canDeleteReview(review) && (
+                        <button
+                          onClick={() => setDeleteDialog({
+                            isOpen: true,
+                            reviewId: review.id,
+                            reviewerName: `${review.userName}`
+                          })}
+                          className="text-red-500 hover:text-red-700 transition-colors p-1 rounded"
+                          title="Delete review"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
 
-                {/* Delete Button */}
-                {canDeleteReview(review) && (
-                  <button
-                    onClick={() => setDeleteDialog({
-                      isOpen: true,
-                      reviewId: review.id,
-                      reviewerName: `User ${review.reviewedBy.slice(-6)}`
-                    })}
-                    className="text-red-500 hover:text-red-700 transition-colors p-1 rounded"
-                    title="Delete review"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
+                    <div className="flex items-center space-x-2 mb-3">
+                      <StarRating rating={review.rating} size="sm" />
+                      <span className="text-sm font-serif font-semibold text-rich-brown">
+                        {review.rating} out of 5
+                      </span>
+                    </div>
+
+                    {review.comment && (
+                      <p className="text-rich-brown font-serif italic leading-relaxed">
+                        "{review.comment}"
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <>
+                {reviews.slice(0, 2).map((review) => (
+                  <div key={review.id} className="bg-subtle-beige border border-rich-brown rounded-xl p-4 sm:p-6">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center space-x-3">
+                        <div className="h-8 w-8 bg-soft-gold rounded-full flex items-center justify-center">
+                          <User className="h-4 w-4 text-rich-brown" />
+                        </div>
+                        <div>
+                          <p className="font-serif font-semibold italic text-rich-brown">
+                           {review.userName}
+                          </p>
+                          <p className="text-xs text-mocha font-serif italic">
+                            {formatReadableDate(review.createdAt)}
+                          </p>
+                        </div>
+                      </div>
+                      {canDeleteReview(review) && (
+                        <button
+                          onClick={() => setDeleteDialog({
+                            isOpen: true,
+                            reviewId: review.id,
+                            reviewerName: `${review.userName}`
+                          })}
+                          className="text-red-500 hover:text-red-700 transition-colors p-1 rounded"
+                          title="Delete review"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="flex items-center space-x-2 mb-3">
+                      <StarRating rating={review.rating} size="sm" />
+                      <span className="text-sm font-serif font-semibold text-rich-brown">
+                        {review.rating} out of 5
+                      </span>
+                    </div>
+
+                    {review.comment && (
+                      <p className="text-rich-brown font-serif italic leading-relaxed break-words">
+                        "{review.comment}"
+                      </p>
+                    )}
+                  </div>
+                ))}
+
+                {/* Show More Button */}
+                {reviews.length > 2 && (
+                  <div className="text-center">
+                    <button
+                      onClick={() => setShowAllReviews(true)}
+                      className="px-4 py-2 mt-2 bg-soft-gold text-rich-brown rounded-lg hover:bg-rose-sand transition-all duration-200 font-serif italic font-semibold"
+                    >
+                      Show All Reviews
+                    </button>
+                  </div>
                 )}
-              </div>
-
-              {/* Rating */}
-              <div className="flex items-center space-x-2 mb-3">
-                <StarRating rating={review.rating} size="sm" />
-                <span className="text-sm font-serif font-semibold text-rich-brown">
-                  {review.rating} out of 5
-                </span>
-              </div>
-
-              {/* Comment */}
-              {review.comment && (
-                <p className="text-rich-brown font-serif italic leading-relaxed">
-                  "{review.comment}"
-                </p>
-              )}
-            </div>
-          ))
+              </>
+            )}
+          </>
         )}
       </div>
+
+
 
       {/* Delete Confirmation Dialog */}
       <ConfirmDialog
