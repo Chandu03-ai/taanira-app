@@ -119,15 +119,29 @@ const CustomerCellRenderer = (params: any) => {
 const OrderItemsCellRenderer = (params: any) => {
   const items = params.value || [];
   const totalItems = items.length;
+  const orderData = params.data;
+
+  // Access context from gridOptions
+  const onViewOrder = params.context?.onViewOrder;
 
   return (
-    <div className="flex items-center justify-center">
+    <div className="flex items-center justify-center gap-2">
       <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800">
         {totalItems} {totalItems === 1 ? 'item' : 'items'}
       </span>
+      {onViewOrder && (
+        <button
+          onClick={() => onViewOrder(orderData)}
+          className="p-1 rounded-full bg-gray-100 hover:bg-indigo-100 text-gray-500 hover:text-[#8f6c43] transition-all duration-200"
+          title="View Order"
+        >
+          <Eye className="h-4 w-4" />
+        </button>
+      )}
     </div>
   );
 };
+
 
 
 const AmountCellRenderer = (params: any) => {
@@ -262,20 +276,6 @@ const ActionsCellRenderer = (params: any) => {
   );
 };
 
-const ViewOrderCellRenderer = (params: any) => {
-  const { onViewOrder } = params.context;
-  return (
-    <div className="flex items-center justify-center h-full">
-      <button
-        onClick={() => onViewOrder(params.data)}
-        className="flex items-center justify-center p-2 text-gray-500 bg-gray-100 rounded-lg hover:bg-indigo-100 hover:text-[#8f6c43] transition-all duration-200"
-        title="View Order Details"
-      >
-        <Eye className="h-5 w-5" />
-      </button>
-    </div>
-  );
-};
 
 
 const OrderManagement: React.FC = () => {
@@ -395,15 +395,6 @@ const OrderManagement: React.FC = () => {
       autoHeight: true,
     },
     {
-      headerName: 'Details',
-      width: 100,
-      cellRenderer: ViewOrderCellRenderer,
-      sortable: false,
-      filter: false,
-      pinned: 'right',
-      cellStyle: { display: 'flex', alignItems: 'center', justifyContent: 'center' }
-    },
-    {
       headerName: 'Actions',
       field: 'actions',
       width: 200,
@@ -423,20 +414,23 @@ const OrderManagement: React.FC = () => {
     flex: 1,
   }), []);
 
-  const gridOptions: GridOptions = useMemo(() => ({
-    pagination: true,
-    paginationPageSize: 15,
-    paginationPageSizeSelector: [10, 15, 25, 50],
-    animateRows: true,
-    enableRangeSelection: true,
-    suppressMovableColumns: false,
-    suppressMenuHide: false,
-    rowHeight: 120,
-    headerHeight: 50,
-    context: {
-      onViewOrder,
+  const gridOptions: GridOptions = {
+    defaultColDef: {
+      flex: 1,
+      minWidth: 100,
+      resizable: true,
+      sortable: true,
+      filter: true,
     },
-  }), [onViewOrder]);
+    suppressCellFocus: true,
+    suppressRowClickSelection: true,
+    suppressMovableColumns: true,
+    suppressMenuHide: true,
+    context: {
+      onViewOrder, // <-- important
+    },
+  };
+
 
   if (loading) return <LoadingSpinner />;
 

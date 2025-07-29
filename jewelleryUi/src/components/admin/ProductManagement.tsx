@@ -13,6 +13,7 @@ import ConfirmDialog from '../common/ConfirmDialog';
 import SEOHead from '../seo/SEOHead';
 import { SITE_CONFIG, staticImageBaseUrl } from '../../constants/siteConfig';
 import { useProductManagement } from '../../hooks/useProductManagement';
+import { formatReadableDate } from '../../utils/dateUtils';
 
 const ProductManagement: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -164,9 +165,11 @@ const ProductManagement: React.FC = () => {
                   <col style={{ width: '4%' }} />
                   <col style={{ width: '30%' }} />
                   <col style={{ width: '18%' }} />
+                  <col style={{ width: '10%' }} />
                   <col style={{ width: '18%' }} />
-                  <col style={{ width: '15%' }} />
-                  <col style={{ width: '15%' }} />
+                  <col style={{ width: '12%' }} />
+                  <col style={{ width: '8%' }} />
+
                 </colgroup>
 
                 {/* Table Header */}
@@ -183,6 +186,7 @@ const ProductManagement: React.FC = () => {
                     <th className="px-2 py-3 text-left text-xs font-medium text-[#5f3c2c] uppercase tracking-wider">Product</th>
                     <th className="px-2 py-3 text-left text-xs font-medium text-[#5f3c2c] uppercase tracking-wider">Category</th>
                     <th className="px-2 py-3 text-left text-xs font-medium text-[#5f3c2c] uppercase tracking-wider">Price</th>
+                    <th className="px-2 py-3 text-left text-xs font-medium text-[#5f3c2c] uppercase tracking-wider">Updated</th>
                     <th className="px-2 py-3 text-left text-xs font-medium text-[#5f3c2c] uppercase tracking-wider">Stock</th>
                     <th className="px-2 py-3 text-left text-xs font-medium text-[#5f3c2c] uppercase tracking-wider">Actions</th>
                   </tr>
@@ -220,6 +224,9 @@ const ProductManagement: React.FC = () => {
                       <td className="px-2 py-4 align-middle text-xs text-[#5f3c2c]">{product.category}</td>
                       <td className="px-2 py-4 align-middle">
                         <div className="text-sm font-medium text-[#5f3c2c]">₹{(product.price || 0).toLocaleString()}</div>
+                      </td>
+                      <td className="px-2 py-4 align-middle text-xs text-[#5f3c2c] whitespace-nowrap">
+                        {formatReadableDate(product.updatedAt)}
                       </td>
                       <td className="px-2 py-4 align-middle text-xs font-medium text-[#5f3c2c]">
                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${product.stock ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>

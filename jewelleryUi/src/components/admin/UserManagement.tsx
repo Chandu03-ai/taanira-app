@@ -58,9 +58,9 @@ const UserManagement: React.FC = () => {
           { icon: <Crown className="text-[#DEC9A3]" />, label: 'Admins', count: stats.admins },
           { icon: <Users className="text-gray-500" />, label: 'Regular Users', count: stats.users },
         ].map(({ icon, label, count }) => (
-          <div key={label} className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+          <div key={label} className="bg-white rounded-lg shadow-sm p-3 sm:p-4">
             <div className="flex items-center">
-              <div className="p-2 bg-[#F9F6F1] rounded-lg flex-shrink-0">{icon}</div>
+              <div className="p-1.5 bg-[#F9F6F1] rounded-lg flex-shrink-0">{icon}</div>
               <div className="ml-3 sm:ml-4 min-w-0 flex-1">
                 <p className="text-xs sm:text-sm font-medium text-[#4A3F36] truncate">{label}</p>
                 <p className="text-lg sm:text-xl lg:text-2xl font-bold text-[#4A3F36]">{count}</p>
@@ -100,7 +100,8 @@ const UserManagement: React.FC = () => {
                   {/* Applied px-6 py-3 from your old code, and align-middle for explicit centering */}
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider align-middle">User</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider align-middle">Contact</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider align-middle hidden sm:table-cell">Role</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider align-middle">Role</th>
+
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-100">
@@ -112,10 +113,10 @@ const UserManagement: React.FC = () => {
                       <div className="flex items-center">
                         <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-[#F9F6F1] flex items-center justify-center overflow-hidden flex-shrink-0">
                           {user.avatar ? (
-                            <img 
-                              src={user.avatar} 
-                              alt={`${user.firstname} ${user.lastname}`} 
-                              className="h-full w-full object-cover" 
+                            <img
+                              src={user.avatar}
+                              alt={`${user.firstname} ${user.lastname}`}
+                              className="h-full w-full object-cover"
                             />
                           ) : (
                             <Users className="h-4 w-4 sm:h-5 sm:w-5 text-[#4A3F36]" />
@@ -193,19 +194,19 @@ const UserManagement: React.FC = () => {
                         )}
                       </div>
                     </td> */}
-                    
+
                     {/* Mobile Actions Column - align-middle added for consistency */}
                     <td className="sm:hidden px-3 py-4 min-w-[120px] align-middle">
-                        <div className="flex flex-col gap-2">
-                          <select
-                            value={user.role || 'User'}
-                            onChange={(e) => confirmRoleChange(user.id, e.target.value)}
-                            className="text-xs border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-[#DEC9A3] w-full"
-                          >
-                            <option value="User">User</option>
-                            <option value="Admin">Admin</option>
-                          </select>
-                        </div>
+                      <div className="flex flex-col gap-2">
+                        <select
+                          value={user.role || 'User'}
+                          onChange={(e) => confirmRoleChange(user.id, e.target.value)}
+                          className="text-xs border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-[#DEC9A3] w-full"
+                        >
+                          <option value="User">User</option>
+                          <option value="Admin">Admin</option>
+                        </select>
+                      </div>
                     </td>
                   </tr>
                 ))}
