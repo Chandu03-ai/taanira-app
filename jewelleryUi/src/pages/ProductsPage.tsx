@@ -119,13 +119,12 @@ const ProductsPage: React.FC = () => {
 
   if (loading) return <LoadingSpinner />;
 
-return (
+  return (
     <div className="min-h-screen bg-[#FAF9F6] pt-16 sm:pt-20">
       <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-6 sm:py-8">
         {/* Header with Animation */}
-        <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 space-y-4 sm:space-y-0 transform transition-all duration-1000 ${
-          isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
-        }`}>
+        <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 space-y-4 sm:space-y-0 transform transition-all duration-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
+          }`}>
           <div>
             <h1 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-serif font-semibold text-[#4A3F36]">
               {getDisplayedCategoryName()}
@@ -136,6 +135,24 @@ return (
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
             {/* Hierarchical Category Dropdown */}
+            {/* Category Dropdown */}
+            <div className="relative w-full sm:w-auto">
+              <select
+                value={selectedParentCategoryId}
+                onChange={(e) => setSelectedParentCategoryId(e.target.value)}
+                className="w-full sm:w-auto min-w-[160px] appearance-none px-3 py-2 pr-8 border border-[#4A3F36] text-[#4A3F36] rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#DEC9A3] text-xs sm:text-sm cursor-pointer"
+                title="Select Category"
+              >
+                <option value="">All Categories</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-[#4A3F36] pointer-events-none" />
+            </div>
+
 
             {/* Sort */}
             <div className="relative w-full sm:w-auto">
@@ -176,26 +193,23 @@ return (
           {/* Products Grid with Staggered Animation */}
           <div className="flex-1">
             {products.length === 0 ? (
-              <div className={`text-center py-12 transform transition-all duration-1000 delay-200 ${
-                isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
-              }`}>
+              <div className={`text-center py-12 transform transition-all duration-1000 delay-200 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
+                }`}>
                 <p className="text-[#6D6258] text-sm sm:text-base lg:text-lg">No products found matching your criteria.</p>
               </div>
             ) : (
               <div
-                className={`grid gap-4 sm:gap-6 ${
-                  viewMode === 'grid' 
-                    ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6' 
+                className={`grid gap-4 sm:gap-6 ${viewMode === 'grid'
+                    ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6'
                     : 'grid-cols-1'
-                }`}
+                  }`}
               >
                 {products.map((product, index) => (
                   <div
                     key={product.id}
-                    className={`transform transition-all duration-700 ${
-                      isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
-                    }`}
-                    style={{ 
+                    className={`transform transition-all duration-700 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
+                      }`}
+                    style={{
                       transitionDelay: `${Math.min(index * 50, 800)}ms`,
                       animationFillMode: 'both'
                     }}
