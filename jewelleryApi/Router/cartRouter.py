@@ -7,6 +7,7 @@ from yensiAuthentication import logger
 from ReturnLog.logReturn import returnResponse
 from yensiDatetime.yensiDatetime import formatDateTime
 from Models.cartWishlistModel import CartItemModel, BulkCartRequest
+from typing import Optional
 
 router = APIRouter(tags=["Cart & Wishlist"])
 
@@ -49,12 +50,17 @@ async def getCart(request: Request):
 
 
 @router.put("/cart/update/{productId}")
-async def updateCartItem(request: Request, productId: str, quantity: int, selectedSize: str):
+async def updateCartItem(request: Request, productId: str, quantity: int, selectedSize: Optional[str] = None):
     try:
         userId = request.state.userMetadata.get("id")
         logger.debug(f"Updating cart item for user {userId}, product {productId}, size {selectedSize}")
 
-        cartItem = getSingleCartDb({"productId": productId, "userId": userId, "selectedSize": selectedSize, "isDeleted": False})
+        filterQuery = {"productId": productId, "userId": userId, "isDeleted": False}
+
+        if selectedSize is not None:
+            filterQuery["selectedSize"] = selectedSize
+
+        cartItem = getSingleCartDb(filterQuery)
 
         if not cartItem:
             logger.warning(f"No matching cart item for productId={productId}, size={selectedSize}")
@@ -77,12 +83,17 @@ async def updateCartItem(request: Request, productId: str, quantity: int, select
 
 
 @router.delete("/cart/remove/{productId}")
-async def removeCartItem(request: Request, productId: str, selectedSize: str):
+async def removeCartItem(request: Request, productId: str, selectedSize: Optional[str] = None):
     try:
         userId = request.state.userMetadata.get("id")
         logger.debug(f"Removing cart item for user {userId}, product {productId}, size {selectedSize}")
 
-        cartItem = getSingleCartDb({"productId": productId, "userId": userId, "selectedSize": selectedSize, "isDeleted": False})
+        filterQuery = {"productId": productId, "userId": userId, "isDeleted": False}
+
+        if selectedSize is not None:
+            filterQuery["selectedSize"] = selectedSize
+
+        cartItem = getSingleCartDb(filterQuery)
 
         if not cartItem:
             logger.warning(f"No cart item found for user {userId}, product {productId}, size {selectedSize}")

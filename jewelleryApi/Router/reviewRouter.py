@@ -7,6 +7,7 @@ from yensiAuthentication import logger
 from ReturnLog.logReturn import returnResponse
 from Models.userModel import UserRoles
 from Utils.utils import hasRequiredRole
+from yensiAuthentication import verifyUser
 
 router = APIRouter(tags=["Reviews"])
 
@@ -16,8 +17,10 @@ router = APIRouter(tags=["Reviews"])
 async def createReview(request: Request, payload: ReviewModel):
     try:
         userId = request.state.userMetadata.get("id")
+        userData = verifyUser({"id": userId})
+        userName = f"{userData.get('firstname')} {userData.get('lastname')}"
         reviewDict = payload.model_dump()
-        reviewDict.update({"id": str(ObjectId()), "createdAt": formatDateTime(), "updatedAt": formatDateTime(), "isDeleted": False})
+        reviewDict.update({"id": str(ObjectId()), "createdAt": formatDateTime(), "updatedAt": formatDateTime(), "isDeleted": False, "userName": userName})
         insertReviewToDb(reviewDict)
         reviewDict.pop("_id", None)
         logger.info(f"Review created for product [{payload.productId}] by user [{userId}]")
@@ -29,8 +32,8 @@ async def createReview(request: Request, payload: ReviewModel):
 
 
 #  GET all reviews for a product
-@router.get("/review/product/{productId}")
-async def getProductReviews(request: Request, productId: str):
+@router.get("/public/review/product/{productId}")
+async def getProductReviews(productId: str):
     try:
         reviews = list(getReviewsFromDb({"productId": productId, "isDeleted": False}))
         logger.info(f"successfully fetched review by product:{productId}")
@@ -41,8 +44,8 @@ async def getProductReviews(request: Request, productId: str):
 
 
 #  GET single review by ID
-@router.get("/review/{reviewId}")
-async def getReviewById(request: Request, reviewId: str):
+@router.get("/public/review/{reviewId}")
+async def getReviewById(reviewId: str):
     try:
         review = getReviewFromDb({"id": reviewId, "isDeleted": False})
         if not review:
