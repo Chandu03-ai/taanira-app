@@ -49,13 +49,13 @@ async def getCart(request: Request):
         return returnResponse(2062)
 
 
-@router.put("/cart/update/{productId}")
-async def updateCartItem(request: Request, productId: str, quantity: int, selectedSize: Optional[str] = None):
+@router.put("/cart/update/{cartId}")
+async def updateCartItem(request: Request, cartId: str, quantity: int, selectedSize: Optional[str] = None):
     try:
         userId = request.state.userMetadata.get("id")
-        logger.debug(f"Updating cart item for user {userId}, product {productId}, size {selectedSize}")
+        logger.debug(f"Updating cart item for user {userId}, product {cartId}, size {selectedSize}")
 
-        filterQuery = {"productId": productId, "userId": userId, "isDeleted": False}
+        filterQuery = {"id": cartId, "userId": userId, "isDeleted": False}
 
         if selectedSize is not None:
             filterQuery["selectedSize"] = selectedSize
@@ -63,7 +63,7 @@ async def updateCartItem(request: Request, productId: str, quantity: int, select
         cartItem = getSingleCartDb(filterQuery)
 
         if not cartItem:
-            logger.warning(f"No matching cart item for productId={productId}, size={selectedSize}")
+            logger.warning(f"No matching cart item for productId={cartId}, size={selectedSize}")
             return returnResponse(2119)
 
         newQuantity = cartItem.get("quantity", 0) + quantity
@@ -82,13 +82,13 @@ async def updateCartItem(request: Request, productId: str, quantity: int, select
         return returnResponse(2121)
 
 
-@router.delete("/cart/remove/{productId}")
-async def removeCartItem(request: Request, productId: str, selectedSize: Optional[str] = None):
+@router.delete("/cart/remove/{cartId}")
+async def removeCartItem(request: Request, cartId: str, selectedSize: Optional[str] = None):
     try:
         userId = request.state.userMetadata.get("id")
-        logger.debug(f"Removing cart item for user {userId}, product {productId}, size {selectedSize}")
+        logger.debug(f"Removing cart item for user {userId}, cartId {cartId}, size {selectedSize}")
 
-        filterQuery = {"productId": productId, "userId": userId, "isDeleted": False}
+        filterQuery = {"id": cartId, "userId": userId, "isDeleted": False}
 
         if selectedSize is not None:
             filterQuery["selectedSize"] = selectedSize
@@ -96,18 +96,18 @@ async def removeCartItem(request: Request, productId: str, selectedSize: Optiona
         cartItem = getSingleCartDb(filterQuery)
 
         if not cartItem:
-            logger.warning(f"No cart item found for user {userId}, product {productId}, size {selectedSize}")
+            logger.warning(f"No cart item found for user {userId}, cartId {cartId}, size {selectedSize}")
             return returnResponse(2116)
 
-        query = {"id": cartItem["id"], "userId": userId, "isDeleted": False}
+        query = {"id": cartId, "userId": userId, "isDeleted": False}
         updateData = {"isDeleted": True, "deletedAt": formatDateTime()}
         result = updateCartDb(query, updateData)
 
         if result.modified_count == 0:
-            logger.warning(f"No active cart item found with id [{cartItem['id']}]")
+            logger.warning(f"No active cart item found with id [{cartId}]")
             return returnResponse(2116)
 
-        logger.info(f"Cart item [{cartItem['id']}] removed successfully")
+        logger.info(f"Cart item [{cartId}] removed successfully")
         return returnResponse(2117)
     except Exception as e:
         logger.error(f"Error deleting cart item: {e}", exc_info=True)
