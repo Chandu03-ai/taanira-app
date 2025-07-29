@@ -242,6 +242,7 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
                 slug: formData.slug || generateSlug(formData.name),
                 category: formData.category,
                 description: formData.description,
+                details: formData.details,
                 initialPrice: formData.initialPrice,
                 price: formData.price,
                 comparePrice: formData.comparePrice,

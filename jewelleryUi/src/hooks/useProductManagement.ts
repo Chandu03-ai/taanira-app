@@ -59,6 +59,7 @@ export const useProductManagement = () => {
             slug: productData.slug,
             category: productData.category,
             description: productData.description,
+            details: productData.details, // Added details field
             price: productData.price,
             initialPrice: productData.initialPrice,
             comparePrice: productData.comparePrice,

@@ -168,6 +168,7 @@ export interface ProductImport {
   initialPrice: number;
   price: number;
   comparePrice?: number;
+  details?: string;
   images?: string[];
   stock?: boolean;
   id?: string; // Allow id for update operations
