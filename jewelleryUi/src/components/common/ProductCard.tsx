@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Plus, Minus } from 'lucide-react'; // X and Eye are not used, so removed from import
+import { ChevronLeft, ChevronRight, Plus, Minus } from 'lucide-react';
 import { Product } from '../../types';
-import { useCartStore } from '../../store/cartStore';
+import { useCartStore } from '../../store/cartStore'; // Correct import
 import { useAuthStore } from '../../store/authStore';
 import { SITE_CONFIG, staticImageBaseUrl } from '../../constants/siteConfig';
 import LoginPromptModal from './LoginPromptModal';
@@ -19,25 +19,24 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showQuickView = true
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-  const [selectedSize, setSelectedSize] = useState<string>(''); // Holds selected size string
+  const [selectedSize, setSelectedSize] = useState<string>('');
   const [showSizeSelector, setShowSizeSelector] = useState(false);
   const [averageRating, setAverageRating] = useState(0);
   const [reviewCount, setReviewCount] = useState(0);
   const [category, setCategory] = useState<any>(null);
+  const [isUpdating, setIsUpdating] = useState(false); // Manages loading state for cart operations
 
-  const { addItem, updateQuantity, removeItem, getProductQuantity, isProductInCart } = useCartStore();
+  // Destructure relevant actions and state from useCartStore
+  const { addItem, updateQuantity, removeItem, items } = useCartStore();
   const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
 
-  // Load cart state and review stats on component mount
+  // Load review stats on component mount
   useEffect(() => {
-    const { syncWithServer } = useCartStore.getState();
-    syncWithServer(); // Synchronize cart with server
-
     if (showRating) {
-      loadReviewStats(); // Load review data if ratings are enabled
+      loadReviewStats();
     }
-  }, []); // Empty dependency array means this runs once on mount
+  }, [showRating]);
 
   // Load category data for size options
   useEffect(() => {
@@ -53,7 +52,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showQuickView = true
     loadCategory();
   }, [product.category]); // Rerun if product category changes
 
-  // Function to load review statistics for the product
+  // Load review statistics for the product
   const loadReviewStats = async () => {
     try {
       const reviews = await apiService.getProductReviews(product.id);
@@ -70,83 +69,97 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showQuickView = true
   // Determine if the product has size options
   const hasSizeOptions = category?.sizeOptions && Array.isArray(category.sizeOptions) && category.sizeOptions.length > 0;
 
-  // Determine the effective size to pass to cart functions:
-  // Use selectedSize if product has size options, otherwise use undefined for "no size"
+  // Determine the effective size to pass to cart functions
   const effectiveSelectedSize = hasSizeOptions ? selectedSize : undefined;
 
-  // Check product quantity and if it's in the cart using the effective size
-  const productQuantity = getProductQuantity(product.id, effectiveSelectedSize);
-  const inCart = isProductInCart(product.id, effectiveSelectedSize);
+  // Derive productQuantity and inCart directly from the `items` array from Zustand
+  // This ensures that when `items` updates, these values also re-evaluate.
+  const cartItem = items.find(
+    (item) => item.productId === product.id && (item.selectedSize ?? '') === (effectiveSelectedSize ?? '')
+  );
+  const productQuantity = cartItem ? cartItem.quantity : 0;
+  const inCart = !!cartItem;
 
-  // Handle adding product to cart
-  const handleAddToCart = (e: React.MouseEvent) => {
+
+  const handleAddToCart = async (e: React.MouseEvent) => { // Made async
     e.preventDefault();
     e.stopPropagation();
 
     if (!isAuthenticated) {
-      setShowLoginPrompt(true); // Prompt user to log in if not authenticated
+      setShowLoginPrompt(true);
       return;
     }
 
-    // If product requires size but none is selected, show size selector modal
     if (hasSizeOptions && !selectedSize) {
       setShowSizeSelector(true);
       return;
     }
 
-    // Add item to cart if stock is available
-    if (product.stock) {
-      addItem(product, 1, effectiveSelectedSize); // Use effectiveSelectedSize here
-      const button = e.currentTarget as HTMLButtonElement;
-      const originalText = button.textContent;
-      button.textContent = 'ADDED!'; // Provide immediate feedback
-      button.style.backgroundColor = '#10b981'; // Green background
-      setTimeout(() => {
-        button.textContent = originalText!;
-        button.style.backgroundColor = ''; // Revert button style after a delay
-      }, 1200);
+    if (product.stock && !isUpdating) { // Check isUpdating to prevent double-clicks
+      setIsUpdating(true);
+      try {
+        await addItem(product, 1, effectiveSelectedSize); // Await the async addItem
+
+        const button = e.currentTarget as HTMLButtonElement;
+        const originalText = button.textContent;
+        const originalBg = button.style.backgroundColor;
+
+        button.textContent = 'ADDED!';
+        button.style.backgroundColor = '#10b981'; // Green color
+
+        setTimeout(() => {
+          button.textContent = originalText!;
+          button.style.backgroundColor = originalBg;
+          setIsUpdating(false); // Reset updating state after visual feedback
+        }, 1200);
+      } catch (error) {
+        console.error("Failed to add item to cart:", error);
+        setIsUpdating(false); // Ensure updating state is reset on error
+        // Optionally, show an error message to the user
+      }
     }
   };
 
-  // Handle size selection from the modal
-  const handleSizeSelect = (size: string) => {
-    setSelectedSize(size); // Set the chosen size
-    setShowSizeSelector(false); // Close the size selector modal
-    addItem(product, 1, size); // Add to cart with the selected size
+  const handleSizeSelect = async (size: string) => { // Made async
+    setSelectedSize(size);
+    setShowSizeSelector(false);
+    setIsUpdating(true); // Set updating true here
+
+    try {
+      await addItem(product, 1, size); // Await the async addItem
+    } catch (error) {
+      console.error("Failed to add item with selected size:", error);
+      // Optionally, show an error message
+    } finally {
+      setIsUpdating(false); // Reset updating state
+    }
   };
 
-  // Handle quantity changes for items already in cart
-  const handleQuantityChange = (e: React.MouseEvent, change: number) => {
+  const handleQuantityChange = async (e: React.MouseEvent, delta: number) => { // Made async, renamed 'change' to 'delta'
     e.preventDefault();
     e.stopPropagation();
 
     if (!isAuthenticated) {
-      setShowLoginPrompt(true); // Prompt user to log in if not authenticated
+      setShowLoginPrompt(true);
       return;
     }
 
-    const newQuantity = productQuantity + change;
+    if (!cartItem || isUpdating) return; // Prevent if no cart item or already updating
 
-    if (newQuantity <= 0) {
-      // If new quantity is 0 or less, remove the item from cart
-      const item = useCartStore.getState().items.find(item =>
-        item.productId === product.id && item.selectedSize === effectiveSelectedSize // Use effectiveSelectedSize here
-      );
-      if (item) {
-        removeItem(item.id);
-      }
-    } else {
-      // Otherwise, update the quantity of the item
-      const item = useCartStore.getState().items.find(item =>
-        item.productId === product.id && item.selectedSize === effectiveSelectedSize // Use effectiveSelectedSize here
-      );
-      if (item) {
-        updateQuantity(item.id, change, effectiveSelectedSize); // Use effectiveSelectedSize here
-      }
+    setIsUpdating(true); // Set loading state
+
+    try {
+      // Directly pass the delta (+1 or -1) to the store's updateQuantity action.
+      // The store will handle calculating the new quantity and calling removeItem if needed.
+      await updateQuantity(cartItem.id, delta);
+    } catch (error) {
+      console.error("Failed to update cart item quantity:", error);
+      // Optionally, show an error message to the user
+    } finally {
+      setIsUpdating(false); // Reset loading state
     }
   };
 
-  // Image navigation functions (next/previous)
   const goToNextImage = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -159,10 +172,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showQuickView = true
     setCurrentImageIndex((prev) => (prev - 1 + productImages.length) % productImages.length);
   };
 
-  // Prepare product images, using a placeholder if no images are available
   const productImages = product.images?.length
     ? product.images.map((img) => (img.startsWith('http') ? img : staticImageBaseUrl + img))
     : ['https://www.macsjewelry.com/cdn/shop/files/IMG_4360_594x.progressive.jpg?v=1701478772'];
+
+  console.log({
+    productQuantity,
+    effectiveSelectedSize,
+    cartItem,
+    isAuthenticated,
+  });
 
   return (
     <>
@@ -263,6 +282,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showQuickView = true
               <div className="flex items-center justify-center space-x-4 py-3 relative">
                 <button
                   onClick={(e) => handleQuantityChange(e, -1)}
+                  disabled={isUpdating} // Disable button while updating
                   className="w-8 h-8 flex items-center justify-center border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-110 active:scale-95 shadow-sm hover:shadow-md"
                   aria-label="Decrease quantity"
                   title="Decrease quantity"
@@ -276,6 +296,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showQuickView = true
 
                 <button
                   onClick={(e) => handleQuantityChange(e, 1)}
+                  disabled={isUpdating} // Disable button while updating
                   className="w-8 h-8 flex items-center justify-center border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-110 active:scale-95 shadow-sm hover:shadow-md"
                   aria-label="Increase quantity"
                   title="Increase quantity"
@@ -286,10 +307,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showQuickView = true
             ) : (
               <button
                 onClick={handleAddToCart}
+                disabled={!product.stock || isUpdating}
                 className="w-full py-3 text-xs font-serif font-semibold italic border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md"
                 title="Add to Cart"
               >
-                Preorder
+                {isUpdating ? 'Adding...' : 'Preorder'}
               </button>
             )}
           </div>

@@ -52,7 +52,6 @@ export const useAuthStore = create<AuthState>()(
 
             const cartStore = useCartStore.getState();
             await cartStore.syncWithServer();
-            cartStore.resetCartStore();
 
             return { success: true };
           }
@@ -95,7 +94,6 @@ export const useAuthStore = create<AuthState>()(
 
             const cartStore = useCartStore.getState();
             await cartStore.syncWithServer();
-            cartStore.resetCartStore();
 
             return true;
           }

@@ -14,37 +14,50 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ onClose }) => {
     items,
     removeItem,
     updateQuantity,
-    getTotalPrice
+    getTotalPrice,
+    syncWithServer
   } = useCartStore();
 
   const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
   const [showContent, setShowContent] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false); // State to manage update loading
 
   useEffect(() => {
     const timer = setTimeout(() => setShowContent(true), 200);
+    // When the sidebar opens, sync the cart with the server to get the latest state
+    if (isAuthenticated) {
+      syncWithServer();
+    }
     return () => clearTimeout(timer);
-  }, []);
+  }, [isAuthenticated, syncWithServer]); // Depend on isAuthenticated and syncWithServer
 
   const handleCheckout = () => {
     onClose();
     navigate('/cart');
   };
 
-  const handleQuantityUpdate = (id: string, delta: number) => {
+  const handleQuantityUpdate = async (id: string, delta: number) => {
+    if (isUpdating) return; // Prevent multiple clicks while an update is in progress
+
     if (!isAuthenticated) {
       navigate('/login');
       return;
     }
 
-    const item = items.find(item => item.id === id);
-    if (!item) return;
+    // No need to calculate newQuantity here, the store's updateQuantity will handle it
+    // and call removeItem if the resulting quantity is <= 0.
 
-    const newQuantity = item.quantity + delta;
-    if (newQuantity <= 0) {
-      removeItem(item.id);
-    } else {
-      updateQuantity(item.id, delta, item.selectedSize);
+    setIsUpdating(true); // Set loading state for the current operation
+
+    try {
+      // Directly pass the delta (+1 or -1) to the store's updateQuantity action
+      await updateQuantity(id, delta);
+    } catch (error) {
+      console.error("Failed to update cart item quantity:", error);
+      // Optionally, show a user-friendly error message here
+    } finally {
+      setIsUpdating(false); // Reset loading state
     }
   };
 
@@ -78,8 +91,8 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ onClose }) => {
           <h2 className="text-base sm:text-lg font-semibold text-black truncate">
             MY BAG ({items.length})
           </h2>
-          <button 
-            onClick={onClose} 
+          <button
+            onClick={onClose}
             className="hover:opacity-70 transition-opacity text-black p-1 rounded-full hover:bg-gray-100"
             title="Close cart"
           >
@@ -139,6 +152,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ onClose }) => {
                       <div className="flex items-center space-x-2">
                         <button
                           onClick={() => handleQuantityUpdate(item.id, -1)}
+                          disabled={isUpdating} // Disable button while updating
                           className="w-7 h-7 border border-gray-300 rounded flex items-center justify-center text-sm hover:bg-gray-50 transition-colors"
                           title="Decrease quantity"
                         >
@@ -147,6 +161,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ onClose }) => {
                         <span className="text-sm w-6 text-center font-medium">{item.quantity}</span>
                         <button
                           onClick={() => handleQuantityUpdate(item.id, +1)}
+                          disabled={isUpdating} // Disable button while updating
                           className="w-7 h-7 border border-gray-300 rounded flex items-center justify-center text-sm hover:bg-gray-50 transition-colors"
                           title="Increase quantity"
                         >
@@ -155,6 +170,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ onClose }) => {
                       </div>
                       <button
                         onClick={() => removeItem(item.id)}
+                        disabled={isUpdating} // Disable remove button too
                         className="text-xs text-gray-400 hover:text-red-500 transition-colors"
                         title={`Remove ${item.product.name}`}
                       >
@@ -183,6 +199,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ onClose }) => {
             </p>
             <button
               onClick={handleCheckout}
+              disabled={isUpdating} // Disable checkout button too
               className="w-full bg-black text-white py-3 text-sm rounded font-medium hover:bg-gray-800 transition-colors mb-2"
               title="Proceed to checkout"
             >

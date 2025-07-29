@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Minus, Plus } from 'lucide-react';
 import { Product } from '../types';
 import { apiService } from '../services/api';
-import { useCartStore } from '../store/cartStore';
+import { useCartStore } from '../store/cartStore'; // Correct import
 import { useAuthStore } from '../store/authStore';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import SEOHead from '../components/seo/SEOHead';
@@ -22,13 +22,11 @@ const ProductDetailPage: React.FC = () => {
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [category, setCategory] = useState<any>(null);
 
-  const {
-    addItem,
-    removeItem,
-    updateQuantity,
-    getProductQuantity,
-    isProductInCart
-  } = useCartStore();
+  // CORRECTED: Destructure the state (items) and actions from useCartStore using a selector
+  const addItem = useCartStore(state => state.addItem);
+  const removeItem = useCartStore(state => state.removeItem);
+  const updateQuantity = useCartStore(state => state.updateQuantity);
+  const items = useCartStore(state => state.items); // <--- Select 'items' here
 
   const { isAuthenticated } = useAuthStore();
 
@@ -49,12 +47,14 @@ const ProductDetailPage: React.FC = () => {
       }
     };
     loadCategory();
-  }, [product, selectedSize]);
+  }, [product]); // Removed selectedSize from dependency array as it's not needed for category loading
 
   const loadProduct = async () => {
     try {
       const productData = await apiService.getProductBySlug(slug!);
       setProduct(productData);
+      // Reset selected size when a new product is loaded (good practice)
+      setSelectedSize('');
     } catch (error) {
       console.error('Error loading product:', error);
       setProduct(null);
@@ -68,8 +68,14 @@ const ProductDetailPage: React.FC = () => {
   // Use selectedSize if product has size options, otherwise use undefined for "no size"
   const effectiveSelectedSize = hasSizeOptions ? selectedSize : undefined;
 
-  const productQuantity = product ? getProductQuantity(product.id, effectiveSelectedSize) : 0;
-  const inCart = product ? isProductInCart(product.id, effectiveSelectedSize) : false;
+  // Derive productQuantity and inCart directly from the 'items' array,
+  // which is now correctly being observed from the Zustand store.
+  const cartItem = product ? items.find(
+    item => item.productId === product.id && (item.selectedSize ?? '') === (effectiveSelectedSize ?? '')
+  ) : undefined;
+
+  const productQuantity = cartItem ? cartItem.quantity : 0;
+  const inCart = !!cartItem;
 
 
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -113,18 +119,15 @@ const ProductDetailPage: React.FC = () => {
       return;
     }
 
-    if (!product) return;
+    // Ensure product and a matching cartItem exist before attempting to update quantity
+    if (!product || !cartItem) return;
 
     const newQuantity = productQuantity + change;
 
-    const item = useCartStore.getState().items.find(item =>
-      item.productId === product.id && item.selectedSize === effectiveSelectedSize
-    );
-
-    if (newQuantity <= 0 && item) {
-      removeItem(item.id);
-    } else if (item) {
-      updateQuantity(item.id, change, effectiveSelectedSize);
+    if (newQuantity <= 0) {
+      removeItem(cartItem.id); // Use the existing cartItem's ID
+    } else {
+      updateQuantity(cartItem.id, change); // Use the existing cartItem's ID
     }
   };
 
@@ -290,7 +293,7 @@ const ProductDetailPage: React.FC = () => {
                   {currentTab === 'About' && <p>{product.description}</p>}
                   {currentTab === 'Details' && (
                     <p>
-                     {product.details}
+                      {product.details}
                     </p>
                   )}
                   {currentTab === 'Shipping' && (
