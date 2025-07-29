@@ -3,6 +3,7 @@ export interface ProductFormData {
     slug: string;
     category: string;
     description: string;
+    details:string;
     initialPrice: number;
     price: number;
     comparePrice: number;

@@ -28,6 +28,7 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
         slug: '',
         category: '',
         description: '',
+        details: '',
         initialPrice: 0,
         price: 0,
         comparePrice: 0,
@@ -44,6 +45,7 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
                     slug: '',
                     category: '',
                     description: '',
+                    details: '',
                     initialPrice: 0,
                     price: 0,
                     comparePrice: 0,
@@ -63,7 +65,6 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
                 slug: product.slug || '',
                 category: (() => {
                     if (typeof product.category === 'string') {
-                        // Look up category name in categories list and return its ID
                         const match = categories.find(cat => cat.name === product.category);
                         return match?.id || '';
                     } else {
@@ -73,6 +74,7 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
 
                 description: product.description || '',
                 initialPrice: product.initialPrice || 0,
+                details:product.details || '',
                 price: product.price || 0,
                 comparePrice: product.comparePrice || 0,
                 images: product.images || [],
@@ -376,6 +378,7 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4B896] focus:border-transparent"
                             />
                         </div>
+
                     </div>
 
                     {/* Description */}
@@ -392,6 +395,21 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4B896] focus:border-transparent"
                         />
                     </div>
+                    {/* Details */}
+                    <div>
+                        <label className="block text-sm font-medium text-[#5f3c2c] mb-2">
+                            Details
+                        </label>
+                        <textarea
+                            name="details"
+                            value={formData.details}
+                            onChange={handleInputChange}
+                            rows={4}
+                            placeholder="E.g., purity 92.5 silver, handcrafted with pure zari, made of cotton-silk blend"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4B896] focus:border-transparent"
+                        />
+                    </div>
+
 
                     {/* Image Upload */}
                     <div>
