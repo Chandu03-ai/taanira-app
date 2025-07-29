@@ -66,7 +66,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showQuickView = true
       }
     };
     loadCategory();
-  }, [product.category, selectedSize]);
+  }, [product.category]);
 
   const productQuantity = getProductQuantity(product.id, selectedSize);
   const inCart = isProductInCart(product.id, selectedSize);
@@ -119,14 +119,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showQuickView = true
     const newQuantity = productQuantity + change;
 
     if (newQuantity <= 0) {
-      const item = useCartStore.getState().items.find(item => 
+      const item = useCartStore.getState().items.find(item =>
         item.productId === product.id && item.selectedSize === selectedSize
       );
       if (item) {
         removeItem(item.id);
       }
     } else {
-      const item = useCartStore.getState().items.find(item => 
+      const item = useCartStore.getState().items.find(item =>
         item.productId === product.id && item.selectedSize === selectedSize
       );
       if (item) {
@@ -214,22 +214,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showQuickView = true
 
             <hr className="my-3 border-t border-subtle-beige w-3/4 mx-auto" />
 
-            {/* Size Selection */}
-            {hasSizeOptions && category?.sizeOptions && (
-              <div className="mb-3">
-                <select
-                  value={selectedSize}
-                  onChange={(e) => setSelectedSize(e.target.value)}
-                  className="w-full text-xs border border-subtle-beige rounded-lg px-2 py-1 font-serif text-rich-brown focus:border-soft-gold focus:outline-none"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <option value="">Select Size</option>
-                  {category.sizeOptions.map((size: string) => (
-                    <option key={size} value={size}>{size}</option>
-                  ))}
-                </select>
-              </div>
-            )}
             <div className="flex items-center justify-center space-x-2 mt-2 mb-4">
               <span className="text-sm sm:text-base font-serif font-semibold text-rich-brown">
                 {SITE_CONFIG.currencySymbol} {(product.price || 0).toLocaleString()}
@@ -240,58 +224,62 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showQuickView = true
                 </span>
               )}
             </div>
-          </div>
-            {/* Rating Display */}
-            {showRating && reviewCount > 0 && (
-              <div className="flex items-center justify-center space-x-2 mb-2">
-                <StarRating rating={averageRating} size="sm" />
-                <span className="text-xs text-mocha font-serif italic">
-                  ({reviewCount})
-                </span>
-              </div>
-            )}
 
-
-          {!product.stock ? (
-            <button
-              disabled
-              className="w-full py-3 text-xs font-serif font-semibold italic border-2 border-gray-400 text-gray-400 rounded-xl cursor-not-allowed"
-            >
-              OUT OF STOCK
-            </button>
-          ) : inCart ? (
-            <div className="flex items-center justify-center space-x-4 py-3 relative">
-              <button
-                onClick={(e) => handleQuantityChange(e, -1)}
-                className="w-8 h-8 flex items-center justify-center border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-110 active:scale-95 shadow-sm hover:shadow-md"
-                aria-label="Decrease quantity"
-                title="Decrease quantity"
-              >
-                <Minus className="w-3 h-3" />
-              </button>
-
-              <span className="text-base font-serif font-semibold text-rich-brown min-w-[2rem] text-center">
-                {productQuantity}
-              </span>
-
-              <button
-                onClick={(e) => handleQuantityChange(e, 1)}
-                className="w-8 h-8 flex items-center justify-center border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-110 active:scale-95 shadow-sm hover:shadow-md"
-                aria-label="Increase quantity"
-                title="Increase quantity"
-              >
-                <Plus className="w-3 h-3" />
-              </button>
+            {/* Consistent space for Rating Display and improved responsiveness */}
+            <div className="flex items-center justify-center mb-2" style={{ minHeight: '1.5rem', maxHeight: '1.5rem' }}>
+              {showRating && reviewCount > 0 ? (
+                <div className="flex items-center justify-center space-x-1 sm:space-x-2 min-w-0">
+                  <StarRating rating={averageRating} size="sm" />
+                  <span className="text-xs sm:text-sm text-mocha font-serif italic flex-shrink">
+                    ({reviewCount})
+                  </span>
+                </div>
+              ) : (
+                <div className="w-full h-full"></div>
+              )}
             </div>
-          ) : (
-            <button
-              onClick={handleAddToCart}
-              className="w-full py-3 text-xs font-serif font-semibold italic border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md"
-              title="Add to Cart"
-            >
-              Preorder 
-            </button>
-          )}
+
+            {!product.stock ? (
+              <button
+                disabled
+                className="w-full py-3 text-xs font-serif font-semibold italic border-2 border-gray-400 text-gray-400 rounded-xl cursor-not-allowed"
+              >
+                OUT OF STOCK
+              </button>
+            ) : inCart ? (
+              <div className="flex items-center justify-center space-x-4 py-3 relative">
+                <button
+                  onClick={(e) => handleQuantityChange(e, -1)}
+                  className="w-8 h-8 flex items-center justify-center border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-110 active:scale-95 shadow-sm hover:shadow-md"
+                  aria-label="Decrease quantity"
+                  title="Decrease quantity"
+                >
+                  <Minus className="w-3 h-3" />
+                </button>
+
+                <span className="text-base font-serif font-semibold text-rich-brown min-w-[2rem] text-center">
+                  {productQuantity}
+                </span>
+
+                <button
+                  onClick={(e) => handleQuantityChange(e, 1)}
+                  className="w-8 h-8 flex items-center justify-center border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-110 active:scale-95 shadow-sm hover:shadow-md"
+                  aria-label="Increase quantity"
+                  title="Increase quantity"
+                >
+                  <Plus className="w-3 h-3" />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={handleAddToCart}
+                className="w-full py-3 text-xs font-serif font-semibold italic border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md"
+                title="Add to Cart"
+              >
+                Preorder
+              </button>
+            )}
+          </div>
         </div>
       </article>
 
