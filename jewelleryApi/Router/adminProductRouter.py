@@ -88,7 +88,7 @@ async def updateProductByIdEndpoint(request: Request, productId: str, payload: P
                 "categoryId": payload.category,
                 "category": category.get("name"),  # store readable name
                 "sizeOptions": category.get("sizeOptions", []),
-                "images": payload.images,  # Overwrite image
+                "images": payload.images if payload.images else existing.get("images", []),
                 "updatedAt": formatDateTime(),
                 "createdBy": existing.get("createdBy", userId),
                 "createdAt": existing.get("createdAt", formatDateTime()),

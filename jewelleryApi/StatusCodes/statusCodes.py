@@ -169,9 +169,6 @@ CUSTOM_STATUS_CODES = {
     2146: {"code": 2146, "message": "Error occurred while fetching user addresses."},
     2147: {"code": 2147, "message": "email sent successfully"},
     2148: {"code": 2148, "message": "error while sending email"},
-
-
-
     2149: {"code": 2149, "message": "review created successfully"},
     2150: {"code": 2150, "message": "Error occured while creating"},
     2151: {"code": 2151, "message": "successfully fetched review"},
@@ -183,4 +180,6 @@ CUSTOM_STATUS_CODES = {
     2157: {"code": 2157, "message": "error while deleting"},
     2158: {"code": 2158, "message": "fetched all products by category"},
     2159: {"code": 2159, "message": "error while fetching all products by category"},
+    2160: {"code": 2160, "message": "successfully sent email to user with trackingId"},
+    2161: {"code": 2161, "message": "error while sending email to user with trackingId"},
 }
