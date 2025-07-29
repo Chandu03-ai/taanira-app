@@ -194,7 +194,7 @@ const CartPage: React.FC = () => {
                     </>
                   ) : (
                     <button
-                      onClick={() => setShowAddressSelector(true)}
+                      onClick={() => navigate('/addresses')}
                       className={`btn-primary w-full mt-4 ${!agreedToTerms ? 'opacity-50 cursor-not-allowed' : ''
                         }`}
                       disabled={!agreedToTerms}
