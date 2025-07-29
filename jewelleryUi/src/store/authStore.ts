@@ -130,8 +130,13 @@ export const useAuthStore = create<AuthState>()(
             user: null,
             isAuthenticated: false
           });
+
+          // Clear cart
+          const cartStore = useCartStore.getState();
+          cartStore.resetCartStore();
         }
       },
+
 
       verifyToken: async () => {
         try {
@@ -155,20 +160,31 @@ export const useAuthStore = create<AuthState>()(
             return true;
           }
 
+          // Token invalid
           set({
             user: null,
             isAuthenticated: false
           });
+
+          const cartStore = useCartStore.getState();
+          cartStore.resetCartStore();
+
           return false;
         } catch (error) {
           console.error('Token verification failed:', error);
+
           set({
             user: null,
             isAuthenticated: false
           });
+
+          const cartStore = useCartStore.getState();
+          cartStore.resetCartStore();
+
           return false;
         }
       },
+
 
       initialize: async () => {
         const state = get();
