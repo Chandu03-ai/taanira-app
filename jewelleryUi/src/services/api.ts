@@ -5,9 +5,11 @@ import {
   cartService,   
   orderService,
   paymentService,
-  adminService
+  adminService,
+  reviewService
 } from './index';
 import { Product, Category, CartItem, ProductFilters, ProductImport, Order, User, OrderRequest } from '../types';
+import { Review, ReviewFormData } from '../types/review';
 import { addressService } from '../services/addressService';
 
 class ApiService {
@@ -256,6 +258,31 @@ async getUserOrders(): Promise<Order[]> {
 
   async updateUserRole(userId: string, role: string) {
     await adminService.updateUserRole(userId, role);
+  }
+
+  // Review methods
+  async createReview(reviewData: ReviewFormData): Promise<Review> {
+    const response = await reviewService.createReview(reviewData);
+    return response.result;
+  }
+
+  async getProductReviews(productId: string): Promise<Review[]> {
+    try {
+      const response = await reviewService.getProductReviews(productId);
+      return response.result || [];
+    } catch (error) {
+      console.error('Error fetching product reviews:', error);
+      return [];
+    }
+  }
+
+  async getReviewById(reviewId: string): Promise<Review> {
+    const response = await reviewService.getReviewById(reviewId);
+    return response.result;
+  }
+
+  async deleteReview(reviewId: string): Promise<void> {
+    await reviewService.deleteReview(reviewId);
   }
 
 }

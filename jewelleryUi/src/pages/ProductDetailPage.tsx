@@ -9,6 +9,7 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 import SEOHead from '../components/seo/SEOHead';
 import { staticImageBaseUrl } from '../constants/siteConfig';
 import LoginPromptModal from '../components/common/LoginPromptModal';
+import ProductReviews from '../components/reviews/ProductReviews';
 
 const ProductDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -288,6 +289,11 @@ const ProductDetailPage: React.FC = () => {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Reviews Section */}
+          <div className="mt-12 pt-8 border-t border-rich-brown/20">
+            <ProductReviews productId={product.id} />
           </div>
         </div>
 

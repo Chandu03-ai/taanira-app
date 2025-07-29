@@ -7,18 +7,22 @@ import { useAuthStore } from '../../store/authStore';
 import { SITE_CONFIG, staticImageBaseUrl } from '../../constants/siteConfig';
 import LoginPromptModal from './LoginPromptModal';
 import { apiService } from '../../services/api';
+import StarRating from '../reviews/StarRating';
 
 interface ProductCardProps {
   product: Product;
   showQuickView?: boolean;
+  showRating?: boolean;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, showQuickView = true }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, showQuickView = true, showRating = true }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [showSizeSelector, setShowSizeSelector] = useState(false);
+  const [averageRating, setAverageRating] = useState(0);
+  const [reviewCount, setReviewCount] = useState(0);
 
   const { addItem, updateQuantity, removeItem, getProductQuantity, isProductInCart } = useCartStore();
   const { isAuthenticated } = useAuthStore();
@@ -27,7 +31,25 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showQuickView = true
   useEffect(() => {
     const { syncWithServer } = useCartStore.getState();
     syncWithServer();
+    
+    // Load review stats if showRating is enabled
+    if (showRating) {
+      loadReviewStats();
+    }
   }, []);
+
+  const loadReviewStats = async () => {
+    try {
+      const reviews = await apiService.getProductReviews(product.id);
+      if (reviews.length > 0) {
+        const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+        setAverageRating(totalRating / reviews.length);
+        setReviewCount(reviews.length);
+      }
+    } catch (error) {
+      console.error('Error loading review stats:', error);
+    }
+  };
 
   // Get category to check for size options
   const [category, setCategory] = useState<any>(null);
@@ -48,7 +70,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showQuickView = true
 
   const productQuantity = getProductQuantity(product.id, selectedSize);
   const inCart = isProductInCart(product.id, selectedSize);
-  const hasSizeOptions = category?.sizeOptions && category.sizeOptions.length > 0;
+  const hasSizeOptions = category?.sizeOptions && Array.isArray(category.sizeOptions) && category.sizeOptions.length > 0;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -219,6 +241,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showQuickView = true
               )}
             </div>
           </div>
+            {/* Rating Display */}
+            {showRating && reviewCount > 0 && (
+              <div className="flex items-center justify-center space-x-2 mb-2">
+                <StarRating rating={averageRating} size="sm" />
+                <span className="text-xs text-mocha font-serif italic">
+                  ({reviewCount})
+                </span>
+              </div>
+            )}
+
 
           {!product.stock ? (
             <button

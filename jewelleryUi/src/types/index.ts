@@ -1,4 +1,5 @@
 import { AddressFormData } from "./address";
+import { Review } from "./review";
 
 export interface User {
   id: string;
@@ -44,6 +45,9 @@ export interface Product {
   stock: boolean;
   createdAt: string;
   details:string;
+  reviews?: Review[];
+  averageRating?: number;
+  reviewCount?: number;
 }
 
 export interface Category {

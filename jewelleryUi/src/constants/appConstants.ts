@@ -48,6 +48,10 @@ export const API_ENDPOINTS = {
   ADD_REVIEW: '/products',
   ADMIN_REVIEWS: '/admin/reviews',
   MODERATE_REVIEW: '/admin/reviews',
+  CREATE_REVIEW: '/review/create',
+  GET_PRODUCT_REVIEWS: '/review/product',
+  GET_REVIEW_BY_ID: '/review',
+  DELETE_REVIEW: '/review',
 
   // Cart endpoints
   ADD_TO_CART: '/cart/add',
