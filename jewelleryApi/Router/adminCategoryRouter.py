@@ -107,6 +107,7 @@ async def updateCategory(request: Request, categoryId: str, payload: UpdateCateg
         updateData = {}
         if payload.name:
             updateData["name"] = payload.name
+            updateManyProductsInDb({"categoryId": categoryId}, {"category": payload.name})
         if payload.slug or payload.name:
             updateData["slug"] = slugify(payload.slug or payload.name)
         if payload.image is not None:

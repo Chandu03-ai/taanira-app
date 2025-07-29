@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Your Taanera Order Has Shipped</title>
+    <style>
+        body {
+            background-color: #f6f1eb;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 30px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: #a5715a;
+            color: white;
+            padding: 24px;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .content-box {
+            background-color: #fff8f3;
+            border: 1px solid #e8d8cc;
+            margin: 20px;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .content-box p {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .highlight {
+            color: #a0522d;
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 14px;
+            color: #777;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            📦 Your Taanera Order Is On Its Way!
+        </div>
+
+        <div class="content-box">
+            <p>Hello <span class="highlight">{{ userName }}</span>,</p>
+
+            <p>Your order <strong class="highlight">#{{ orderId }}</strong> has been shipped and is on its way to you!
+            </p>
+
+            <p>Your tracking ID is: <strong class="highlight">{{ trackingId }}</strong></p>
+
+            <p>You can use this tracking ID to follow your shipment via the courier's website.</p>
+
+            <p>If you have any questions or concerns, don't hesitate to reach out to us — we're always here to help.</p>
+
+            <p>Warm regards,<br>
+                <strong>– The Taanera Team</strong>
+            </p>
+        </div>
+
+        <div class="footer">
+            &copy; 2025 Taanera. All rights reserved.
+        </div>
+    </div>
+</body>
+
+</html>
