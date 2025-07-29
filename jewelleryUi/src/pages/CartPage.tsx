@@ -42,7 +42,7 @@ const CartPage: React.FC = () => {
     if (newQty <= 0) {
       removeItem(cartItemId);
     } else {
-      updateQuantity(cartItemId, newQty, item.selectedSize); // IMPORTANT: use `item.id` here
+      updateQuantity(cartItemId, delta, item.selectedSize); // IMPORTANT: use `item.id` here
     }
   };
 

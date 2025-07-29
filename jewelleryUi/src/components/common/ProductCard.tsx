@@ -141,7 +141,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showQuickView = true
         item.productId === product.id && item.selectedSize === effectiveSelectedSize // Use effectiveSelectedSize here
       );
       if (item) {
-        updateQuantity(item.id, newQuantity, effectiveSelectedSize); // Use effectiveSelectedSize here
+        updateQuantity(item.id, change, effectiveSelectedSize); // Use effectiveSelectedSize here
       }
     }
   };

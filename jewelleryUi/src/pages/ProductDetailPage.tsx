@@ -124,7 +124,7 @@ const ProductDetailPage: React.FC = () => {
     if (newQuantity <= 0 && item) {
       removeItem(item.id);
     } else if (item) {
-      updateQuantity(item.id, newQuantity, effectiveSelectedSize);
+      updateQuantity(item.id, change, effectiveSelectedSize);
     }
   };
 
