@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, ChevronLeft, ChevronRight, Plus, Minus, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Minus } from 'lucide-react'; // X and Eye are not used, so removed from import
 import { Product } from '../../types';
 import { useCartStore } from '../../store/cartStore';
 import { useAuthStore } from '../../store/authStore';
@@ -19,25 +19,41 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showQuickView = true
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-  const [selectedSize, setSelectedSize] = useState<string>('');
+  const [selectedSize, setSelectedSize] = useState<string>(''); // Holds selected size string
   const [showSizeSelector, setShowSizeSelector] = useState(false);
   const [averageRating, setAverageRating] = useState(0);
   const [reviewCount, setReviewCount] = useState(0);
+  const [category, setCategory] = useState<any>(null);
 
   const { addItem, updateQuantity, removeItem, getProductQuantity, isProductInCart } = useCartStore();
   const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
 
+  // Load cart state and review stats on component mount
   useEffect(() => {
     const { syncWithServer } = useCartStore.getState();
-    syncWithServer();
-    
-    // Load review stats if showRating is enabled
-    if (showRating) {
-      loadReviewStats();
-    }
-  }, []);
+    syncWithServer(); // Synchronize cart with server
 
+    if (showRating) {
+      loadReviewStats(); // Load review data if ratings are enabled
+    }
+  }, []); // Empty dependency array means this runs once on mount
+
+  // Load category data for size options
+  useEffect(() => {
+    const loadCategory = async () => {
+      try {
+        const categories = await apiService.getCategories();
+        const productCategory = categories.find(cat => cat.name === product.category);
+        setCategory(productCategory);
+      } catch (error) {
+        console.error('Error loading category:', error);
+      }
+    };
+    loadCategory();
+  }, [product.category]); // Rerun if product category changes
+
+  // Function to load review statistics for the product
   const loadReviewStats = async () => {
     try {
       const reviews = await apiService.getProductReviews(product.id);
@@ -51,92 +67,99 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showQuickView = true
     }
   };
 
-  // Get category to check for size options
-  const [category, setCategory] = useState<any>(null);
-  
-  useEffect(() => {
-    const loadCategory = async () => {
-      try {
-        const categories = await apiService.getCategories();
-        const productCategory = categories.find(cat => cat.name === product.category);
-        setCategory(productCategory);
-        
-      } catch (error) {
-        console.error('Error loading category:', error);
-      }
-    };
-    loadCategory();
-  }, [product.category]);
-
-  const productQuantity = getProductQuantity(product.id, selectedSize);
-  const inCart = isProductInCart(product.id, selectedSize);
+  // Determine if the product has size options
   const hasSizeOptions = category?.sizeOptions && Array.isArray(category.sizeOptions) && category.sizeOptions.length > 0;
 
+  // Determine the effective size to pass to cart functions:
+  // Use selectedSize if product has size options, otherwise use undefined for "no size"
+  const effectiveSelectedSize = hasSizeOptions ? selectedSize : undefined;
+
+  // Check product quantity and if it's in the cart using the effective size
+  const productQuantity = getProductQuantity(product.id, effectiveSelectedSize);
+  const inCart = isProductInCart(product.id, effectiveSelectedSize);
+
+  // Handle adding product to cart
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
     if (!isAuthenticated) {
-      setShowLoginPrompt(true);
+      setShowLoginPrompt(true); // Prompt user to log in if not authenticated
       return;
     }
 
-    // Check if size is required but not selected
+    // If product requires size but none is selected, show size selector modal
     if (hasSizeOptions && !selectedSize) {
       setShowSizeSelector(true);
       return;
     }
 
+    // Add item to cart if stock is available
     if (product.stock) {
-      addItem(product, 1, selectedSize);
+      addItem(product, 1, effectiveSelectedSize); // Use effectiveSelectedSize here
       const button = e.currentTarget as HTMLButtonElement;
       const originalText = button.textContent;
-      button.textContent = 'ADDED!';
-      button.style.backgroundColor = '#10b981';
+      button.textContent = 'ADDED!'; // Provide immediate feedback
+      button.style.backgroundColor = '#10b981'; // Green background
       setTimeout(() => {
         button.textContent = originalText!;
-        button.style.backgroundColor = '';
+        button.style.backgroundColor = ''; // Revert button style after a delay
       }, 1200);
     }
   };
 
+  // Handle size selection from the modal
   const handleSizeSelect = (size: string) => {
-    setSelectedSize(size);
-    setShowSizeSelector(false);
-    // Auto add to cart after size selection
-    addItem(product, 1, size);
+    setSelectedSize(size); // Set the chosen size
+    setShowSizeSelector(false); // Close the size selector modal
+    addItem(product, 1, size); // Add to cart with the selected size
   };
 
+  // Handle quantity changes for items already in cart
   const handleQuantityChange = (e: React.MouseEvent, change: number) => {
     e.preventDefault();
     e.stopPropagation();
 
     if (!isAuthenticated) {
-      setShowLoginPrompt(true);
+      setShowLoginPrompt(true); // Prompt user to log in if not authenticated
       return;
     }
 
     const newQuantity = productQuantity + change;
 
     if (newQuantity <= 0) {
+      // If new quantity is 0 or less, remove the item from cart
       const item = useCartStore.getState().items.find(item =>
-        item.productId === product.id && item.selectedSize === selectedSize
+        item.productId === product.id && item.selectedSize === effectiveSelectedSize // Use effectiveSelectedSize here
       );
       if (item) {
         removeItem(item.id);
       }
     } else {
+      // Otherwise, update the quantity of the item
       const item = useCartStore.getState().items.find(item =>
-        item.productId === product.id && item.selectedSize === selectedSize
+        item.productId === product.id && item.selectedSize === effectiveSelectedSize // Use effectiveSelectedSize here
       );
       if (item) {
-        updateQuantity(item.id, newQuantity, selectedSize);
+        updateQuantity(item.id, newQuantity, effectiveSelectedSize); // Use effectiveSelectedSize here
       }
     }
   };
 
-  // Image navigation functions omitted here for brevity (same as before)...
+  // Image navigation functions (next/previous)
+  const goToNextImage = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentImageIndex((prev) => (prev + 1) % productImages.length);
+  };
 
+  const goToPreviousImage = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentImageIndex((prev) => (prev - 1 + productImages.length) % productImages.length);
+  };
+
+  // Prepare product images, using a placeholder if no images are available
   const productImages = product.images?.length
     ? product.images.map((img) => (img.startsWith('http') ? img : staticImageBaseUrl + img))
     : ['https://www.macsjewelry.com/cdn/shop/files/IMG_4360_594x.progressive.jpg?v=1701478772'];
@@ -144,8 +167,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showQuickView = true
   return (
     <>
       <article className="group relative bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-200 ease-in-out border border-subtle-beige overflow-hidden transform hover:scale-[1.02] w-full max-w-sm mx-auto">
-        {/* ...all your existing JSX unchanged, including Add to Cart button... */}
-
         <Link to={`/product/${product.slug || product.id}`}>
           <div
             className="relative overflow-hidden bg-gray-100 aspect-[3/4] sm:aspect-[4/5] rounded-xl"
@@ -163,22 +184,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showQuickView = true
             {productImages.length > 1 && isHovered && (
               <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between px-2 opacity-0 group-hover:opacity-100 transition-all duration-200 ease-in-out">
                 <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setCurrentImageIndex((prev) => (prev - 1 + product.images.length) % product.images.length);
-                  }}
+                  onClick={goToPreviousImage}
                   className="p-1.5 bg-white/90 backdrop-blur-sm rounded-xl shadow-sm hover:bg-white hover:shadow-md transition-all duration-200 ease-in-out"
                   aria-label="Previous"
                 >
                   <ChevronLeft className="w-3 h-3" />
                 </button>
                 <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setCurrentImageIndex((prev) => (prev + 1) % product.images.length);
-                  }}
+                  onClick={goToNextImage}
                   className="p-1.5 bg-white/90 backdrop-blur-sm rounded-xl shadow-sm hover:bg-white hover:shadow-md transition-all duration-200 ease-in-out"
                   aria-label="Next"
                 >
@@ -235,7 +248,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showQuickView = true
                   </span>
                 </div>
               ) : (
-                <div className="w-full h-full"></div>
+                <div className="w-full h-full"></div> // Placeholder to maintain layout
               )}
             </div>
 
