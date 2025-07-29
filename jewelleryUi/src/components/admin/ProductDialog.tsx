@@ -281,7 +281,10 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
                             >
                                 <option value="">Select Category</option>
                                 {categories.map(cat => (
-                                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                                    <option key={cat.id} value={cat.name}>
+                                        {cat.name} 
+                                        {cat.sizeOptions && cat.sizeOptions.length > 0 && ` (Has sizes: ${cat.sizeOptions.join(', ')})`}
+                                    </option>
                                 ))}
                             </select>
                         </div>

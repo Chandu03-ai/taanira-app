@@ -179,7 +179,7 @@ const UserOrdersPage: React.FC = () => {
                           <img src={staticImageBaseUrl + item.image} alt={item.name} className="w-16 h-16 object-cover rounded" />
                           <div className="flex-1">
                             <p className="font-medium text-gray-900">{item.name}</p>
-                            {item.selectedSize && (
+                            {item.selectedSize && item.productId && (
                               <p className="text-sm text-gray-500">Size: {item.selectedSize}</p>
                             )}
                             <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
@@ -214,4 +214,4 @@ const UserOrdersPage: React.FC = () => {
   );
 };
 
-export default UserOrdersPage;
+export default UserOrdersPage; 

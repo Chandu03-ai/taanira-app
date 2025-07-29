@@ -29,38 +29,41 @@ export const useCartStore = create<CartState>()(
         const { isAuthenticated } = useAuthStore.getState();
         if (!isAuthenticated) return;
 
+        // Only use selectedSize if the product actually has size options
+        const effectiveSize = selectedSize && product.category ? selectedSize : undefined;
+
         const state = get();
         const existingItem = state.items.find(item =>
-          item.productId === product.id && item.selectedSize === selectedSize
+          item.productId === product.id && item.selectedSize === effectiveSize
         );
 
         if (existingItem) {
           const updatedItems = state.items.map(item =>
-            item.productId === product.id && item.selectedSize === selectedSize
+            item.productId === product.id && item.selectedSize === effectiveSize
               ? { ...item, quantity: item.quantity + quantity }
               : item
           );
           set({ items: updatedItems });
 
           try {
-            await cartService.updateCartItem(product.id, existingItem.quantity + quantity, selectedSize);
+            await cartService.updateCartItem(product.id, existingItem.quantity + quantity, effectiveSize);
             await get().syncWithServer();
           } catch (err) {
             console.error(err);
           }
         } else {
           const newItem: CartItem = {
-            id: `${product.id}-${selectedSize || 'no-size'}`,
+            id: `${product.id}-${effectiveSize || 'no-size'}`,
             productId: product.id,
             quantity,
-            selectedSize,
+            selectedSize: effectiveSize,
             product,
           };
 
           set({ items: [...state.items, newItem] });
 
           try {
-            await cartService.addToCart(product.id, quantity, selectedSize);
+            await cartService.addToCart(product.id, quantity, effectiveSize);
             await get().syncWithServer();
           } catch (err) {
             console.error(err);
@@ -148,14 +151,18 @@ export const useCartStore = create<CartState>()(
       },
 
       getProductQuantity: (productId: string, selectedSize?: string) => {
+        // Only consider selectedSize if it's actually provided and meaningful
+        const effectiveSize = selectedSize || undefined;
         return get().items.find(item =>
-          item.productId === productId && item.selectedSize === selectedSize
+          item.productId === productId && item.selectedSize === effectiveSize
         )?.quantity || 0;
       },
 
       isProductInCart: (productId: string, selectedSize?: string) => {
+        // Only consider selectedSize if it's actually provided and meaningful
+        const effectiveSize = selectedSize || undefined;
         return get().items.some(item =>
-          item.productId === productId && item.selectedSize === selectedSize
+          item.productId === productId && item.selectedSize === effectiveSize
         );
       },
 

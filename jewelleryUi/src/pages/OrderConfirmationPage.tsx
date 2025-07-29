@@ -38,35 +38,6 @@ const OrderConfirmationPage: React.FC = () => {
     }
   };
 
-  // const getStatusIcon = (status: string) => {
-  //   switch (status) {
-  //     case 'pending':
-  //       return <Clock className="h-5 w-5 text-yellow-500" />;
-  //     case 'confirmed':
-  //       return <CheckCircle className="h-5 w-5 text-blue-500" />;
-  //     case 'shipped':
-  //       return <Truck className="h-5 w-5 text-purple-500" />;
-  //     case 'delivered':
-  //       return <CheckCircle className="h-5 w-5 text-green-500" />;
-  //     default:
-  //       return <Package className="h-5 w-5 text-gray-500" />;
-  //   }
-  // };
-
-  // const getStatusColor = (status: string) => {
-  //   switch (status) {
-  //     case 'pending':
-  //       return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-  //     case 'confirmed':
-  //       return 'bg-blue-100 text-blue-800 border-blue-200';
-  //     case 'shipped':
-  //       return 'bg-purple-100 text-purple-800 border-purple-200';
-  //     case 'delivered':
-  //       return 'bg-green-100 text-green-800 border-green-200';
-  //     default:
-  //       return 'bg-gray-100 text-gray-800 border-gray-200';
-  //   }
-  // };
 
   const getPaymentStatusColor = (status: string) => {
     switch (status) {
@@ -207,7 +178,7 @@ const OrderConfirmationPage: React.FC = () => {
                       />
                       <div className="flex-1">
                         <h3 className="font-medium text-gray-900">{item.name}</h3>
-                        {item.selectedSize && (
+                        {item.selectedSize && item.productId && (
                           <p className="text-sm text-gray-500">Size: {item.selectedSize}</p>
                         )}
                         <p className="text-sm text-gray-500">Quantity: {item.quantity}</p>

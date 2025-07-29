@@ -106,7 +106,7 @@ const CartPage: React.FC = () => {
                     />
                     <div className="flex-1 text-rich-brown">
                       <h3 className="text-base font-serif font-semibold italic mb-1 line-clamp-2">{item.product.name}</h3>
-                      {item.selectedSize && (
+                      {item.selectedSize && item.product.category && (
                         <p className="text-sm font-serif font-light text-mocha mb-1">Size: {item.selectedSize}</p>
                       )}
                       <div className="text-base font-serif font-light mb-3">

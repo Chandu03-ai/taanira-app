@@ -64,7 +64,7 @@ const ProductDetailPage: React.FC = () => {
 
   const productQuantity = product ? getProductQuantity(product.id, selectedSize) : 0;
   const inCart = product ? isProductInCart(product.id, selectedSize) : false;
-  const hasSizeOptions = category?.sizeOptions?.length > 0;
+  const hasSizeOptions = category?.sizeOptions && Array.isArray(category.sizeOptions) && category.sizeOptions.length > 0;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();

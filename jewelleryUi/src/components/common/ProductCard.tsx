@@ -48,7 +48,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showQuickView = true
 
   const productQuantity = getProductQuantity(product.id, selectedSize);
   const inCart = isProductInCart(product.id, selectedSize);
-  const hasSizeOptions = category?.sizeOptions?.length > 0;
+  const hasSizeOptions = category?.sizeOptions && category.sizeOptions.length > 0;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -193,7 +193,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showQuickView = true
             <hr className="my-3 border-t border-subtle-beige w-3/4 mx-auto" />
 
             {/* Size Selection */}
-            {hasSizeOptions && (
+            {hasSizeOptions && category?.sizeOptions && (
               <div className="mb-3">
                 <select
                   value={selectedSize}
@@ -264,12 +264,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showQuickView = true
       </article>
 
       {/* Size Selection Modal */}
-      {showSizeSelector && (
+      {showSizeSelector && category?.sizeOptions && category.sizeOptions.length > 0 && (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl p-6 max-w-sm w-full">
             <h3 className="text-lg font-serif font-semibold italic text-rich-brown mb-4">Select Size</h3>
             <div className="grid grid-cols-2 gap-2 mb-4">
-              {category?.sizeOptions?.map((size: string) => (
+              {category.sizeOptions.map((size: string) => (
                 <button
                   key={size}
                   onClick={() => handleSizeSelect(size)}

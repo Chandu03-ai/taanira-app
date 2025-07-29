@@ -624,7 +624,7 @@ const OrderItemList: React.FC<{ items: OrderItem[] }> = ({ items }) => {
 
             <div className="flex flex-col text-sm text-gray-500 space-y-1">
               <p>Qty: {item.quantity}</p>
-              {item.selectedSize && (
+              {item.selectedSize && item.productId && (
                 <p>Size: {item.selectedSize}</p>
               )}
             </div>
