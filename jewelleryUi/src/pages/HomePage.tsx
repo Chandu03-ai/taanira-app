@@ -230,17 +230,6 @@ const HomePage: React.FC = () => {
         </section>
 
 
-        {/* Footer */}
-        <section className="py-6 sm:py-8 md:py-10 px-3 sm:px-4 text-center bg-subtle-beige">
-          <div className="max-w-xl mx-auto">
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-serif italic text-espresso mb-2 sm:mb-3">
-              {SITE_CONFIG.shortName}
-            </h2>
-            <p className="text-xs sm:text-sm md:text-base font-light text-espresso px-4">
-              Get exclusive updates on new collections and special offers
-            </p>
-          </div>
-        </section>
 
         <div className="py-3 sm:py-4 md:py-6 px-3 sm:px-4 border-t border-bronze text-center bg-subtle-beige text-[10px] sm:text-xs text-espresso">
           <Footer />

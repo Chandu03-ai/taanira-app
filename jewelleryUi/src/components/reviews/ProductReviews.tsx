@@ -153,11 +153,10 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
 
         {/* Rating Distribution */}
         {stats.totalReviews > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 mb-6">
+          <div className="space-y-2 mb-6">
             {[5, 4, 3, 2, 1].map((rating) => {
               const count = stats.ratingDistribution[rating as keyof typeof stats.ratingDistribution];
               const percentage = stats.totalReviews > 0 ? (count / stats.totalReviews) * 100 : 0;
-              
               return (
                 <div key={rating} className="flex items-center space-x-2 text-sm">
                   <span className="flex items-center space-x-1 w-12">
@@ -176,6 +175,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
             })}
           </div>
         )}
+
       </div>
 
       {/* Review Form */}

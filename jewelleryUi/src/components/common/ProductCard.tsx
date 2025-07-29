@@ -143,19 +143,19 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showQuickView = true
 
   return (
     <>
-      <article className="group relative bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-200 ease-in-out border border-subtle-beige overflow-hidden transform hover:scale-[1.02] w-full max-w-sm mx-auto">
+      <article className="group relative bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-200 ease-in-out border border-subtle-beige overflow-hidden transform hover:scale-[1.02] w-full max-w-sm mx-auto">
         {/* ...all your existing JSX unchanged, including Add to Cart button... */}
 
         <Link to={`/product/${product.slug || product.id}`}>
           <div
-            className="relative overflow-hidden bg-gray-100 aspect-[3/4] sm:aspect-[4/5]"
+            className="relative overflow-hidden bg-gray-100 aspect-[3/4] sm:aspect-[4/5] rounded-xl"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
             <img
               src={productImages[currentImageIndex]}
               alt={product.name}
-              className="w-full h-full object-cover transition-all duration-200 ease-in-out group-hover:scale-110"
+              className="w-full h-full object-cover transition-all duration-200 ease-in-out"
               loading="lazy"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-rich-brown/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-200 ease-in-out" />

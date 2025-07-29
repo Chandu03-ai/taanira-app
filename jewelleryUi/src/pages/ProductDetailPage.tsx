@@ -217,8 +217,8 @@ const ProductDetailPage: React.FC = () => {
                         key={size}
                         onClick={() => setSelectedSize(size)}
                         className={`py-2 px-3 border rounded-md text-sm transition-colors italic ${selectedSize === size
-                            ? 'border-rich-brown bg-rich-brown text-white'
-                            : 'border-rich-brown/40 text-rich-brown hover:border-rich-brown'}`}
+                          ? 'border-rich-brown bg-rich-brown text-white'
+                          : 'border-rich-brown/40 text-rich-brown hover:border-rich-brown'}`}
                       >
                         {size}
                       </button>
@@ -253,12 +253,12 @@ const ProductDetailPage: React.FC = () => {
               </button>
 
               <div className="pt-6 border-t border-rich-brown/20">
-                <div className="flex space-x-6 border-b border-rich-brown/20 mb-4">
+                <div className="flex space-x-6 border-b border-rich-brown/20 mb-4 ">
                   {['About', 'Details', 'Shipping', 'Reviews'].map((tab) => (
                     <button
                       key={tab}
                       onClick={() => setTab(tab as any)}
-                      className={`pb-2 italic font-semibold uppercase tracking-wide text-sm ${currentTab === tab ? 'border-b-2 border-rich-brown text-rich-brown' : 'text-rich-brown/70 hover:text-rich-brown'}`}
+                      className={`pb-2 italic font-semibold uppercase tracking-wide text-sm focus:outline-none ${currentTab === tab ? 'border-b-2 border-rich-brown text-rich-brown' : 'text-rich-brown/70 hover:text-rich-brown'}`}
                     >
                       {tab}
                     </button>
@@ -269,10 +269,7 @@ const ProductDetailPage: React.FC = () => {
                   {currentTab === 'About' && <p>{product.description}</p>}
                   {currentTab === 'Details' && (
                     <p>
-                      Net Weight: 16oz (1 lb) / 454g<br />
-                      Shelf Life: 12 months from manufacturing date<br />
-                      Storage: Keep in a cool, dry place<br />
-                      Allergen info: Contains wheat
+                     {product.details}
                     </p>
                   )}
                   {currentTab === 'Shipping' && (
@@ -281,19 +278,11 @@ const ProductDetailPage: React.FC = () => {
                     </p>
                   )}
                   {currentTab === 'Reviews' && (
-                    <p>
-                      ★★★★★<br />
-                      "Absolutely stunning piece! Quality and craftsmanship exceeded my expectations."
-                    </p>
+                    <ProductReviews productId={product.id} />
                   )}
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Reviews Section */}
-          <div className="mt-12 pt-8 border-t border-rich-brown/20">
-            <ProductReviews productId={product.id} />
           </div>
         </div>
 

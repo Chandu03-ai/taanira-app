@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star } from 'lucide-react';
+import { Star, StarHalf } from 'lucide-react'; // Import StarHalf
 
 interface StarRatingProps {
   rating: number;
@@ -33,7 +33,7 @@ const StarRating: React.FC<StarRatingProps> = ({
       {Array.from({ length: maxRating }, (_, index) => {
         const starRating = index + 1;
         const isFilled = starRating <= rating;
-        const isHalfFilled = starRating - 0.5 <= rating && starRating > rating;
+        const isHalfFilled = starRating - 0.5 <= rating && starRating > rating; // True for the star that should be half-filled
 
         return (
           <button
@@ -46,15 +46,21 @@ const StarRating: React.FC<StarRatingProps> = ({
             }`}
             title={interactive ? `Rate ${starRating} star${starRating !== 1 ? 's' : ''}` : `${rating} out of ${maxRating} stars`}
           >
-            <Star
-              className={`${sizeClasses[size]} transition-colors duration-150 ${
-                isFilled || isHalfFilled
-                  ? 'text-yellow-400 fill-current'
-                  : interactive
-                  ? 'text-gray-300 hover:text-yellow-300'
-                  : 'text-gray-300'
-              }`}
-            />
+            {isHalfFilled ? (
+              <StarHalf
+                className={`${sizeClasses[size]} text-yellow-400 fill-current transition-colors duration-150`}
+              />
+            ) : (
+              <Star
+                className={`${sizeClasses[size]} transition-colors duration-150 ${
+                  isFilled
+                    ? 'text-yellow-400 fill-current'
+                    : interactive
+                    ? 'text-gray-300 hover:text-yellow-300'
+                    : 'text-gray-300'
+                }`}
+              />
+            )}
           </button>
         );
       })}
