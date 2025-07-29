@@ -33,7 +33,7 @@ const Dialog: React.FC<DialogProps> = ({
     } else {
       document.body.classList.remove('modal-open');
     }
-    
+
     return () => {
       document.body.classList.remove('modal-open');
     };
@@ -46,11 +46,14 @@ const Dialog: React.FC<DialogProps> = ({
   };
 
   return (
-    <div 
-      className="fixed inset-0 z-100 bg-rich-brown/0 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6"
+    <div
+      className="fixed inset-0 z-50 bg-rich-brown/10 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6"
       onClick={handleBackdropClick}
     >
-      <div className={`bg-white rounded-2xl shadow-2xl border border-subtle-beige w-full ${maxWidthClasses[maxWidth]} max-h-[90vh] transform transition-all flex flex-col`}>
+
+
+      <div className={`bg-white rounded-2xl shadow-2xl border border-subtle-beige w-full ${maxWidthClasses[maxWidth]} sm:mx-0 mx-2 max-h-[90vh] transform transition-all flex flex-col overflow-hidden`}>
+
         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-subtle-beige flex-shrink-0">
           <h2 className="text-xl font-serif font-semibold italic text-rich-brown">{title}</h2>
           <button
