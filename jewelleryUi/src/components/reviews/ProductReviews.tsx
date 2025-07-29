@@ -102,7 +102,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
 
   if (loading) {
     return (
-      <div className="bg-white border border-subtle-beige rounded-xl p-6 font-serif">
+      <div className="bg-brown border border-subtle-beige rounded-xl p-6 font-serif">
         <div className="animate-pulse space-y-4">
           <div className="h-6 bg-subtle-beige rounded w-1/3"></div>
           <div className="space-y-3">
@@ -117,7 +117,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
   return (
     <div className="space-y-6 font-serif">
       {/* Reviews Summary */}
-      <div className="bg-white border border-subtle-beige rounded-xl p-4 sm:p-6">
+      <div className="bg-brown border border-black rounded-xl p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
           <div>
             <h3 className="text-xl font-serif font-semibold italic text-rich-brown mb-2">
@@ -164,7 +164,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
                     <span className="text-rich-brown font-serif">{rating}</span>
                     <Star className="h-3 w-3 text-yellow-400 fill-current" />
                   </span>
-                  <div className="flex-1 bg-subtle-beige rounded-full h-2">
+                  <div className="flex-1 bg-white border border-black-10 rounded-full h-2">
                     <div
                       className="bg-yellow-400 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${percentage}%` }}
@@ -218,14 +218,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
       {/* Reviews List */}
       <div className="space-y-4">
         {reviews.length === 0 ? (
-          <div className="bg-white border border-subtle-beige rounded-xl p-8 text-center">
-            <MessageCircle className="h-12 w-12 text-mocha/50 mx-auto mb-4" />
-            <h4 className="text-lg font-serif font-semibold italic text-rich-brown mb-2">
-              No Reviews Yet
-            </h4>
-            <p className="text-mocha font-serif italic">
-              Be the first to share your thoughts about this jewelry piece!
-            </p>
+          <div className="bg-brown border border-brown  rounded-xl p-8 text-center">
           </div>
         ) : (
           <>
@@ -233,7 +226,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
             {showAllReviews ? (
               <div className="max-h-[320px] overflow-y-auto pr-2 space-y-4">
                 {reviews.map((review) => (
-                  <div key={review.id} className="bg-subtle-beige border border-rich-brown rounded-xl p-4 sm:p-6">
+                  <div key={review.id} className="bg-brown border border-rich-brown rounded-xl p-4 sm:p-6">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center space-x-3">
                         <div className="h-8 w-8 bg-soft-gold rounded-full flex items-center justify-center">
@@ -281,7 +274,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
             ) : (
               <>
                 {reviews.slice(0, 2).map((review) => (
-                  <div key={review.id} className="bg-subtle-beige border border-rich-brown rounded-xl p-4 sm:p-6">
+                  <div key={review.id} className="bg-brown border border-rich-brown rounded-xl p-4 sm:p-6">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center space-x-3">
                         <div className="h-8 w-8 bg-soft-gold rounded-full flex items-center justify-center">

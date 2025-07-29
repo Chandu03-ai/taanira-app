@@ -44,7 +44,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ onClose }) => {
     if (newQuantity <= 0) {
       removeItem(item.id);
     } else {
-      updateQuantity(item.id, newQuantity, item.selectedSize);
+      updateQuantity(item.id, delta, item.selectedSize);
     }
   };
 
@@ -187,13 +187,6 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ onClose }) => {
               title="Proceed to checkout"
             >
               PROCEED TO CHECKOUT
-            </button>
-            <button
-              onClick={onClose}
-              className="w-full text-center text-xs text-gray-600 hover:text-black py-2 transition-colors"
-              title="View full cart"
-            >
-              VIEW CART
             </button>
           </div>
         )}

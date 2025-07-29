@@ -60,7 +60,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
   };
 
   return (
-    <div className="bg-white border border-subtle-beige rounded-xl p-4 sm:p-6 font-serif">
+    <div className="bg-brown border border-subtle-beige rounded-xl p-4 sm:p-6 font-serif">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-serif font-semibold italic text-rich-brown">
           {existingReview ? 'Edit Your Review' : 'Write a Review'}
