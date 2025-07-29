@@ -205,29 +205,6 @@ const UserManagement: React.FC = () => {
                             <option value="User">User</option>
                             <option value="Admin">Admin</option>
                           </select>
-                          <button
-                            onClick={() =>
-                              setTrackingConfirmDialog({
-                                isOpen: true,
-                                userId: user.id,
-                                orderId: user?.latestOrderId,
-                              })
-                            }
-                            disabled={trackingLoading === user.id}
-                            className="inline-flex items-center justify-center px-2 py-1 text-xs font-medium rounded bg-[#DEC9A3] text-[#4A3F36] hover:bg-[#c9b283] transition disabled:opacity-50 w-full"
-                          >
-                            {trackingLoading === user.id ? (
-                              <>
-                                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-[#4A3F36] mr-1"></div>
-                                <span>Sending...</span>
-                              </>
-                            ) : (
-                              <>
-                                <Send className="h-3 w-3 mr-1" />
-                                <span>Track</span>
-                              </>
-                            )}
-                          </button>
                         </div>
                     </td>
                   </tr>
