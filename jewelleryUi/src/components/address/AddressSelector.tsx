@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { MapPin, Home, Building, CheckCircle, Trash2, Edit, Loader } from 'lucide-react';
 import { useAddressStore } from '../../store/addressStore';
 import { Address } from '../../types/address';
-import ConfirmationDialog from '../common/ConfirmDialog'; // Assuming you have this component
+import ConfirmationDialog from '../common/ConfirmDialog';
 
 interface AddressSelectorProps {
   showTitle?: boolean;
-  onEditAddress?: (address: Address) => void; // New prop for editing
+  onEditAddress?: (address: Address) => void;
 }
 
 const AddressSelector: React.FC<AddressSelectorProps> = ({ showTitle = true, onEditAddress }) => {
@@ -22,7 +22,7 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({ showTitle = true, onE
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [addressToDelete, setAddressToDelete] = useState<Address | null>(null);
-  const [actionLoading, setActionLoading] = useState<string | null>(null); // To show loading on specific actions
+  const [individualActionLoadingId, setIndividualActionLoadingId] = useState<string | null>(null);
 
   useEffect(() => {
     loadAddresses();
@@ -47,39 +47,35 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({ showTitle = true, onE
   };
 
   const handleConfirmDelete = async () => {
-    if (addressToDelete) {
-      setActionLoading(addressToDelete.id); // Set loading for this specific address
-      try {
-        await deleteAddress(addressToDelete.id);
-        alert('Address deleted successfully!');
-      } catch (error) {
-        console.error('Error deleting address:', error);
-        alert(`Failed to delete address: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      } finally {
-        setIsDeleteDialogOpen(false);
-        setAddressToDelete(null);
-        setActionLoading(null);
-      }
+    if (!addressToDelete) return;
+
+    setIndividualActionLoadingId(addressToDelete.id);
+    try {
+      await deleteAddress(addressToDelete.id);
+    } catch (error) {
+      console.error('Error deleting address:', error);
+    } finally {
+      setIsDeleteDialogOpen(false);
+      setAddressToDelete(null);
+      setIndividualActionLoadingId(null);
     }
   };
 
   const handleSetDefault = async (addressId: string) => {
-    setActionLoading(addressId);
+    setIndividualActionLoadingId(addressId);
     try {
       await setDefaultAddress(addressId);
-      alert('Default address updated!');
     } catch (error) {
       console.error('Error setting default address:', error);
-      alert(`Failed to set default address: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
-      setActionLoading(null);
+      setIndividualActionLoadingId(null);
     }
   };
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-10 text-[#4A3F36]">
-        <Loader className="w-8 h-8 animate-spin mr-3" />
+      <div className="flex flex-col items-center justify-center py-10 text-[#4A3F36]">
+        <Loader className="w-8 h-8 animate-spin mb-3" />
         <span className="text-lg font-serif italic">Loading addresses...</span>
       </div>
     );
@@ -141,16 +137,17 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({ showTitle = true, onE
               {!address.isDefault && (
                 <button
                   onClick={(e) => {
-                    e.stopPropagation(); // Prevent selecting address when clicking this button
+                    e.stopPropagation();
                     handleSetDefault(address.id);
                   }}
-                  disabled={actionLoading === address.id}
+                  disabled={individualActionLoadingId === address.id}
                   className="
                     flex items-center text-xs text-[#AA732F] hover:text-[#8f5c20]
                     transition-colors duration-200 font-serif italic
+                    disabled:opacity-50 disabled:cursor-not-allowed
                   "
                 >
-                  {actionLoading === address.id ? (
+                  {individualActionLoadingId === address.id ? (
                     <Loader className="w-3 h-3 animate-spin mr-1" />
                   ) : (
                     <CheckCircle className="w-3 h-3 mr-1" />
@@ -158,31 +155,34 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({ showTitle = true, onE
                   Set as Default
                 </button>
               )}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEditAddress?.(address); // Call the new edit handler
-                }}
-                className="
-                  flex items-center text-xs text-[#4A3F36] hover:text-gray-700
-                  transition-colors duration-200 font-serif italic
-                "
-              >
-                <Edit className="w-3 h-3 mr-1" />
-                Edit
-              </button>
+              {onEditAddress && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEditAddress(address);
+                  }}
+                  className="
+                    flex items-center text-xs text-[#4A3F36] hover:text-gray-700
+                    transition-colors duration-200 font-serif italic
+                  "
+                >
+                  <Edit className="w-3 h-3 mr-1" />
+                  Edit
+                </button>
+              )}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   handleDeleteClick(address);
                 }}
-                disabled={actionLoading === address.id}
+                disabled={individualActionLoadingId === address.id}
                 className="
                   flex items-center text-xs text-red-500 hover:text-red-700
                   transition-colors duration-200 font-serif italic
+                  disabled:opacity-50 disabled:cursor-not-allowed
                 "
               >
-                {actionLoading === address.id ? (
+                {individualActionLoadingId === address.id ? (
                   <Loader className="w-3 h-3 animate-spin mr-1" />
                 ) : (
                   <Trash2 className="w-3 h-3 mr-1" />
@@ -196,14 +196,17 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({ showTitle = true, onE
 
       <ConfirmationDialog
         isOpen={isDeleteDialogOpen}
-        onClose={() => setIsDeleteDialogOpen(false)}
+        onClose={() => {
+          setIsDeleteDialogOpen(false);
+          setIndividualActionLoadingId(null);
+        }}
         onConfirm={handleConfirmDelete}
         title="Confirm Deletion"
         message={`Are you sure you want to delete the address for ${addressToDelete?.fullName}? This action cannot be undone.`}
         confirmText="Delete"
-        cancelText="Cancel"   
-        type="danger"        
-        loading={actionLoading === addressToDelete?.id}
+        cancelText="Cancel"
+        type="danger"
+        loading={individualActionLoadingId === addressToDelete?.id}
       />
     </div>
   );

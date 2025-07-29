@@ -1,3 +1,5 @@
+// src/components/payment/PaymentHandler.tsx
+
 import React from 'react';
 import { useCartStore } from '../../store/cartStore';
 import { useAuthStore } from '../../store/authStore';
@@ -15,9 +17,10 @@ declare global {
 interface PaymentHandlerProps {
   onSuccess: (orderId: string) => void;
   onError: (error: string) => void;
+  isTermsAccepted: boolean; // Add this line
 }
 
-const PaymentHandler: React.FC<PaymentHandlerProps> = ({ onSuccess, onError }) => {
+const PaymentHandler: React.FC<PaymentHandlerProps> = ({ onSuccess, onError, isTermsAccepted }) => {
   const { getTotalPrice, clearCart, items } = useCartStore();
   const { user } = useAuthStore();
   const { selectedAddress } = useAddressStore();
@@ -53,6 +56,11 @@ const PaymentHandler: React.FC<PaymentHandlerProps> = ({ onSuccess, onError }) =
 
       if (!selectedAddress) {
         onError('Please select a delivery address');
+        return;
+      }
+
+      if (!isTermsAccepted) {
+        onError('Please agree to the Terms and Conditions');
         return;
       }
 
@@ -155,8 +163,9 @@ const PaymentHandler: React.FC<PaymentHandlerProps> = ({ onSuccess, onError }) =
   return (
     <button
       onClick={handlePayment}
-      className="btn-primary w-full"
+      className={`btn-primary w-full ${!isTermsAccepted ? 'opacity-50 cursor-not-allowed' : ''}`}
       title="Proceed to secure payment"
+      disabled={!isTermsAccepted}
     >
       PROCEED TO CHECKOUT
     </button>

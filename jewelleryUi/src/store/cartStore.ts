@@ -1,38 +1,28 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Product } from '../types'; // Ensure your Product type is correctly imported and defined
-// Assuming useAuthStore and cartService are correctly imported and functional
+import { CartItem, Product } from '../types';
 import { useAuthStore } from './authStore';
 import { cartService } from '../services/cartService';
 
-// Define the structure of a single item within the cart
-export interface CartItem {
-  id: string; // Unique ID for the cart item, typically from the backend
-  productId: string;
-  quantity: number;
-  selectedSize?: string; // Optional: for products that don't have size variations
-  product: Product; // Storing the full product data for easy access
-}
 
-// Define the shape of your cart store's state and actions
 interface CartState {
   items: CartItem[];
-  totalItems: number; // Total count of all items (sum of quantities)
-  totalPrice: number; // Total price of all items in the cart
+  totalItems: number; 
+  totalPrice: number;
 
   // Actions
   addItem: (product: Product, quantity: number, selectedSize?: string) => Promise<void>;
-  removeItem: (itemId: string) => Promise<void>; // Uses CartItem.id
-  updateQuantity: (itemId: string, delta: number) => Promise<void>; // Uses CartItem.id, sends delta to backend
-  updateItemSize: (itemId: string, selectedSize: string) => Promise<void>; // Uses CartItem.id
+  removeItem: (itemId: string) => Promise<void>; 
+  updateQuantity: (itemId: string, delta: number) => Promise<void>; 
+  updateItemSize: (itemId: string, selectedSize: string) => Promise<void>;
   clearCart: () => void;
-  getTotalPrice: () => number; // Getter, not a state field
-  getItemCount: () => number; // Getter, not a state field
+  getTotalPrice: () => number; 
+  getItemCount: () => number; 
   getProductQuantity: (productId: string, selectedSize?: string) => number;
   isProductInCart: (productId: string, selectedSize?: string) => boolean;
-  syncWithServer: () => Promise<void>; // To fetch the latest cart from the backend
+  syncWithServer: () => Promise<void>; 
   resetCartStore: () => void;
-  getUniqueItemCount: () => number; // Getter, number of unique items
+  getUniqueItemCount: () => number; 
 }
 
 export const useCartStore = create<CartState>()(

@@ -16,7 +16,6 @@ const CartPage: React.FC = () => {
   const navigate = useNavigate();
   const [showAddressSelector, setShowAddressSelector] = React.useState(false);
 
-  // Redirect unauthenticated users to login
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-white flex flex-col items-center justify-center px-4 text-center">
@@ -75,7 +74,6 @@ const CartPage: React.FC = () => {
       <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-6 sm:py-8 max-w-7xl">
         {!showAddressSelector ? (
           <>
-            {/* Header */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4">
               <h1 className="text-lg sm:text-xl lg:text-2xl font-serif font-semibold italic text-rich-brown">
                 MY BAG ({items.length})
@@ -89,9 +87,7 @@ const CartPage: React.FC = () => {
               </button>
             </div>
 
-            {/* Main Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
-              {/* Cart Items */}
               <div className="lg:col-span-2 order-2 lg:order-1 space-y-4">
                 {items.map((item) => (
                   <div key={item.id} className="flex items-start space-x-4 pb-4 border-b border-soft-gold/30 last:border-b-0">
@@ -114,7 +110,6 @@ const CartPage: React.FC = () => {
                       </div>
 
                       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                        {/* Quantity */}
                         <div className="flex items-center space-x-2">
                           <button
                             onClick={() => handleQuantityChange(item.id, -1)}
@@ -146,7 +141,6 @@ const CartPage: React.FC = () => {
                 ))}
               </div>
 
-              {/* Order Summary */}
               <div className="lg:col-span-1 order-1 lg:order-2">
                 <div className="card-elegant sticky top-24 lg:top-28">
                   <h2 className="text-lg font-serif font-semibold italic text-rich-brown mb-4">Order Summary</h2>
@@ -169,34 +163,28 @@ const CartPage: React.FC = () => {
                       />
                       <label htmlFor="terms">I agree with the Terms and Conditions.</label>
                     </div>
-
-
                   </div>
 
                   {selectedAddress ? (
                     <>
-                      <div className="mb-4 p-4 bg-subtle-beige border border-soft-gold/30 rounded-xl text-sm font-serif">
-                        <p className="font-semibold italic text-rich-brown">Delivering to:</p>
-                        <p className="text-rich-brown font-light">{selectedAddress.fullName}</p>
-                        <p className="text-rich-brown font-light">{selectedAddress.city}, {selectedAddress.state}</p>
-                        <button
-                          onClick={() => setShowAddressSelector(true)}
-                          className="text-mocha underline text-xs mt-1 hover:text-rich-brown transition-all duration-200 ease-in-out font-serif italic"
-                          title="Change delivery address"
-                        >
-                          Change Address
-                        </button>
-                      </div>
+                      {/* ... display selected address ... */}
+                      <button
+                        onClick={() => setShowAddressSelector(true)} // Correctly sets state to show AddressSelector
+                        className="text-mocha underline text-xs mt-1 hover:text-rich-brown transition-all duration-200 ease-in-out font-serif italic"
+                        title="Change delivery address"
+                      >
+                        Change Address
+                      </button>
                       <PaymentHandler
                         onSuccess={(orderId) => navigate(`/order-confirmation/${orderId}`)}
                         onError={(error) => alert(`Payment failed: ${error}`)}
+                        isTermsAccepted={agreedToTerms}
                       />
                     </>
                   ) : (
                     <button
-                      onClick={() => navigate('/addresses')}
-                      className={`btn-primary w-full mt-4 ${!agreedToTerms ? 'opacity-50 cursor-not-allowed' : ''
-                        }`}
+                      onClick={() => navigate('/addresses')} // Correctly sets state to show AddressSelector
+                      className={`btn-primary w-full mt-4 ${!agreedToTerms ? 'opacity-50 cursor-not-allowed' : ''}`}
                       disabled={!agreedToTerms}
                       title="Select delivery address"
                     >
@@ -204,7 +192,6 @@ const CartPage: React.FC = () => {
                     </button>
                   )}
 
-                  {/* Features */}
                   <div className="mt-6 space-y-3 text-xs font-serif text-rich-brown">
                     <div className="flex items-center space-x-2">
                       <span>🔄</span>
@@ -223,7 +210,6 @@ const CartPage: React.FC = () => {
             </div>
           </>
         ) : (
-          // Address Selector View (just style buttons below)
           <div>
             <div className="flex items-center mb-6">
               <button
@@ -255,7 +241,6 @@ const CartPage: React.FC = () => {
       </div>
     </div>
   );
-
 };
 
 export default CartPage;

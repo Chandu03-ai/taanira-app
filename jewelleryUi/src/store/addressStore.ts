@@ -26,14 +26,16 @@ export const useAddressStore = create<AddressState>()(
 
       addAddress: async (addressData: AddressFormData) => {
         const { user } = useAuthStore.getState();
-        if (!user) return;
+        if (!user) {
+          console.warn("No user logged in, cannot add address.");
+          return;
+        }
 
         set({ loading: true });
         try {
           const response = await addressService.createAddress(addressData);
-          
+
           if (response.code === 2135 && response.result) {
-            // Reload all addresses to get updated default status
             await get().loadAddresses();
           } else {
             throw new Error(response.message || 'Failed to create address');
@@ -50,9 +52,8 @@ export const useAddressStore = create<AddressState>()(
         set({ loading: true });
         try {
           const response = await addressService.updateAddress(id, addressData);
-          
+
           if (response.code === 2137 && response.result) {
-            // Reload all addresses to get updated data
             await get().loadAddresses();
           } else {
             throw new Error(response.message || 'Failed to update address');
@@ -69,16 +70,14 @@ export const useAddressStore = create<AddressState>()(
         set({ loading: true });
         try {
           const response = await addressService.deleteAddress(id);
-          
+
           if (response.code === 2139) {
-            const selectedAddress = get().selectedAddress;
-            
-            // Clear selected address if it was deleted
-            if (selectedAddress?.id === id) {
+            const currentSelectedAddress = get().selectedAddress;
+
+            if (currentSelectedAddress?.id === id) {
               set({ selectedAddress: null });
             }
-            
-            // Reload addresses
+
             await get().loadAddresses();
           } else {
             throw new Error(response.message || 'Failed to delete address');
@@ -99,9 +98,8 @@ export const useAddressStore = create<AddressState>()(
         set({ loading: true });
         try {
           const response = await addressService.setDefaultAddress(id);
-          
+
           if (response.code === 2141) {
-            // Reload addresses to get updated default status
             await get().loadAddresses();
           } else {
             throw new Error(response.message || 'Failed to set default address');
@@ -116,30 +114,55 @@ export const useAddressStore = create<AddressState>()(
 
       loadAddresses: async () => {
         const { user } = useAuthStore.getState();
-        if (!user) return;
+        if (!user) {
+          set({ addresses: [], selectedAddress: null, loading: false });
+          return;
+        }
 
         set({ loading: true });
         try {
           const response = await addressService.getUserAddresses();
-          console.log(response)
-          
+          console.log("Loaded Addresses Response:", response);
+
           if (response.code === 2143 && response.result) {
-            set({ 
-              addresses: response.result,
-              loading: false 
+            const loadedAddresses: Address[] = response.result;
+
+            let defaultAddressFound = loadedAddresses.some((addr: Address) => addr.isDefault);
+            let newSelectedAddress: Address | null = null;
+
+            if (!defaultAddressFound && loadedAddresses.length > 0) {
+              console.warn("No default address found from backend. Setting the first address as default locally.");
+              loadedAddresses[0].isDefault = true;
+            }
+
+            const currentSelectedAddressId = get().selectedAddress?.id;
+            if (currentSelectedAddressId) {
+              newSelectedAddress = loadedAddresses.find(addr => addr.id === currentSelectedAddressId) || null;
+            }
+
+            if (!newSelectedAddress) {
+              newSelectedAddress = loadedAddresses.find(addr => addr.isDefault) || loadedAddresses[0] || null;
+            }
+
+            set({
+              addresses: loadedAddresses,
+              selectedAddress: newSelectedAddress,
+              loading: false
             });
           } else {
-            console.error('Failed to load addresses:', response.message);
-            set({ 
+            console.error('Failed to load addresses:', response.message || 'Unknown error');
+            set({
               addresses: [],
-              loading: false 
+              selectedAddress: null,
+              loading: false
             });
           }
         } catch (error) {
           console.error('Error loading addresses:', error);
-          set({ 
+          set({
             addresses: [],
-            loading: false 
+            selectedAddress: null,
+            loading: false
           });
         }
       },

@@ -7,9 +7,9 @@ import Dialog from '../common/Dialog';
 interface AddressFormProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (addressData: AddressFormData) => void;
+  onSave: (addressData: AddressFormData) => Promise<void>; // onSave should be a Promise to handle async operations
   address?: Address | null;
-  loading?: boolean;
+  loading?: boolean; // This 'loading' prop is for the parent component's save operation
 }
 
 const AddressForm: React.FC<AddressFormProps> = ({
@@ -17,7 +17,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
   onClose,
   onSave,
   address,
-  loading = false
+  loading = false // Default to false
 }) => {
   const [formData, setFormData] = useState<AddressFormData>({
     fullName: '',
@@ -36,44 +36,42 @@ const AddressForm: React.FC<AddressFormProps> = ({
   const [errors, setErrors] = useState<Partial<AddressFormData>>({});
   const [submitError, setSubmitError] = useState<string>('');
 
+  // Effect to initialize form data when dialog opens or address prop changes
   useEffect(() => {
-    if (address) {
-      setFormData({
-        fullName: address.fullName,
-        mobileNumber: address.mobileNumber,
-        pincode: address.pincode,
-        houseNumber: address.houseNumber,
-        streetArea: address.streetArea,
-        landmark: address.landmark || '',
-        city: address.city,
-        state: address.state,
-        addressType: address.addressType,
-        isDefault: address.isDefault,
-      });
-    } else {
-      setFormData({
-        fullName: '',
-        mobileNumber: '',
-        pincode: '',
-        houseNumber: '',
-        streetArea: '',
-        landmark: '',
-        city: '',
-        state: '',
-        isDefault: false,
-        addressType: 'home', // Ensure default is set for new address
-      });
+    if (isOpen) { // Only reset if the dialog is opening/already open
+      if (address) {
+        setFormData({
+          fullName: address.fullName,
+          mobileNumber: address.mobileNumber,
+          pincode: address.pincode,
+          houseNumber: address.houseNumber,
+          streetArea: address.streetArea,
+          landmark: address.landmark || '',
+          city: address.city,
+          state: address.state,
+          addressType: address.addressType,
+          isDefault: address.isDefault,
+        });
+      } else {
+        setFormData({
+          fullName: '',
+          mobileNumber: '',
+          pincode: '',
+          houseNumber: '',
+          streetArea: '',
+          landmark: '',
+          city: '',
+          state: '',
+          isDefault: false,
+          addressType: 'home',
+        });
+      }
+      setErrors({}); // Clear errors on open/reset
+      setSubmitError(''); // Clear submit error on open/reset
     }
-    setErrors({});
   }, [address, isOpen]);
 
-  // Clear submit error when form data changes
-  useEffect(() => {
-    if (submitError) {
-      setSubmitError('');
-    }
-  }, [formData]);
-
+  // Clear individual field error when user starts typing
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     const checked = type === 'checkbox' ? (e.target as HTMLInputElement).checked : undefined;
@@ -83,7 +81,6 @@ const AddressForm: React.FC<AddressFormProps> = ({
       [name]: type === 'checkbox' ? checked : value
     }));
 
-    // Clear error when user starts typing
     if (errors[name as keyof AddressFormData]) {
       setErrors(prev => ({ ...prev, [name]: undefined }));
     }
@@ -92,6 +89,10 @@ const AddressForm: React.FC<AddressFormProps> = ({
   const handlePincodeChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const pincode = e.target.value;
     setFormData(prev => ({ ...prev, pincode }));
+
+    // Clear pincode error immediately when typing starts
+    setErrors(prev => ({ ...prev, pincode: undefined }));
+    setFormData(prev => ({ ...prev, city: '', state: '' })); // Clear city/state while fetching
 
     if (pincodeService.validatePincode(pincode)) {
       setPincodeLoading(true);
@@ -103,7 +104,6 @@ const AddressForm: React.FC<AddressFormProps> = ({
             city: pincodeData.city,
             state: pincodeData.state
           }));
-          setErrors(prev => ({ ...prev, pincode: undefined, city: undefined, state: undefined })); // Clear errors on success
         } else {
           setErrors(prev => ({ ...prev, pincode: 'Pincode not found or invalid' }));
         }
@@ -113,10 +113,10 @@ const AddressForm: React.FC<AddressFormProps> = ({
       } finally {
         setPincodeLoading(false);
       }
-    } else {
+    } else if (pincode.length === 6) { // Only show error if 6 digits and invalid
       setErrors(prev => ({ ...prev, pincode: 'Please enter a valid 6-digit pincode' }));
-      setFormData(prev => ({ ...prev, city: '', state: '' }));
     }
+    // Don't show error if less than 6 digits, as user is still typing
   };
 
   const validateForm = (): boolean => {
@@ -154,20 +154,21 @@ const AddressForm: React.FC<AddressFormProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitError('');
 
     if (validateForm()) {
       try {
-        onSave(formData);   // Trigger save (can be async if needed)
-        // onClose();           // We will close it *after* the onSave promise resolves in parent if it's async
+        // onSave is now expected to be an async function returning a Promise
+        await onSave(formData);
+        onClose(); // Close the dialog only after successful save
       } catch (error) {
-        setSubmitError(error instanceof Error ? error.message : 'Failed to save address');
+        setSubmitError(error instanceof Error ? error.message : 'Failed to save address. Please try again.');
+        console.error('Save Address Error:', error); // Log for debugging
       }
     }
   };
-
 
   const addressTypeOptions = [
     { value: 'home', label: 'Home', icon: Home },
@@ -175,13 +176,12 @@ const AddressForm: React.FC<AddressFormProps> = ({
     { value: 'other', label: 'Other', icon: MapPin },
   ];
 
-  // Common input classes for consistency and responsiveness
   const inputClasses = `
     w-full px-3 py-2 sm:px-4 sm:py-2.5 border rounded-lg sm:rounded-xl
     focus:ring-2 focus:ring-[#DEC9A3] focus:border-[#AA732F]
     font-serif italic text-rich-brown placeholder:text-gray-400
     transition-all duration-200 ease-in-out
-    min-w-0 /* Added to ensure inputs can shrink */
+    min-w-0
   `;
 
   const errorClasses = `
@@ -201,13 +201,12 @@ const AddressForm: React.FC<AddressFormProps> = ({
           ? 'Edit Address'
           : '💎 Add Your Delivery Address'
       }
-      maxWidth="lg" // Dialog max width
+      maxWidth="lg"
     >
       <div className="mb-4 sm:mb-6 text-sm text-rich-brown font-serif font-light italic leading-relaxed">
         We deliver your precious jewelry with care. Please provide your delivery address to ensure timely and secure shipping.
       </div>
 
-      {/* Submit Error */}
       {submitError && (
         <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg sm:rounded-xl text-red-700 text-sm font-serif italic" role="alert">
           {submitError}
@@ -215,7 +214,6 @@ const AddressForm: React.FC<AddressFormProps> = ({
       )}
 
       <form onSubmit={handleSubmit} className="grid gap-4 sm:gap-6">
-        {/* Full Name & Mobile */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label htmlFor="fullName" className={labelClasses}>Full Name *</label>
@@ -251,7 +249,6 @@ const AddressForm: React.FC<AddressFormProps> = ({
           </div>
         </div>
 
-        {/* Pincode, City, State */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label htmlFor="pincode" className={labelClasses}>Pincode *</label>
@@ -308,42 +305,38 @@ const AddressForm: React.FC<AddressFormProps> = ({
           </div>
         </div>
 
-        {/* House No + Street */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="houseNumber" className={labelClasses}>House No. / Building Name *</label>
-            <input
-              type="text"
-              id="houseNumber"
-              name="houseNumber"
-              value={formData.houseNumber}
-              onChange={handleInputChange}
-              placeholder="e.g., Flat 502, Pearl Residency"
-              className={`${inputClasses} ${errors.houseNumber ? errorClasses : 'border-[#d6cdbf]'}`}
-              aria-invalid={errors.houseNumber ? "true" : "false"}
-              aria-describedby={errors.houseNumber ? "houseNumber-error" : undefined}
-            />
-            {errors.houseNumber && <p id="houseNumber-error" className="text-red-500 text-xs mt-1 font-serif italic">{errors.houseNumber}</p>}
-          </div>
-
-          <div>
-            <label htmlFor="streetArea" className={labelClasses}>Street / Area / Locality *</label>
-            <input
-              type="text"
-              id="streetArea"
-              name="streetArea"
-              value={formData.streetArea}
-              onChange={handleInputChange}
-              placeholder="e.g., Lajpat Nagar, Near City Mall"
-              className={`${inputClasses} ${errors.streetArea ? errorClasses : 'border-[#d6cdbf]'}`}
-              aria-invalid={errors.streetArea ? "true" : "false"}
-              aria-describedby={errors.streetArea ? "streetArea-error" : undefined}
-            />
-            {errors.streetArea && <p id="streetArea-error" className="text-red-500 text-xs mt-1 font-serif italic">{errors.streetArea}</p>}
-          </div>
+        <div>
+          <label htmlFor="houseNumber" className={labelClasses}>House No. / Building Name *</label>
+          <input
+            type="text"
+            id="houseNumber"
+            name="houseNumber"
+            value={formData.houseNumber}
+            onChange={handleInputChange}
+            placeholder="e.g., Flat 502, Pearl Residency"
+            className={`${inputClasses} ${errors.houseNumber ? errorClasses : 'border-[#d6cdbf]'}`}
+            aria-invalid={errors.houseNumber ? "true" : "false"}
+            aria-describedby={errors.houseNumber ? "houseNumber-error" : undefined}
+          />
+          {errors.houseNumber && <p id="houseNumber-error" className="text-red-500 text-xs mt-1 font-serif italic">{errors.houseNumber}</p>}
         </div>
 
-        {/* Landmark */}
+        <div>
+          <label htmlFor="streetArea" className={labelClasses}>Street / Area / Locality *</label>
+          <input
+            type="text"
+            id="streetArea"
+            name="streetArea"
+            value={formData.streetArea}
+            onChange={handleInputChange}
+            placeholder="e.g., Lajpat Nagar, Near City Mall"
+            className={`${inputClasses} ${errors.streetArea ? errorClasses : 'border-[#d6cdbf]'}`}
+            aria-invalid={errors.streetArea ? "true" : "false"}
+            aria-describedby={errors.streetArea ? "streetArea-error" : undefined}
+          />
+          {errors.streetArea && <p id="streetArea-error" className="text-red-500 text-xs mt-1 font-serif italic">{errors.streetArea}</p>}
+        </div>
+
         <div>
           <label htmlFor="landmark" className={labelClasses}>Landmark (Optional)</label>
           <input
@@ -357,7 +350,6 @@ const AddressForm: React.FC<AddressFormProps> = ({
           />
         </div>
 
-        {/* Address Type */}
         <div>
           <label className={labelClasses}>Address Type</label>
           <div className="flex flex-wrap gap-2 sm:gap-3">
@@ -390,7 +382,6 @@ const AddressForm: React.FC<AddressFormProps> = ({
           </div>
         </div>
 
-        {/* Set as Default Checkbox */}
         <div className="flex items-center mt-2">
           <input
             type="checkbox"
@@ -405,12 +396,11 @@ const AddressForm: React.FC<AddressFormProps> = ({
           </label>
         </div>
 
-        {/* Buttons */}
         <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4 sm:pt-6 border-t border-[#e9e2d1]">
           <button
             type="button"
             onClick={onClose}
-            disabled={loading}
+            disabled={loading || pincodeLoading}
             className="
               w-full sm:w-auto px-4 py-2 sm:px-5 sm:py-2.5 text-sm rounded-lg
               bg-[#f0ece2] text-[#4A3F36]
@@ -422,14 +412,14 @@ const AddressForm: React.FC<AddressFormProps> = ({
           </button>
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || pincodeLoading}
             className="
               w-full sm:w-auto px-4 py-2 sm:px-5 sm:py-2.5 bg-[#AA732F] text-white text-sm rounded-lg
               hover:bg-[#8f5c20] transition-colors duration-200
               flex items-center justify-center space-x-2 font-serif italic
             "
           >
-            {loading ? (
+            {loading || pincodeLoading ? (
               <>
                 <Loader className="h-4 w-4 animate-spin" />
                 <span>Saving...</span>
@@ -442,7 +432,6 @@ const AddressForm: React.FC<AddressFormProps> = ({
       </form>
     </Dialog>
   );
-
 };
 
 export default AddressForm;

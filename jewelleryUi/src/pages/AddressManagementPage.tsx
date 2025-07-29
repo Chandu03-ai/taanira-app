@@ -7,26 +7,23 @@ import SEOHead from '../components/seo/SEOHead';
 import { SITE_CONFIG } from '../constants/siteConfig';
 import Header from '../components/common/Header';
 import { AddressFormData, Address } from '../types/address';
-import { useAddressStore } from '../store/addressStore'; // Import the address store
+import { useAddressStore } from '../store/addressStore';
 
 const AddressManagementPage: React.FC = () => {
   const navigate = useNavigate();
   const [isAddressFormOpen, setIsAddressFormOpen] = useState(false);
-  const [editingAddress, setEditingAddress] = useState<Address | null>(null); // State to hold address being edited
+  const [editingAddress, setEditingAddress] = useState<Address | null>(null);
 
-  // Get store actions and state
-  const { addAddress, updateAddress, loadAddresses, loading: storeLoading } = useAddressStore();
+  const { addAddress, updateAddress, loadAddresses } = useAddressStore();
 
-  // Use a local loading state for form submission to avoid conflicts with global store loading
   const [formLoading, setFormLoading] = useState(false);
 
   useEffect(() => {
-    // Load addresses when the component mounts
     loadAddresses();
   }, [loadAddresses]);
 
   const handleAddAddressClick = () => {
-    setEditingAddress(null); // Ensure we're adding a new address
+    setEditingAddress(null);
     setIsAddressFormOpen(true);
   };
 
@@ -37,25 +34,21 @@ const AddressManagementPage: React.FC = () => {
 
   const handleCloseAddressForm = () => {
     setIsAddressFormOpen(false);
-    setEditingAddress(null); // Clear editing address when form closes
+    setEditingAddress(null);
   };
 
   const handleSaveAddress = async (addressData: AddressFormData) => {
     setFormLoading(true);
     try {
       if (editingAddress) {
-        // Update existing address
         await updateAddress(editingAddress.id, addressData);
-        alert('Address updated successfully!');
       } else {
-        // Add new address
         await addAddress(addressData);
-        alert('Address added successfully!');
       }
-      handleCloseAddressForm(); // Close modal after successful save
+      handleCloseAddressForm();
     } catch (error) {
       console.error('Failed to save address:', error);
-      alert(`Failed to save address: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw error;
     } finally {
       setFormLoading(false);
     }
@@ -72,15 +65,19 @@ const AddressManagementPage: React.FC = () => {
 
       <main className="min-h-screen pt-24 pb-10 bg-gradient-to-b from-white to-gray-50 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
-          {/* Top Row */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
-
+            <button
+              onClick={() => navigate(-1)}
+              className="flex items-center text-[#4A3F36] hover:text-[#AA732F] transition-colors duration-200 text-sm sm:text-base font-serif italic"
+            >
+              <ArrowLeft className="w-5 h-5 mr-2" />
+              Back
+            </button>
 
             <h1 className="text-xl sm:text-2xl font-semibold text-[#4A3F36] text-center sm:text-left">
               Manage Addresses
             </h1>
 
-            {/* Add New Address Button */}
             <button
               onClick={handleAddAddressClick}
               className="
@@ -94,20 +91,18 @@ const AddressManagementPage: React.FC = () => {
             </button>
           </div>
 
-          {/* Address Selector */}
           <div className="bg-white/90 backdrop-blur-md border border-gray-100 rounded-2xl shadow-md p-5 sm:p-8">
             <AddressSelector showTitle={false} onEditAddress={handleEditAddressClick} />
           </div>
         </div>
       </main>
 
-      {/* Address Form Modal */}
       <AddressForm
         isOpen={isAddressFormOpen}
         onClose={handleCloseAddressForm}
         onSave={handleSaveAddress}
-        loading={formLoading} // Use local loading state for the form
-        address={editingAddress} // Pass the address for editing, or null for new
+        loading={formLoading}
+        address={editingAddress}
       />
     </>
   );
