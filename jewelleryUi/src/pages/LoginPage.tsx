@@ -56,7 +56,7 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-subtle-beige font-serif">
+    <div className="min-h-screen flex flex-col bg-linen font-serif">
       {/* Main Content */}
       <div className="flex-grow flex items-center sm:mt-24 lg:mt-5 justify-center px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-xs sm:max-w-sm lg:max-w-md">
