@@ -7,6 +7,11 @@ export const API_ENDPOINTS = {
   VERIFY_TOKEN: '/verifyToken',
   SEND_EMAIL: '/auth/sendEmail',
   LOGOUT: '/logout',
+  
+  // Password endpoints
+  RESET_PASSWORD: '/auth/resetPassword',
+  UPDATE_PASSWORD: '/auth/updatePassword',
+  CHANGE_PASSWORD: '/change-password',
 
   // Product endpoints
   PRODUCTS: '/auth/products',

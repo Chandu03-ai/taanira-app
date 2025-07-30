@@ -126,7 +126,7 @@ const LoginPage: React.FC = () => {
             </div>
 
             <div className="text-right text-xs sm:text-sm uppercase tracking-widest text-rich-brown font-serif font-semibold italic mt-2">
-              <Link to="/forgot-password">Forgot your password?</Link>
+              <Link to="/forgot-password" className="hover:text-mocha transition-colors">Forgot your password?</Link>
             </div>
 
             <div className="pt-4 sm:pt-6">

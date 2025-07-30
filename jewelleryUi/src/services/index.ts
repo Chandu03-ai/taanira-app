@@ -9,6 +9,7 @@ export { paymentService } from './paymentService';
 export { adminService } from './adminService';
 export { addressService } from './addressService';
 export { reviewService } from './reviewService';
+export { passwordService } from './passwordService';
 
 // Export base service for extending
 export { default as BaseService } from './baseService';

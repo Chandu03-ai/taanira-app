@@ -21,6 +21,8 @@ import NotificationToast from './components/common/NotificationToast';
 import PrivacyPage from './pages/PrivacyPage';
 import TermsPage from './pages/TermsPage';
 import SitemapPage from './pages/SitemapPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import VerifyResetPage from './pages/VerifyResetPage';
 import Footer from './components/common/Footer';
 
 function AppContent() {
@@ -32,15 +34,12 @@ function AppContent() {
   }, [initialize]);
 
   const hideFooterRoutes = ['/login', '/register', '/admin'];
-  const hideHeaderRoutes = ['/']; 
-
   const shouldShowFooter = !hideFooterRoutes.some(path => location.pathname.startsWith(path));
-  const shouldShowHeader = !hideHeaderRoutes.includes(location.pathname); 
 
   return (
     <RouteGuard>
       <div className="min-h-screen bg-gray-50 flex flex-col">
-        {shouldShowHeader && <Header />}
+        <Header />
         <main className="flex-1">
           <Routes>
             <Route path="/" element={<HomePage />} />
@@ -53,6 +52,8 @@ function AppContent() {
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/sitemap" element={<SitemapPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/verify-reset" element={<VerifyResetPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/order-confirmation/:orderId" element={<OrderConfirmationPage />} />
 
