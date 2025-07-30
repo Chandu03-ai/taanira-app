@@ -72,7 +72,7 @@ const CartPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-theme-background pt-16 sm:pt-20 font-serif">
-      <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-6 sm:py-8 max-w-7xl">
+      <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-6 sm:py-8 max-w-6xl">
         {!showAddressSelector ? (
           <>
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4">
@@ -88,8 +88,8 @@ const CartPage: React.FC = () => {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
-              <div className="lg:col-span-2 order-2 lg:order-1 space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
+              <div className="order-2 lg:order-1 space-y-4">
                 {items.map((item) => (
                   <div key={item.id} className="flex items-start space-x-4 pb-4 border-b border-theme-secondary/30 last:border-b-0">
                     <img
@@ -142,7 +142,8 @@ const CartPage: React.FC = () => {
                 ))}
               </div>
 
-              <div className="lg:col-span-1 order-1 lg:order-2">
+              <div className="order-1 lg:order-2">
+
                 <div className="card-elegant sticky rounded-lg p-5 top-24 lg:top-28 bg-theme-surface">
                   <h2 className="text-lg font-serif font-semibold italic text-theme-primary mb-4">Order Summary</h2>
 
@@ -169,13 +170,23 @@ const CartPage: React.FC = () => {
                   {selectedAddress ? (
                     <>
                       {/* ... display selected address ... */}
-                      <button
-                        onClick={() => setShowAddressSelector(true)} // Correctly sets state to show AddressSelector
-                        className={`text-theme-muted underline text-xs mt-1 hover:text-theme-primary transition-all duration-200 ease-in-out font-serif italic ${baseFocusClasses}`}
-                        title="Change delivery address"
-                      >
-                        Change Address
-                      </button>
+                      <div className="space-y-2 mb-4 text-sm font-serif text-theme-primary">
+                        <div>
+                          <div className="font-semibold italic">{selectedAddress.addressType}</div>
+                          <div>{selectedAddress.fullName}</div>
+                          {selectedAddress.houseNumber && <div>{selectedAddress.mobileNumber}</div>}
+                          <div>{selectedAddress.streetArea}, {selectedAddress.city} - {selectedAddress.pincode}</div>
+                          <div>{selectedAddress.state}</div>
+                        </div>
+                        <button
+                          onClick={() => setShowAddressSelector(true)}
+                          className={`text-theme-muted underline text-xs hover:text-theme-primary transition-all duration-200 ease-in-out font-serif italic ${baseFocusClasses}`}
+                          title="Change delivery address"
+                        >
+                          Change Address
+                        </button>
+                      </div>
+
                       <PaymentHandler
                         onSuccess={(orderId) => navigate(`/order-confirmation/${orderId}`)}
                         onError={(error) => alert(`Payment failed: ${error}`)}
