@@ -22,6 +22,7 @@ const AdminPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const baseFocusClasses = "focus:outline-none focus:ring-0";
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -48,12 +49,12 @@ const AdminPage: React.FC = () => {
       />
 
       {/* Main Layout */}
-      <div className="min-h-screen bg-subtle-beige text-rich-brown font-serif pt-0">
+      <div className="min-h-screen bg-theme-background text-theme-primary font-serif pt-0">
         <div className="flex h-screen">
           {/* Mobile Sidebar Overlay */}
           {sidebarOpen && (
             <div 
-              className="fixed inset-0 bg-rich-brown/80 backdrop-blur-sm z-40 lg:hidden"
+              className="fixed inset-0 bg-theme-primary/80 backdrop-blur-sm z-40 lg:hidden"
               onClick={() => setSidebarOpen(false)}
             />
           )}
@@ -61,26 +62,26 @@ const AdminPage: React.FC = () => {
           {/* Sidebar */}
           <aside className={`
             fixed lg:static inset-y-0 left-0 z-50 w-64 lg:w-64 xl:w-72 
-            bg-white border-r border-subtle-beige shadow-xl lg:shadow-none
+            bg-theme-light border-r border-theme-surface shadow-xl lg:shadow-none
             transform transition-all duration-200 ease-in-out lg:transform-none
             ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
             flex flex-col h-screen
           `}>
-            <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-soft-gold scrollbar-track-transparent">
+            <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-theme-secondary scrollbar-track-transparent">
               <div className="p-4 lg:p-6">
                 {/* Mobile Close Button */}
                 <div className="flex items-center justify-between mb-4 lg:hidden">
-                  <h1 className="text-lg font-serif font-semibold italic text-rich-brown">Admin Panel</h1>
+                  <h1 className="text-lg font-serif font-semibold italic text-theme-primary">Admin Panel</h1>
                   <button
                     onClick={() => setSidebarOpen(false)}
-                    className="p-2 rounded-xl hover:bg-subtle-beige transition-all duration-200 ease-in-out"
+                    className={`p-2 rounded-xl hover:bg-theme-surface transition-all duration-200 ease-in-out ${baseFocusClasses}`}
                     title="Close menu"
                   >
                     <X className="h-5 w-5" />
                   </button>
                 </div>
                 
-                <h1 className="hidden lg:block text-lg xl:text-xl font-serif font-semibold italic text-rich-brown mb-4 lg:mb-6">Admin Panel</h1>
+                <h1 className="hidden lg:block text-lg xl:text-xl font-serif font-semibold italic text-theme-primary mb-4 lg:mb-6">Admin Panel</h1>
 
                 <nav>
                   <div className="space-y-1 lg:space-y-2">
@@ -91,10 +92,10 @@ const AdminPage: React.FC = () => {
                           setActiveTab(tab.id);
                           setSidebarOpen(false);
                         }}
-                        className={`w-full flex items-center px-3 lg:px-4 py-2.5 lg:py-3 text-left hover:bg-rose-sand/30 rounded-xl transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-soft-gold/20 ${
+                        className={`w-full flex items-center px-3 lg:px-4 py-2.5 lg:py-3 text-left hover:bg-theme-accent/30 rounded-xl transition-all duration-200 ease-in-out ${baseFocusClasses} ${
                           activeTab === tab.id
-                            ? 'bg-rose-sand text-rich-brown shadow-sm'
-                            : 'text-rich-brown'
+                            ? 'bg-theme-accent text-theme-primary shadow-sm'
+                            : 'text-theme-primary'
                         }`}
                         title={tab.label}
                       >
@@ -107,30 +108,30 @@ const AdminPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="p-3 lg:p-4 border-t border-subtle-beige bg-subtle-beige/50">
+            <div className="p-3 lg:p-4 border-t border-theme-surface bg-theme-surface/50">
               <UserMenu dropdownPosition="top" />
             </div>
           </aside>
 
           {/* Main Content */}
-          <main className="flex-1 flex flex-col min-w-0 overflow-hidden bg-subtle-beige">
+          <main className="flex-1 flex flex-col min-w-0 overflow-hidden bg-theme-background">
             {/* Mobile Header */}
-            <div className="lg:hidden bg-white border-b border-subtle-beige p-3 sm:p-4 flex items-center justify-between sticky top-0 z-30">
+            <div className="lg:hidden bg-theme-light border-b border-theme-surface p-3 sm:p-4 flex items-center justify-between sticky top-0 z-30">
               <button
                 onClick={() => setSidebarOpen(true)}
-                className="p-2 rounded-xl hover:bg-subtle-beige transition-all duration-200 ease-in-out"
+                className={`p-2 rounded-xl hover:bg-theme-surface transition-all duration-200 ease-in-out ${baseFocusClasses}`}
                 title="Open menu"
               >
                 <Menu className="h-5 w-5" />
               </button>
-              <h1 className="text-base sm:text-lg font-serif font-semibold italic text-rich-brown truncate mx-4">
+              <h1 className="text-base sm:text-lg font-serif font-semibold italic text-theme-primary truncate mx-4">
                 {tabs.find(tab => tab.id === activeTab)?.label}
               </h1>
               <div className="w-9 flex-shrink-0" /> {/* Spacer for centering */}
             </div>
 
             {/* Content Area */}
-            <div className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6 scrollbar-thin scrollbar-thumb-soft-gold scrollbar-track-transparent">
+            <div className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6 scrollbar-thin scrollbar-thumb-theme-secondary scrollbar-track-transparent">
               {activeTab === 'dashboard' && <AdminDashboard />}
               {activeTab === 'products' && <ProductManagement />}
               {activeTab === 'categories' && <CategoryManagement />}

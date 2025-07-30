@@ -25,6 +25,8 @@ const Header: React.FC = () => {
   const isAdminPage = location.pathname.startsWith('/admin');
   const cartItemCount = getUniqueItemCount();
 
+  const baseFocusClasses = "focus:outline-none focus:ring-0";
+
   useEffect(() => {
     loadCategories().catch(console.error);
   }, [loadCategories]);
@@ -41,7 +43,7 @@ const Header: React.FC = () => {
 
   const headerStyles = {
     backgroundColor: 'transparent',
-    textColor: isHomePage ? '#FFFFFF' : '#4A3F36',
+    textColor: isHomePage ? '#FFFFFF' : 'var(--color-theme-primary)',
     fontWeight: '700',
   };
 
@@ -50,7 +52,7 @@ const Header: React.FC = () => {
       <SEOHead />
       {!isAdminPage && (
         <header
-          className="absolute top-0 left-0 w-full z-30 transition-all duration-500 ease-in-out animate-fadeInSlow" // Added absolute, top-0, left-0, w-full, z-30
+          className="absolute top-0 left-0 w-full z-30 transition-all duration-500 ease-in-out animate-fadeInSlow"
           style={{
             backgroundColor: headerStyles.backgroundColor,
             borderColor: 'transparent',
@@ -65,7 +67,7 @@ const Header: React.FC = () => {
                   <button
                     onClick={() => setIsMenuOpen(true)}
                     style={{ color: headerStyles.textColor, fontWeight: headerStyles.fontWeight }}
-                    className={`hover:opacity-70 transition-opacity flex items-center ${
+                    className={`hover:opacity-70 transition-opacity flex items-center ${baseFocusClasses} ${
                       showText ? 'opacity-100 animate-fadeInSlow' : 'opacity-0'
                     }`}
                     title="Open Menu"
@@ -76,7 +78,7 @@ const Header: React.FC = () => {
                     <Link
                       to="/products"
                       style={{ color: headerStyles.textColor, fontWeight: headerStyles.fontWeight }}
-                      className="hover:opacity-70 transition-all duration-200 ease-in-out whitespace-nowrap font-serif italic"
+                      className={`hover:opacity-70 transition-all duration-200 ease-in-out whitespace-nowrap font-serif italic ${baseFocusClasses}`}
                       title="Shop Products"
                     >
                       SHOP
@@ -89,7 +91,7 @@ const Header: React.FC = () => {
               <div className="flex items-center justify-center">
                 <Link
                   to="/"
-                  className={`flex items-center justify-center transition-all duration-200 ease-in-out ${
+                  className={`flex items-center justify-center transition-all duration-200 ease-in-out ${baseFocusClasses} ${
                     showText ? 'opacity-100 animate-fadeInSlow' : 'opacity-0'
                   }`}
                   title={`${SITE_CONFIG.name} - Home`}
@@ -120,7 +122,7 @@ const Header: React.FC = () => {
                   <UserMenu dropdownPosition="bottom" />
                   <button
                     onClick={() => setShowCartSidebar(true)}
-                    className="flex items-center focus:outline-none gap-1 sm:gap-2 hover:opacity-70 transition-opacity relative h-8 sm:h-10 lg:h-12 min-w-0"
+                    className={`flex items-center ${baseFocusClasses} gap-1 sm:gap-2 hover:opacity-70 transition-opacity relative h-8 sm:h-10 lg:h-12 min-w-0`}
                     title={`Shopping Cart (${cartItemCount} items)`}
                   >
                     <span
@@ -132,7 +134,7 @@ const Header: React.FC = () => {
                     <div className="relative flex items-center">
                       <ShoppingBag className="w-6 h-6 sm:w-6 sm:h-6 lg:w-6 lg:h-6" style={{ color: headerStyles.textColor }} />
                       {cartItemCount > 0 && (
-                        <span className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-red-500 text-white text-[10px] sm:text-xs rounded-full h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 flex items-center justify-center font-medium">
+                        <span className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-red-500 text-theme-light text-[10px] sm:text-xs rounded-full h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 flex items-center justify-center font-medium">
                           {cartItemCount > 99 ? '99+' : cartItemCount}
                         </span>
                       )}
@@ -149,18 +151,18 @@ const Header: React.FC = () => {
       {isMenuOpen && (
         <>
           <div
-            className="fixed inset-0 bg-black bg-opacity-40 z-40"
+            className="fixed inset-0 bg-theme-dark bg-opacity-40 z-40"
             onClick={() => setIsMenuOpen(false)}
           />
-          <div className="fixed top-0 left-0 h-screen w-[280px] sm:w-80 md:w-96 lg:w-[400px] max-w-[90vw] bg-[#1d1a15] z-50 shadow-2xl px-4 sm:px-6 py-6 sm:py-8 flex flex-col justify-between text-[#d4b896] transition-all duration-300 ease-in-out overflow-y-auto">
+          <div className="fixed top-0 left-0 h-screen w-[280px] sm:w-80 md:w-96 lg:w-[400px] max-w-[90vw] bg-theme-dark z-50 shadow-2xl px-4 sm:px-6 py-6 sm:py-8 flex flex-col justify-between text-theme-secondary transition-all duration-300 ease-in-out overflow-y-auto">
             <div>
               <div className="flex items-center gap-2 mb-6 sm:mb-8">
                 <button
                   onClick={() => setIsMenuOpen(false)}
-                  className="w-6 h-6 rounded-full border border-[#d4b896] flex items-center justify-center hover:opacity-70 transition-opacity"
+                  className={`w-6 h-6 rounded-full border border-theme-secondary flex items-center justify-center hover:opacity-70 transition-opacity ${baseFocusClasses}`}
                   title="Close Menu"
                 >
-                  <X className="h-4 w-4 text-[#d4b896]" />
+                  <X className="h-4 w-4 text-theme-secondary" />
                 </button>
                 <span className="tracking-widest text-xs">CLOSE</span>
               </div>
@@ -170,55 +172,55 @@ const Header: React.FC = () => {
                     <Link
                       to="/profile"
                       onClick={() => setIsMenuOpen(false)}
-                      className="block text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-2 transition-opacity"
+                      className={`block text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-2 transition-opacity ${baseFocusClasses}`}
                       title="View Profile"
                     >
                       PROFILE
                     </Link>
-                    <div className="border-t border-[#d4b896]/20" />
+                    <div className="border-t border-theme-secondary/20" />
                     <Link
                       to="/products"
                       onClick={() => setIsMenuOpen(false)}
-                      className="block text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-2 transition-opacity"
+                      className={`block text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-2 transition-opacity ${baseFocusClasses}`}
                       title="Shop Products"
                     >
                       SHOP
                     </Link>
-                    <div className="border-t border-[#d4b896]/20" />
+                    <div className="border-t border-theme-secondary/20" />
                     <Link
                       to="/cart"
                       onClick={() => setIsMenuOpen(false)}
-                      className="flex items-center justify-between text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-2 transition-opacity"
+                      className={`flex items-center justify-between text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-2 transition-opacity ${baseFocusClasses}`}
                       title={`Shopping Cart (${cartItemCount} items)`}
                     >
                       <span>CART</span>
                       {cartItemCount > 0 && (
-                        <span className="bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-medium ml-2">
+                        <span className="bg-red-500 text-theme-light text-xs rounded-full h-4 w-4 flex items-center justify-center font-medium ml-2">
                           {cartItemCount > 99 ? '99+' : cartItemCount}
                         </span>
                       )}
                     </Link>
-                    <div className="border-t border-[#d4b896]/20" />
+                    <div className="border-t border-theme-secondary/20" />
                     <Link
                       to="/addresses"
                       onClick={() => setIsMenuOpen(false)}
-                      className="block text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-2 transition-opacity"
+                      className={`block text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-2 transition-opacity ${baseFocusClasses}`}
                       title="Manage Addresses"
                     >
                       ADDRESSES
                     </Link>
-                    <div className="border-t border-[#d4b896]/20" />
+                    <div className="border-t border-theme-secondary/20" />
                     {user?.role === 'Admin' && (
                       <>
                         <Link
                           to="/admin"
                           onClick={() => setIsMenuOpen(false)}
-                          className="block text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-2 transition-opacity"
+                          className={`block text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-2 transition-opacity ${baseFocusClasses}`}
                           title="Admin Panel"
                         >
                           ADMIN PANEL
                         </Link>
-                        <div className="border-t border-[#d4b896]/20" />
+                        <div className="border-t border-theme-secondary/20" />
                       </>
                     )}
                   </>
@@ -229,32 +231,33 @@ const Header: React.FC = () => {
                         <Link
                           to={path}
                           onClick={() => setIsMenuOpen(false)}
-                          className="block text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-2 transition-opacity"
+                          className={`block text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-2 transition-opacity ${baseFocusClasses}`}
                           title={path === '/' ? 'Home' : path.replace('/', '').charAt(0).toUpperCase() + path.slice(2)}
                         >
                           {path === '/' ? 'HOME' : path.replace('/', '').toUpperCase()}
                         </Link>
-                        <div className="border-t border-[#d4b896]/20" />
+                        <div className="border-t border-theme-secondary/20" />
                       </div>
                     ))}
                     <Link
                       to="/cart"
                       onClick={() => setIsMenuOpen(false)}
-                      className="flex items-center justify-between text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-2 transition-opacity"
+                      className={`flex items-center justify-between text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-2 transition-opacity ${baseFocusClasses}`}
                       title={`Shopping Cart (${cartItemCount} items)`}
                     >
                       <span>CART</span>
                       {cartItemCount > 0 && (
-                        <span className="bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-medium ml-2">
+                        <span className="bg-red-500 text-theme-light text-xs rounded-full h-4 w-4 flex items-center justify-center font-medium ml-2">
                           {cartItemCount > 99 ? '99+' : cartItemCount}
                         </span>
                       )}
                     </Link>
-                    <div className="border-t border-[#d4b896]/20" />
+                    <div className="border-t border-theme-secondary/20" />
                     <Link
                       to="/login"
                       onClick={() => setIsMenuOpen(false)}
-                      className="block text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-2 transition-opacity"
+                      className={`block text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-2 transition-opacity ${baseFocusClasses}`}
+                      state={{ from: location }}
                       title="Login to Account"
                     >
                       LOGIN
@@ -271,7 +274,7 @@ const Header: React.FC = () => {
                     handleLogout();
                     setIsMenuOpen(false);
                   }}
-                  className="block w-full text-left text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-2 transition-opacity"
+                  className={`block w-full text-left text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-2 transition-opacity ${baseFocusClasses}`}
                   title="Logout"
                 >
                   LOGOUT

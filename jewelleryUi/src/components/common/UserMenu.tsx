@@ -17,9 +17,10 @@ const UserMenu: React.FC<UserMenuProps> = ({ dropdownPosition = 'bottom' }) => {
   const menuRef = useRef<HTMLDivElement>(null);
 
   const isAdmin = user?.role === 'Admin';
+  const baseFocusClasses = "focus:outline-none focus:ring-0";
 
   const styles = {
-    textColor: isHomePage ? '#FFFFFF' : '#4A3F36',
+    textColor: isHomePage ? '#FFFFFF' : 'var(--color-theme-primary)',
     fontWeight: '700',
   };
 
@@ -76,7 +77,8 @@ const UserMenu: React.FC<UserMenuProps> = ({ dropdownPosition = 'bottom' }) => {
     return (
       <Link
         to="/login"
-        className="flex items-center text-xs sm:text-sm lg:text-sm tracking-widest hover:opacity-70 transition-all duration-200 ease-in-out h-8 sm:h-10 lg:h-12 min-w-0 font-serif italic"
+        state={{ from: location }}
+        className={`flex items-center text-xs sm:text-sm lg:text-sm tracking-widest hover:opacity-70 transition-all duration-200 ease-in-out h-8 sm:h-10 lg:h-12 min-w-0 font-serif italic ${baseFocusClasses}`}
         style={{ color: styles.textColor, fontWeight: styles.fontWeight }}
         title="Login to your account"
       >
@@ -90,7 +92,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ dropdownPosition = 'bottom' }) => {
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setIsOpen(prev => !prev)}
-        className="flex items-center space-x-1 sm:space-x-2 hover:opacity-70 transition-all duration-200 ease-in-out h-8 sm:h-10 lg:h-12 focus:outline-none focus:ring-0 active:outline-none active:ring-0 border-none min-w-0 font-serif italic"
+        className={`flex items-center space-x-1 sm:space-x-2 hover:opacity-70 transition-all duration-200 ease-in-out h-8 sm:h-10 lg:h-12 ${baseFocusClasses} active:outline-none active:ring-0 border-none min-w-0 font-serif italic`}
         style={{ color: styles.textColor, fontWeight: styles.fontWeight }}
         title={`${user?.firstname || 'User'} Menu`}
         aria-haspopup="true"
@@ -120,11 +122,11 @@ const UserMenu: React.FC<UserMenuProps> = ({ dropdownPosition = 'bottom' }) => {
         <div
           id="user-menu-dropdown"
           className={`absolute ${dropdownPosition === 'top' ? 'bottom-full mb-2' : 'mt-2'
-            } right-0 w-44 xs:w-[calc(100vw-2rem)] sm:w-48 lg:w-52 bg-white rounded-2xl shadow-xl border border-subtle-beige py-2 z-50 min-w-max`}
+            } right-0 w-44 xs:w-[calc(100vw-2rem)] sm:w-48 lg:w-52 bg-theme-light rounded-2xl shadow-xl border border-theme-surface py-2 z-50 min-w-max`}
         >
-          <div className="px-3 sm:px-4 py-2 sm:py-3 text-sm text-rich-brown border-b border-subtle-beige font-serif">
+          <div className="px-3 sm:px-4 py-2 sm:py-3 text-sm text-theme-primary border-b border-theme-surface font-serif">
             <div className="font-semibold italic truncate">{user?.firstname} {user?.lastname}</div>
-            <div className="text-xs text-mocha/70 font-light truncate mt-1">{user?.email}</div>
+            <div className="text-xs text-theme-muted/70 font-light truncate mt-1">{user?.email}</div>
           </div>
           
           {/* Dynamic menu items based on role and current route */}
@@ -132,7 +134,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ dropdownPosition = 'bottom' }) => {
             <Link
               key={item.path}
               to={item.path}
-              className="block px-3 sm:px-4 py-2 text-sm font-serif italic text-rich-brown hover:bg-subtle-beige transition-all duration-200 ease-in-out"
+              className={`block px-3 sm:px-4 py-2 text-sm font-serif italic text-theme-primary hover:bg-theme-surface transition-all duration-200 ease-in-out ${baseFocusClasses}`}
               title={item.label}
               onClick={() => setIsOpen(false)}
             >
@@ -140,11 +142,11 @@ const UserMenu: React.FC<UserMenuProps> = ({ dropdownPosition = 'bottom' }) => {
             </Link>
           ))}
           
-          <div className="border-t border-gray-100 my-1 mx-2"></div>
+          <div className="border-t border-theme-surface my-1 mx-2"></div>
           
           <button
             onClick={handleLogout}
-            className="block w-full text-left px-3 sm:px-4 py-2 text-sm font-serif italic text-rich-brown hover:bg-subtle-beige transition-all duration-200 ease-in-out"
+            className={`block w-full text-left px-3 sm:px-4 py-2 text-sm font-serif italic text-theme-primary hover:bg-theme-surface transition-all duration-200 ease-in-out ${baseFocusClasses}`}
             title="Logout from account"
           >
             Logout

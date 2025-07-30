@@ -4,15 +4,27 @@ export default {
   theme: {
     extend: {
       colors: {
-        'rich-brown': '#4A3F36',
-        'soft-gold': '#DEC9A3',
-        'subtle-beige': '#F2ECE4',
-        'mocha': '#8F6C43',
-        'rose-sand': '#E5CFB5',
-        'linen': '#F6F5F1',
+        // Global Theme Colors - Change these to update entire site theme
+        'theme': {
+          'primary': '#4A3F36',      // Main brand color (rich brown)
+          'secondary': '#DEC9A3',    // Accent color (soft gold)
+          'background': '#FAF9F6',   // Main background (linen)
+          'surface': '#F2ECE4',      // Card/surface background (subtle beige)
+          'muted': '#8F6C43',        // Muted text (mocha)
+          'accent': '#E5CFB5',       // Highlight color (rose sand)
+          'dark': '#1C1A17',         // Dark text/elements (coal)
+          'light': '#F6F5F1',        // Light backgrounds
+        },
+        // Legacy color names for backward compatibility
+        'rich-brown': 'var(--color-theme-primary)',
+        'soft-gold': 'var(--color-theme-secondary)',
+        'subtle-beige': 'var(--color-theme-surface)',
+        'mocha': 'var(--color-theme-muted)',
+        'rose-sand': 'var(--color-theme-accent)',
+        'linen': 'var(--color-theme-background)',
         'burntumber': '#804000',
         'champagne': '#D4B896',
-        'coal': '#1C1A17',
+        'coal': 'var(--color-theme-dark)',
         'copper': '#AA732F',
         'sand': '#F2E9D8',
         'espresso': '#4F3C2A',
@@ -74,4 +86,8 @@ export default {
     },
   },
   plugins: [],
+  corePlugins: {
+    // Remove default focus ring styles
+    ringWidth: false,
+  },
 };

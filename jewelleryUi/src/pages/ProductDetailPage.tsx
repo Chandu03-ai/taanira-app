@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Minus, Plus } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Product } from '../types';
 import { apiService } from '../services/api';
 import { useCartStore } from '../store/cartStore'; // Correct import
 import { useAuthStore } from '../store/authStore';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import SEOHead from '../components/seo/SEOHead';
-import { staticImageBaseUrl } from '../constants/siteConfig';
+import { SITE_CONFIG, staticImageBaseUrl } from '../constants/siteConfig';
 import LoginPromptModal from '../components/common/LoginPromptModal';
-import ProductReviews from '../components/reviews/ProductReviews';
 
 const ProductDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -25,10 +24,10 @@ const ProductDetailPage: React.FC = () => {
   // CORRECTED: Destructure the state (items) and actions from useCartStore using a selector
   const addItem = useCartStore(state => state.addItem);
   const removeItem = useCartStore(state => state.removeItem);
-  const updateQuantity = useCartStore(state => state.updateQuantity);
   const items = useCartStore(state => state.items); // <--- Select 'items' here
 
   const { isAuthenticated } = useAuthStore();
+  const baseFocusClasses = "focus:outline-none focus:ring-0";
 
   useEffect(() => {
     if (slug) loadProduct();
@@ -79,7 +78,6 @@ const ProductDetailPage: React.FC = () => {
       (item.selectedSize ?? '') === (effectiveSelectedSize ?? '')
   ) : undefined;
 
-  const productQuantity = cartItem ? cartItem.quantity : 0;
   const inCart = !!cartItem;
 
 
@@ -135,11 +133,11 @@ const ProductDetailPage: React.FC = () => {
     return (
       <>
         <SEOHead title="Product Not Found - JI Jewelry" description="The product you're looking for doesn't exist." />
-        <div className="min-h-screen bg-subtle-beige text-rich-brown font-serif flex items-center justify-center">
+        <div className="min-h-screen bg-theme-background text-theme-primary font-serif flex items-center justify-center">
           <div className="text-center">
             <h2 className="text-2xl font-bold italic mb-2">Product Not Found</h2>
             <p className="italic mb-8">The product you're looking for doesn't exist.</p>
-            <Link to="/products" className="bg-rich-brown text-white px-8 py-3 rounded font-semibold italic hover:bg-opacity-90 transition-colors">
+            <Link to="/products" className={`bg-theme-primary text-theme-light px-8 py-3 rounded font-semibold italic hover:bg-theme-dark transition-colors ${baseFocusClasses}`}>
               Continue Shopping
             </Link>
           </div>
@@ -155,35 +153,38 @@ const ProductDetailPage: React.FC = () => {
   return (
     <>
       <SEOHead
-        title={`${product.name} - JI Jewelry`}
-        description={product.description || `Buy ${product.name} - Handcrafted pure silver jewelry from JI.`}
-        keywords={`${product.name}, ${product.category}, silver jewelry, JI jewelry`}
-        image={productImages[0]}
+        title={`${product.name} - ${SITE_CONFIG.name}`}
+        description={
+          product.description ||
+          `Buy ${product.name} - Handcrafted pure silver jewelry from ${SITE_CONFIG.name}.`
+        }
+        keywords={`${product.name}, ${product.category}, silver jewelry, handcrafted, ${SITE_CONFIG.name}`}
+        image={productImages?.[0] || '/images/default-product.png'}
         type="product"
         productData={{
           name: product.name,
           price: product.price,
           currency: 'INR',
           availability: product.stock ? 'InStock' : 'OutOfStock',
-          brand: 'JI',
-          category: product.category
+          brand: SITE_CONFIG.name,
+          category: product.category,
         }}
       />
 
-      <div className="min-h-screen bg-[#FAF9F6] text-rich-brown font-serif">
+      <div className="min-h-screen bg-theme-background text-theme-primary font-serif">
         <div className="container mx-auto mt-[83px] px-4 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <div className="space-y-4">
-              <div className="relative bg-gray-100 lg:ml-24">
+              <div className="relative bg-theme-surface lg:ml-24  rounded-2xl overflow-hidden">
                 <div className="aspect-square">
-                  <img src={productImages[currentImageIndex]} alt={product.name} className="w-full h-full object-cover" />
+                  <img src={productImages[currentImageIndex]} alt={product.name} className="w-full h-full object-cover rounded-2xl" />
                 </div>
                 {productImages.length > 1 && (
                   <>
-                    <button onClick={prevImage} className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md hover:shadow-lg">
+                    <button onClick={prevImage} className={`absolute left-4 top-1/2 transform -translate-y-1/2 bg-theme-light rounded-full p-2 shadow-md hover:shadow-lg ${baseFocusClasses}`}>
                       <ChevronLeft className="h-6 w-6" />
                     </button>
-                    <button onClick={nextImage} className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md hover:shadow-lg">
+                    <button onClick={nextImage} className={`absolute right-4 top-1/2 transform -translate-y-1/2 bg-theme-light rounded-full p-2 shadow-md hover:shadow-lg ${baseFocusClasses}`}>
                       <ChevronRight className="h-6 w-6" />
                     </button>
                   </>
@@ -192,11 +193,11 @@ const ProductDetailPage: React.FC = () => {
             </div>
 
             <div className="space-y-6">
-              <h1 className="text-3xl italic font-semibold text-rich-brown">{product.name}</h1>
+              <h1 className="text-3xl italic font-semibold text-theme-primary">{product.name}</h1>
               <div className="flex items-center space-x-4 mb-4">
                 <div className="text-xl font-medium">₹ {product.price.toLocaleString()}</div>
                 {product.comparePrice && product.comparePrice > product.price && (
-                  <div className="text-lg line-through text-rich-brown/60">
+                  <div className="text-lg line-through text-theme-primary/60">
                     ₹ {product.comparePrice.toLocaleString()}
                   </div>
                 )}
@@ -210,9 +211,9 @@ const ProductDetailPage: React.FC = () => {
                       <button
                         key={size}
                         onClick={() => setSelectedSize(size)}
-                        className={`py-2 px-3 border rounded-md text-sm transition-colors italic ${selectedSize === size
-                          ? 'border-rich-brown bg-rich-brown text-white'
-                          : 'border-rich-brown/40 text-rich-brown hover:border-rich-brown'}`}
+                        className={`py-2 px-3 border rounded-md text-sm transition-colors italic ${baseFocusClasses} ${selectedSize === size
+                          ? 'border-theme-primary bg-theme-primary text-theme-light'
+                          : 'border-theme-primary/40 text-theme-primary hover:border-theme-primary'}`}
                       >
                         {size}
                       </button>
@@ -224,7 +225,7 @@ const ProductDetailPage: React.FC = () => {
               {!product.stock ? (
                 <button
                   disabled
-                  className="w-full mt-4 py-3 text-xs font-serif font-semibold italic border-2 border-gray-400 text-gray-400 rounded-xl cursor-not-allowed"
+                  className={`w-full mt-4 py-3 text-xs font-serif font-semibold italic border-2 border-theme-muted text-theme-muted rounded-xl cursor-not-allowed ${baseFocusClasses}`}
                 >
                   OUT OF STOCK
                 </button>
@@ -233,14 +234,14 @@ const ProductDetailPage: React.FC = () => {
                 <div className="flex flex-row items-center gap-2 mt-4">
                   <Link
                     to="/cart"
-                    className="flex-1 text-center py-3 text-xs font-serif font-semibold italic border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md"
+                    className={`flex-1 text-center py-3 text-xs font-serif font-semibold italic border-2 border-theme-primary text-theme-primary rounded-xl hover:bg-theme-primary hover:text-theme-light transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md ${baseFocusClasses}`}
                   >
                     Go to Cart
                   </Link>
 
                   <button
                     onClick={() => removeItem(cartItem.id)}
-                    className="flex-1 py-3 text-xs font-serif font-semibold italic border-2 border-red-500 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md"
+                    className={`flex-1 py-3 text-xs font-serif font-semibold italic border-2 border-red-500 text-red-500 rounded-xl hover:bg-red-500 hover:text-theme-light transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md ${baseFocusClasses}`}
                   >
                     Remove
                   </button>
@@ -248,7 +249,7 @@ const ProductDetailPage: React.FC = () => {
               ) : (
                 <button
                   onClick={handleAddToCart}
-                  className="w-full mt-4 py-3 text-xs font-serif font-semibold italic border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md"
+                  className={`w-full mt-4 py-3 text-xs font-serif font-semibold italic border-2 border-theme-primary text-theme-primary rounded-xl hover:bg-theme-primary hover:text-theme-light transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md ${baseFocusClasses}`}
                   title="Add to Cart"
                 >
                   Preorder
@@ -257,13 +258,13 @@ const ProductDetailPage: React.FC = () => {
 
 
 
-              <div className="pt-6 border-t border-rich-brown/20">
-                <div className="flex space-x-6 border-b border-rich-brown/20 mb-4 ">
+              <div className="pt-6 border-t border-theme-primary/20">
+                <div className="flex space-x-6 border-b border-theme-primary/20 mb-4 ">
                   {['About', 'Details', 'Shipping', 'Reviews'].map((tab) => (
                     <button
                       key={tab}
                       onClick={() => setTab(tab as any)}
-                      className={`pb-2 italic font-semibold uppercase tracking-wide text-sm focus:outline-none ${currentTab === tab ? 'border-b-2 border-rich-brown text-rich-brown' : 'text-rich-brown/70 hover:text-rich-brown'}`}
+                      className={`pb-2 italic font-semibold uppercase tracking-wide text-sm ${baseFocusClasses} ${currentTab === tab ? 'border-b-2 border-theme-primary text-theme-primary' : 'text-theme-primary/70 hover:text-theme-primary'}`}
                     >
                       {tab}
                     </button>
@@ -279,7 +280,7 @@ const ProductDetailPage: React.FC = () => {
                   )}
                   {currentTab === 'Shipping' && (
                     <p>
-                      We offer free shipping across India. Estimated delivery time is 3–7 business days. International shipping is available with additional cost.
+                      We offer free shipping across India. As all our pieces are handmade and handloom-crafted, delivery timelines depend on preorder fulfillment.
                     </p>
                   )}
                   {currentTab === 'Reviews' && (

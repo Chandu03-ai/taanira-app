@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Location } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { useNotificationStore } from '../../store/notificationStore';
 
@@ -19,10 +19,16 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Store the current location for post-login redirect
+  const from = (location.state as any)?.from?.pathname || location.pathname;
+
   useEffect(() => {
     if (!isAuthenticated) {
-      // Not authenticated, redirect to login
-      navigate('/login', { replace: true });
+      // Not authenticated, redirect to login with the current location
+      navigate('/login', { 
+        state: { from: location },
+        replace: true 
+      });
       return;
     }
 

@@ -24,6 +24,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
+  const baseFocusClasses = "focus:outline-none focus:ring-0";
 
   useEffect(() => {
     const loadCategory = async () => {
@@ -95,12 +96,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   return (
     <>
       <article
-        className="group bg-[#F9F7F2] rounded-2xl p-4 transition-all duration-300 hover:shadow-md w-full"
+        className="group bg-theme-surface rounded-2xl p-4 transition-all duration-300 hover:shadow-md w-full"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <Link to={`/product/${product.slug || product.id}`} className="block mb-3">
-          <div className="relative aspect-square overflow-hidden rounded-xl bg-white">
+        <Link to={`/product/${product.slug || product.id}`} className={`block mb-3 ${baseFocusClasses}`}>
+          <div className="relative aspect-square overflow-hidden rounded-xl bg-theme-light">
             <img
               src={productImages[0]}
               alt={product.name}
@@ -118,7 +119,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               />
             )}
             {!product.stock && (
-              <div className="absolute top-3 left-3 bg-neutral-800 text-white text-xs px-3 py-1 rounded-full font-medium">
+              <div className="absolute top-3 left-3 bg-theme-dark text-theme-light text-xs px-3 py-1 rounded-full font-medium">
                 SOLD OUT
               </div>
             )}
@@ -126,18 +127,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </Link>
 
         <div className="text-center space-y-2">
-          <Link to={`/product/${product.slug || product.id}`}>
-            <h3 className="font-serif text-lg text-neutral-800 hover:text-neutral-600 transition-colors line-clamp-2 leading-tight">
+          <Link to={`/product/${product.slug || product.id}`} className={baseFocusClasses}>
+            <h3 className="font-serif text-lg text-theme-primary hover:text-theme-muted transition-colors line-clamp-2 leading-tight">
               {product.name}
             </h3>
           </Link>
 
           <div className="flex items-center justify-center gap-2">
-            <span className="font-serif text-neutral-700 font-medium">
+            <span className="font-serif text-theme-primary font-medium">
               {SITE_CONFIG.currencySymbol}{(product.price || 0).toLocaleString()}
             </span>
             {product.comparePrice && product.comparePrice > product.price && (
-              <span className="text-sm text-neutral-400 line-through font-serif">
+              <span className="text-sm text-theme-muted line-through font-serif">
                 {SITE_CONFIG.currencySymbol}{product.comparePrice.toLocaleString()}
               </span>
             )}
@@ -147,7 +148,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             {!product.stock ? (
               <button
                 disabled
-                className="w-full mt-4 py-3 text-xs font-serif font-semibold italic border-2 border-gray-400 text-gray-400 rounded-xl cursor-not-allowed"
+                className={`w-full mt-4 py-3 text-xs font-serif font-semibold italic border-2 border-theme-muted text-theme-muted rounded-xl cursor-not-allowed ${baseFocusClasses}`}
               >
                 OUT OF STOCK
               </button>
@@ -156,7 +157,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 <div className="w-full sm:w-auto">
                   <Link
                     to="/cart"
-                    className="block w-full px-6 py-3 text-xs font-serif font-semibold italic border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md text-center"
+                    className={`block w-full px-6 py-3 text-xs font-serif font-semibold italic border-2 border-theme-primary text-theme-primary rounded-xl hover:bg-theme-primary hover:text-theme-light transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md text-center ${baseFocusClasses}`}
                   >
                     Go to Cart
                   </Link>
@@ -164,7 +165,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 <div className="w-full sm:w-auto">
                   <button
                     onClick={() => removeItem(cartItem!.id)}
-                    className="w-full px-6 py-3 text-xs font-serif font-semibold italic border-2 border-red-600 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md"
+                    className={`w-full px-6 py-3 text-xs font-serif font-semibold italic border-2 border-red-600 text-red-600 rounded-xl hover:bg-red-600 hover:text-theme-light transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md ${baseFocusClasses}`}
                   >
                     Remove
                   </button>
@@ -173,7 +174,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             ) : (
               <button
                 onClick={handleAddToCart}
-                className="w-full mt-4 py-3 text-xs font-serif font-semibold italic border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md"
+                className={`w-full mt-4 py-3 text-xs font-serif font-semibold italic border-2 border-theme-primary text-theme-primary rounded-xl hover:bg-theme-primary hover:text-theme-light transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md ${baseFocusClasses}`}
                 title="Add to Cart"
               >
                 Preorder
@@ -186,15 +187,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
       {/* Size Selector */}
       {showSizeSelector && hasSizeOptions && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-sm w-full">
-            <h3 className="text-lg font-serif text-neutral-800 mb-4 text-center">Select Size</h3>
+        <div className="fixed inset-0 z-50 bg-theme-dark bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-theme-light rounded-2xl p-6 max-w-sm w-full">
+            <h3 className="text-lg font-serif text-theme-primary mb-4 text-center">Select Size</h3>
             <div className="grid grid-cols-2 gap-3 mb-6">
               {category.sizeOptions.map((size: string) => (
                 <button
                   key={size}
                   onClick={() => handleSizeSelect(size)}
-                  className="py-3 px-4 border border-neutral-300 rounded-xl text-sm font-serif text-neutral-800 hover:border-neutral-800 hover:bg-neutral-50"
+                  className={`py-3 px-4 border border-theme-surface rounded-xl text-sm font-serif text-theme-primary hover:border-theme-primary hover:bg-theme-surface ${baseFocusClasses}`}
                 >
                   {size}
                 </button>
@@ -202,7 +203,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             </div>
             <button
               onClick={() => setShowSizeSelector(false)}
-              className="w-full py-2 text-sm text-neutral-500 hover:text-neutral-800 font-serif"
+              className={`w-full py-2 text-sm text-theme-muted hover:text-theme-primary font-serif ${baseFocusClasses}`}
             >
               Cancel
             </button>

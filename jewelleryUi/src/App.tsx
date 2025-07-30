@@ -21,6 +21,7 @@ import NotificationToast from './components/common/NotificationToast';
 import PrivacyPage from './pages/PrivacyPage';
 import TermsPage from './pages/TermsPage';
 import SitemapPage from './pages/SitemapPage';
+import NotFoundPage from './pages/NotFoundPage';
 import Footer from './components/common/Footer';
 
 function AppContent() {
@@ -39,7 +40,7 @@ function AppContent() {
 
   return (
     <RouteGuard>
-      <div className="min-h-screen bg-gray-50 flex flex-col">
+      <div className="min-h-screen bg-theme-background flex flex-col">
         {shouldShowHeader && <Header />}
         <main className="flex-1">
           <Routes>
@@ -91,7 +92,7 @@ function AppContent() {
             />
 
             {/* Fallback */}
-            <Route path="*" element={<HomePage />} />
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
 

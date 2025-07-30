@@ -86,11 +86,11 @@ const HomePage: React.FC = () => {
         description={`Discover exquisite handcrafted pure silver jewelry at ${SITE_CONFIG.name}. Shop necklaces, earrings, bangles, anklets and more. Free shipping within India.`}
         keywords={`silver jewelry, handcrafted jewelry, necklaces, earrings, bangles, anklets, rings, Indian jewelry, ${SITE_CONFIG.name}, pure silver, 925 silver`}
       />
-      <div className="text-sand overflow-hidden bg-linen">
+      <div className="text-sand overflow-hidden bg-theme-background">
         <Header />
 
         {/* Hero Section */}
-        <section className="min-h-screen relative flex items-center justify-center overflow-hidden font-serif">
+        <section className="min-h-screen relative flex items-center justify-center overflow-hidden font-serif bg-theme-background">
           <div className="grid grid-cols-1 lg:grid-cols-2 w-full h-screen">
             <div className="relative overflow-hidden">
               <img
@@ -145,7 +145,7 @@ const HomePage: React.FC = () => {
         </section>
 
         {/* Intro Section */}
-        <section className="py-6 sm:py-8 md:py-12 px-4 sm:px-6 text-center max-w-4xl mx-auto bg-linen">
+        <section className="py-6 sm:py-8 md:py-12 px-4 sm:px-6 text-center max-w-4xl mx-auto bg-theme-background">
           <div>
             <p className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold leading-relaxed text-burntumber italic mb-2 sm:mb-3">
               {SITE_CONFIG.tagline}
@@ -161,7 +161,7 @@ const HomePage: React.FC = () => {
         </section>
 
         {/* Product Cards Section */}
-        <section className="py-6 sm:py-8 md:py-16 px-3 sm:px-4 md:px-6 bg-linen">
+        <section className="py-6 sm:py-8 md:py-16 px-3 sm:px-4 md:px-6 bg-theme-background">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-8 sm:mb-10 md:mb-12 font-serif italic">
               <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-light text-burntumber mb-4 sm:mb-6 tracking-wide">

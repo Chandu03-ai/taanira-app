@@ -24,6 +24,7 @@ const PaymentHandler: React.FC<PaymentHandlerProps> = ({ onSuccess, onError, isT
   const { getTotalPrice, clearCart, items } = useCartStore();
   const { user } = useAuthStore();
   const { selectedAddress } = useAddressStore();
+  const baseFocusClasses = "focus:outline-none focus:ring-0";
 
   const loadRazorpayScript = (): Promise<boolean> => {
     return new Promise((resolve) => {
@@ -143,7 +144,7 @@ const PaymentHandler: React.FC<PaymentHandlerProps> = ({ onSuccess, onError, isT
           user_id: user?.id || '',
         },
         theme: {
-          color: '#000000',
+          color: 'var(--color-theme-primary)',
         },
         modal: {
           ondismiss: () => {
@@ -163,7 +164,7 @@ const PaymentHandler: React.FC<PaymentHandlerProps> = ({ onSuccess, onError, isT
   return (
     <button
       onClick={handlePayment}
-      className={`btn-primary w-full ${!isTermsAccepted ? 'opacity-50 cursor-not-allowed' : ''}`}
+      className={`btn-primary w-full ${!isTermsAccepted ? 'opacity-50 cursor-not-allowed' : ''} ${baseFocusClasses}`}
       title="Proceed to secure payment"
       disabled={!isTermsAccepted}
     >

@@ -120,17 +120,17 @@ const ProductsPage: React.FC = () => {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] pt-16 sm:pt-20">
+    <div className="min-h-screen bg-theme-background pt-16 sm:pt-20">
       <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-6 sm:py-8">
         {/* Header with Animation */}
         <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 space-y-4 sm:space-y-0 transform transition-all duration-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
           }`}>
           <div>
-            <h1 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-serif font-semibold text-[#4A3F36]">
+            <h1 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-serif font-semibold text-theme-primary">
               {getDisplayedCategoryName()}
               {(selectedParentCategoryId || selectedSubcategoryId || searchParams.get('category')) && ' Collection'}
             </h1>
-            <p className="text-[#6D6258] mt-1 text-xs sm:text-sm">{products.length} product{products.length !== 1 ? 's' : ''} found</p>
+            <p className="text-theme-muted mt-1 text-xs sm:text-sm">{products.length} product{products.length !== 1 ? 's' : ''} found</p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
@@ -140,7 +140,7 @@ const ProductsPage: React.FC = () => {
               <select
                 value={selectedParentCategoryId}
                 onChange={(e) => setSelectedParentCategoryId(e.target.value)}
-                className="w-full sm:w-auto min-w-[160px] appearance-none px-3 py-2 pr-8 border border-[#4A3F36] text-[#4A3F36] rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#DEC9A3] text-xs sm:text-sm cursor-pointer"
+                className="w-full sm:w-auto min-w-[160px] appearance-none px-3 py-2 pr-8 border border-theme-primary text-theme-primary rounded-md bg-white focus:outline-none text-xs sm:text-sm cursor-pointer"
                 title="Select Category"
               >
                 <option value="">All Categories</option>
@@ -150,7 +150,7 @@ const ProductsPage: React.FC = () => {
                   </option>
                 ))}
               </select>
-              <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-[#4A3F36] pointer-events-none" />
+              <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-theme-primary pointer-events-none" />
             </div>
 
 
@@ -159,28 +159,28 @@ const ProductsPage: React.FC = () => {
               <select
                 value={sortBy}
                 onChange={(e) => handleSortChange(e.target.value)}
-                className="w-full sm:w-auto min-w-[120px] appearance-none px-3 py-2 pr-8 border border-[#4A3F36] text-[#4A3F36] rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#DEC9A3] text-xs sm:text-sm cursor-pointer"
+                className="w-full sm:w-auto min-w-[120px] appearance-none px-3 py-2 pr-8 border border-theme-primary text-theme-primary rounded-md bg-white focus:outline-none text-xs sm:text-sm cursor-pointer"
                 title="Sort products"
               >
                 <option value="featured">Featured</option>
                 <option value="price-low">Price: Low to High</option>
                 <option value="price-high">Price: High to Low</option>
               </select>
-              <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-[#4A3F36] pointer-events-none" />
+              <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-theme-primary pointer-events-none" />
             </div>
 
             {/* View Toggle */}
-            <div className="flex border border-[#4A3F36] rounded-md overflow-hidden w-full sm:w-auto">
+            <div className="flex border border-theme-primary rounded-md overflow-hidden w-full sm:w-auto">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`flex-1 sm:flex-none px-3 py-2 transition focus:outline-none ${viewMode === 'grid' ? 'bg-[#DEC9A3] text-[#4A3F36]' : 'text-[#4A3F36] hover:bg-[#EFE8DB]'}`}
+                className={`flex-1 sm:flex-none px-3 py-2 transition focus:outline-none ${viewMode === 'grid' ? 'bg-theme-secondary text-theme-primary' : 'text-theme-primary hover:bg-theme-surface'}`}
                 title="Grid view"
               >
                 <Grid className="h-4 w-4 mx-auto" />
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`flex-1 sm:flex-none px-3 py-2 transition focus:outline-none ${viewMode === 'list' ? 'bg-[#DEC9A3] text-[#4A3F36]' : 'text-[#4A3F36] hover:bg-[#EFE8DB]'}`}
+                className={`flex-1 sm:flex-none px-3 py-2 transition focus:outline-none ${viewMode === 'list' ? 'bg-theme-secondary text-theme-primary' : 'text-theme-primary hover:bg-theme-surface'}`}
                 title="List view"
               >
                 <List className="h-4 w-4 mx-auto" />
@@ -195,7 +195,7 @@ const ProductsPage: React.FC = () => {
             {products.length === 0 ? (
               <div className={`text-center py-12 transform transition-all duration-1000 delay-200 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
                 }`}>
-                <p className="text-[#6D6258] text-sm sm:text-base lg:text-lg">No products found matching your criteria.</p>
+                <p className="text-theme-muted text-sm sm:text-base lg:text-lg">No products found matching your criteria.</p>
               </div>
             ) : (
               <div

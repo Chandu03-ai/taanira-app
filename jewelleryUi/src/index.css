@@ -5,11 +5,57 @@
 
 /* Import Merriweather font */
 
+/* CSS Custom Properties for Theme Colors */
+:root {
+  --color-theme-primary: #4A3F36;
+  --color-theme-secondary: #DEC9A3;
+  --color-theme-background: #FAF9F6;
+  --color-theme-surface: #F2ECE4;
+  --color-theme-muted: #8F6C43;
+  --color-theme-accent: #E5CFB5;
+  --color-theme-dark: #1C1A17;
+  --color-theme-light: #F6F5F1;
+}
+
+/* Global Styles */
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
 /* Base typography */
 body {
   font-family: 'Merriweather', Georgia, serif;
-  color: #4A3F36;
-  background-color: #FAF9F6;
+  color: var(--color-theme-primary);
+  background-color: var(--color-theme-background);
+  overflow-x: hidden;
+}
+
+/* Global focus styles - remove blue outline */
+*:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Custom focus styles for accessibility */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--color-theme-secondary) !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 3px rgba(222, 201, 163, 0.2) !important;
+}
+
+/* Remove default browser focus styles */
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+  outline: none;
+  box-shadow: none;
+  border-color: var(--color-theme-secondary);
 }
 
 /* Modal body scroll prevention */
@@ -19,40 +65,40 @@ body.modal-open {
 
 /* Enhanced focus states */
 .focus-ring {
-  @apply focus:outline-none focus:ring-2 focus:ring-soft-gold focus:ring-opacity-50;
+  @apply focus:outline-none;
 }
 
 /* Elegant button styles */
 .btn-primary {
-  @apply bg-soft-gold text-rich-brown px-6 py-3 rounded-xl font-serif font-semibold italic hover:bg-rose-sand transition-all duration-200 ease-in-out shadow-sm hover:shadow-md focus-ring;
+  @apply bg-theme-secondary text-theme-primary px-6 py-3 rounded-xl font-serif font-semibold italic hover:bg-theme-accent transition-all duration-200 ease-in-out shadow-sm hover:shadow-md focus:outline-none;
 }
 
 .btn-secondary {
-  @apply border-2 border-soft-gold text-rich-brown px-6 py-3 rounded-xl font-serif font-semibold italic hover:bg-soft-gold hover:text-rich-brown transition-all duration-200 ease-in-out shadow-sm hover:shadow-md focus-ring;
+  @apply border-2 border-theme-secondary text-theme-primary px-6 py-3 rounded-xl font-serif font-semibold italic hover:bg-theme-secondary hover:text-theme-primary transition-all duration-200 ease-in-out shadow-sm hover:shadow-md focus:outline-none;
 }
 
 .btn-danger {
-  @apply bg-red-600 text-white px-6 py-3 rounded-xl font-serif font-semibold italic hover:bg-red-700 transition-all duration-200 ease-in-out shadow-sm hover:shadow-md focus-ring;
+  @apply bg-red-600 text-white px-6 py-3 rounded-xl font-serif font-semibold italic hover:bg-red-700 transition-all duration-200 ease-in-out shadow-sm hover:shadow-md focus:outline-none;
 }
 
 /* Elegant input styles */
 .input-elegant {
-  @apply w-full px-4 py-3 border border-mocha/30 rounded-xl bg-white font-serif text-rich-brown placeholder-mocha/60 focus:border-soft-gold focus:ring-2 focus:ring-soft-gold/20 transition-all duration-200 ease-in-out;
+  @apply w-full px-4 py-3 border border-theme-muted/30 rounded-xl bg-white font-serif text-theme-primary placeholder-theme-muted/60 focus:border-theme-secondary focus:outline-none transition-all duration-200 ease-in-out;
 }
 
 /* Card styles */
 .card-elegant {
-  @apply bg-white rounded-2xl shadow-sm border border-subtle-beige/50 p-6 transition-all duration-200 ease-in-out hover:shadow-md;
+  @apply bg-white rounded-2xl shadow-sm border border-theme-surface/50 p-6 transition-all duration-200 ease-in-out hover:shadow-md;
 }
 
 /* Modal overlay */
 .modal-overlay {
-  @apply fixed inset-0 z-50 bg-rich-brown/80 backdrop-blur-sm;
+  @apply fixed inset-0 z-50 bg-theme-primary/80 backdrop-blur-sm;
 }
 
 /* Modal content */
 .modal-content {
-  @apply fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl border border-subtle-beige max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto;
+  @apply fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl border border-theme-surface max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto;
 }
 
 /* Custom animations */
@@ -166,23 +212,6 @@ body.modal-open {
 }
 
 /* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
-  overflow-x: hidden;
-}
-
-body {
-  overflow-x: hidden;
-}
-
-/* Enhanced focus styles */
-button:focus,
-input:focus,
-select:focus,
-textarea:focus {
-  outline: 2px solid #6366f1;
-  outline-offset: 2px;
-}
 
 /* Loading spinner */
 .spinner {
