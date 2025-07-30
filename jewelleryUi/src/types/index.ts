@@ -45,9 +45,7 @@ export interface Product {
   stock: boolean;
   createdAt: string;
   details:string;
-  reviews?: Review[];
-  averageRating?: number;
-  reviewCount?: number;
+  review: string;
   isLatest?:boolean;
 }
 

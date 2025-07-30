@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { passwordService } from '../services/passwordService';
-import { SITE_CONFIG } from '../constants/siteConfig';
 
 const ForgotPasswordPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -30,7 +29,7 @@ const ForgotPasswordPage: React.FC = () => {
       setLoading(true);
       const response = await passwordService.resetPassword(email);
       
-      if (response.code === 2000 || response.success) {
+      if (response.code === 1009) {
         setSuccess(true);
         // Navigate to verify reset page after 2 seconds
         setTimeout(() => {

@@ -10,6 +10,7 @@ export interface ProductFormData {
   images: string[];
   stock: boolean;
   isLatest?: boolean;
+  review: string;
 }
 export interface CategoryFormData {
   name: string;

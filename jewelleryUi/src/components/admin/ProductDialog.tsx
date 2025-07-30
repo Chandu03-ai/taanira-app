@@ -28,6 +28,7 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
     category: '',
     description: '',
     details: '',
+    review: '',
     initialPrice: 0,
     price: 0,
     comparePrice: 0,
@@ -46,6 +47,7 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
           description: '',
           details: '',
           initialPrice: 0,
+          review: '',
           price: 0,
           comparePrice: 0,
           images: [],
@@ -73,6 +75,7 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
         description: product.description || '',
         initialPrice: product.initialPrice || 0,
         details: product.details || '',
+        review:product.review || '',
         price: product.price || 0,
         comparePrice: product.comparePrice || 0,
         images: product.images || [],
@@ -234,6 +237,7 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
         category: formData.category,
         description: formData.description,
         details: formData.details,
+        review:formData.review,
         initialPrice: formData.initialPrice,
         price: formData.price,
         comparePrice: formData.comparePrice,
@@ -381,6 +385,19 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
               onChange={handleInputChange}
               rows={4}
               placeholder="E.g., purity 92.5 silver, handcrafted with pure zari, made of cotton-silk blend"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4B896] focus:border-transparent"
+            />
+          </div>
+                    <div>
+            <label className="block text-sm font-medium text-[#5f3c2c] mb-2">
+              Review
+            </label>
+            <textarea
+              name="review"
+              value={formData.review}
+              onChange={handleInputChange}
+              rows={4}
+              placeholder=""
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4B896] focus:border-transparent"
             />
           </div>

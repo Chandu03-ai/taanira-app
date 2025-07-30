@@ -152,19 +152,23 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 OUT OF STOCK
               </button>
             ) : inCart ? (
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-4">
-                <Link
-                  to="/cart"
-                  className="w-full sm:w-auto px-6 py-3 text-xs font-serif font-semibold italic border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md text-center"
-                >
-                  Go to Cart
-                </Link>
-                <button
-                  onClick={() => removeItem(cartItem!.id)}
-                  className="w-full sm:w-auto px-6 py-3 text-xs font-serif font-semibold italic border-2 border-red-600 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md"
-                >
-                  Remove
-                </button>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-4 w-full">
+                <div className="w-full sm:w-auto">
+                  <Link
+                    to="/cart"
+                    className="block w-full px-6 py-3 text-xs font-serif font-semibold italic border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md text-center"
+                  >
+                    Go to Cart
+                  </Link>
+                </div>
+                <div className="w-full sm:w-auto">
+                  <button
+                    onClick={() => removeItem(cartItem!.id)}
+                    className="w-full px-6 py-3 text-xs font-serif font-semibold italic border-2 border-red-600 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md"
+                  >
+                    Remove
+                  </button>
+                </div>
               </div>
             ) : (
               <button
