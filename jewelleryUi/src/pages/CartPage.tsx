@@ -143,7 +143,7 @@ const CartPage: React.FC = () => {
               </div>
 
               <div className="lg:col-span-1 order-1 lg:order-2">
-                <div className="card-elegant sticky top-24 lg:top-28 bg-theme-surface">
+                <div className="card-elegant sticky rounded-lg p-5 top-24 lg:top-28 bg-theme-surface">
                   <h2 className="text-lg font-serif font-semibold italic text-theme-primary mb-4">Order Summary</h2>
 
                   <div className="space-y-3 mb-6">
@@ -185,7 +185,7 @@ const CartPage: React.FC = () => {
                   ) : (
                     <button
                       onClick={() => navigate('/addresses')} // Correctly sets state to show AddressSelector
-                      className={`btn-primary w-full mt-4 ${baseFocusClasses} ${!agreedToTerms ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      className={`btn-primary p-2 rounded-md text-theme-light bg-theme-primary hover:bg-theme-dark w-full mt-4 ${baseFocusClasses} ${!agreedToTerms ? 'opacity-50 cursor-not-allowed' : ''}`}
                       disabled={!agreedToTerms}
                       title="Select delivery address"
                     >

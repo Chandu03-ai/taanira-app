@@ -8,7 +8,7 @@ const ForgotPasswordPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
+  const [success, ] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -29,7 +29,7 @@ const ForgotPasswordPage: React.FC = () => {
       setLoading(true);
       const response = await passwordService.resetPassword(email);
 
-      if (response.code) {
+      if (response.code === 1009 || response.code === 1007) {
         navigate('/verify-reset', {
           state: {
             email,

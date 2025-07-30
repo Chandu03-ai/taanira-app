@@ -135,7 +135,6 @@ const PaymentHandler: React.FC<PaymentHandlerProps> = ({ onSuccess, onError, isT
           }
         },
         prefill: {
-          name: `${user?.firstname || ''} ${user?.lastname || ''}`,
           email: user?.email || '',
           contact: user?.contact || '',
         },
@@ -164,7 +163,7 @@ const PaymentHandler: React.FC<PaymentHandlerProps> = ({ onSuccess, onError, isT
   return (
     <button
       onClick={handlePayment}
-      className={`btn-primary w-full ${!isTermsAccepted ? 'opacity-50 cursor-not-allowed' : ''} ${baseFocusClasses}`}
+      className={`btn-primary rounded-md p-2 text-theme-light bg-theme-primary hover:bg-theme-dark w-full ${!isTermsAccepted ? 'opacity-50 cursor-not-allowed' : ''} ${baseFocusClasses}`}
       title="Proceed to secure payment"
       disabled={!isTermsAccepted}
     >

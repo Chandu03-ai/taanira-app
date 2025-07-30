@@ -98,6 +98,8 @@ const RegisterPage: React.FC = () => {
         name={name}
         type={type}
         required
+        minLength={name === 'contact' ? 10 : undefined}
+        maxLength={name === 'contact' ? 10 : undefined}
         value={formData[name]}
         onChange={(e) => {
           const value = e.target.value;
@@ -109,12 +111,12 @@ const RegisterPage: React.FC = () => {
             handleChange(e);
           }
         }}
-
         onFocus={() => setFocusedField(name)}
         onBlur={() => setFocusedField(null)}
         inputMode={name === 'contact' ? 'numeric' : undefined}
         className="w-full bg-transparent border-b border-theme-primary text-theme-primary placeholder-transparent focus:outline-none focus:ring-0 pt-8 pb-2"
       />
+
     </div>
   );
 
