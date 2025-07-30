@@ -24,7 +24,12 @@ const AdminDashboard: React.FC = () => {
           <Card icon={ShoppingCart} title="Total Orders" value={stats.orders.total} note={`${stats.orders.pending} pending • ${stats.orders.completed} completed`} />
         </div>
         <div className="card-elegant">
-          <Card icon={DollarSign} title="Revenue" value={`${SITE_CONFIG.currencySymbol}${stats.orders.revenue.toLocaleString()}`} note="Total earnings" />
+          <Card
+            icon={DollarSign}
+            title="Revenue"
+            value={`${SITE_CONFIG.currencySymbol}${(stats.orders.revenue / 100).toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
+            note="Total earnings"
+          />
         </div>
         <div className="card-elegant">
           <Card icon={Users} title="Total Users" value={stats.users.total} note="Registered users" />
