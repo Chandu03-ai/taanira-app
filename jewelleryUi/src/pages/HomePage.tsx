@@ -228,12 +228,6 @@ const HomePage: React.FC = () => {
             </div>
           </div>
         </section>
-
-
-
-        <div className="py-3 sm:py-4 md:py-6 px-3 sm:px-4 border-t border-bronze text-center bg-subtle-beige text-[10px] sm:text-xs text-espresso">
-          <Footer />
-        </div>
       </div>
     </>
   );

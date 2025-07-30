@@ -13,8 +13,9 @@ import UserMenu from './UserMenu';
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showCartSidebar, setShowCartSidebar] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  // Initialize isVisible based on current scroll position: true if at top, false otherwise.
+  const [isVisible, setIsVisible] = useState(window.scrollY === 0);
+  // `scrolled` state is still used for potential future styling changes, but for header visibility, it's always false when visible.
   const [scrolled, setScrolled] = useState(false);
   const [showText, setShowText] = useState(false);
 
@@ -36,14 +37,16 @@ const Header: React.FC = () => {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      setScrolled(currentScrollY > 50);
-      setIsVisible(currentScrollY < lastScrollY || currentScrollY < 100);
-      setLastScrollY(currentScrollY);
+      setScrolled(currentScrollY > 50); // Keep this for potential future styling based on scroll depth
+      // Header is visible ONLY when scroll position is 0
+      setIsVisible(currentScrollY === 0);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
+    // Call handleScroll once on mount to set initial visibility correctly
+    handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
+  }, []); // No dependencies needed as window.scrollY is accessed directly
 
   useEffect(() => {
     const timer = setTimeout(() => setShowText(true), 400);
@@ -55,11 +58,11 @@ const Header: React.FC = () => {
     navigate('/');
   };
 
-  const styles = {
-    background: 'transparent',
-    textColor: isHomePage ? '#FFFFFF' : '#4A3F36',
-    fontWeight: scrolled ? '500' : '700',
-    borderColor: '#DEC9A3',
+  // Styles are simplified as the header is only visible when scrolled is effectively false
+  const headerStyles = {
+    backgroundColor: 'transparent', // Header is always transparent when visible at the top
+    textColor: isHomePage ? '#FFFFFF' : '#4A3F36', // Text color depends only on whether it's the home page
+    fontWeight: '700', // Font weight is always bold when visible at the top
   };
 
   return (
@@ -67,11 +70,11 @@ const Header: React.FC = () => {
       <SEOHead />
       {!isAdminPage && (
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-100 ease-in-out ${
           isVisible ? 'translate-y-0' : '-translate-y-full'
         }`}
         style={{
-          backgroundColor: styles.background,
+          backgroundColor: headerStyles.backgroundColor,
           borderColor: 'transparent',
           borderBottomWidth: '0px',
         }}
@@ -83,7 +86,7 @@ const Header: React.FC = () => {
               <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-6">
                 <button
                   onClick={() => setIsMenuOpen(true)}
-                  style={{ color: styles.textColor, fontWeight: styles.fontWeight }}
+                  style={{ color: headerStyles.textColor, fontWeight: headerStyles.fontWeight }}
                   className={`hover:opacity-70 transition-opacity flex items-center ${
                     showText ? 'opacity-100 animate-fadeInSlow' : 'opacity-0'
                   }`}
@@ -94,20 +97,12 @@ const Header: React.FC = () => {
                 <div className="hidden lg:flex items-center space-x-4 xl:space-x-6 text-xs tracking-widest">
                   <Link
                     to="/products"
-                    style={{ color: styles.textColor, fontWeight: styles.fontWeight }}
+                    style={{ color: headerStyles.textColor, fontWeight: headerStyles.fontWeight }}
                     className="hover:opacity-70 transition-all duration-200 ease-in-out whitespace-nowrap font-serif italic"
                     title="Shop Products"
                   >
                     SHOP
                   </Link>
-                  {/* <Link
-                    to="/about"
-                    style={{ color: styles.textColor, fontWeight: styles.fontWeight }}
-                    className="hover:opacity-70 transition-all duration-200 ease-in-out whitespace-nowrap font-serif italic"
-                    title="About Us"
-                  >
-                    ABOUT
-                  </Link> */}
                 </div>
               </div>
             </div>
@@ -127,7 +122,7 @@ const Header: React.FC = () => {
                   <div className="flex items-center justify-center h-8 sm:h-10 lg:h-10">
                     <span
                       className="text-lg sm:text-xl lg:text-xl xl:text-2xl font-serif italic font-semibold tracking-wide whitespace-nowrap"
-                      style={{ color: styles.textColor, fontWeight: styles.fontWeight }}
+                      style={{ color: headerStyles.textColor, fontWeight: headerStyles.fontWeight }}
                     >
                       {SITE_CONFIG.shortName}
                     </span>
@@ -151,12 +146,12 @@ const Header: React.FC = () => {
                 >
                   <span
                     className="hidden lg:inline text-xs tracking-widest whitespace-nowrap"
-                    style={{ color: styles.textColor, fontWeight: styles.fontWeight }}
+                    style={{ color: headerStyles.textColor, fontWeight: headerStyles.fontWeight }}
                   >
                     CART
                   </span>
                   <div className="relative flex items-center">
-                    <ShoppingBag className="w-6 h-6 sm:w-6 sm:h-6 lg:w-6 lg:h-6" style={{ color: styles.textColor }} />
+                    <ShoppingBag className="w-6 h-6 sm:w-6 sm:h-6 lg:w-6 lg:h-6" style={{ color: headerStyles.textColor }} />
                     {cartItemCount > 0 && (
                       <span className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-red-500 text-white text-[10px] sm:text-xs rounded-full h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 flex items-center justify-center font-medium">
                         {cartItemCount > 99 ? '99+' : cartItemCount}
@@ -193,27 +188,27 @@ const Header: React.FC = () => {
               <div className="flex flex-col gap-4 sm:gap-6 text-left pl-2">
                 {isAuthenticated ? (
                   <>
-                    <Link 
-                      to="/profile" 
-                      onClick={() => setIsMenuOpen(false)} 
+                    <Link
+                      to="/profile"
+                      onClick={() => setIsMenuOpen(false)}
                       className="block text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-2 transition-opacity"
                       title="View Profile"
                     >
                       PROFILE
                     </Link>
                     <div className="border-t border-[#d4b896]/20" />
-                    <Link 
-                      to="/products" 
-                      onClick={() => setIsMenuOpen(false)} 
+                    <Link
+                      to="/products"
+                      onClick={() => setIsMenuOpen(false)}
                       className="block text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-2 transition-opacity"
                       title="Shop Products"
                     >
                       SHOP
                     </Link>
                     <div className="border-t border-[#d4b896]/20" />
-                    <Link 
-                      to="/cart" 
-                      onClick={() => setIsMenuOpen(false)} 
+                    <Link
+                      to="/cart"
+                      onClick={() => setIsMenuOpen(false)}
                       className="flex items-center justify-between text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-2 transition-opacity"
                       title={`Shopping Cart (${cartItemCount} items)`}
                     >
@@ -225,9 +220,9 @@ const Header: React.FC = () => {
                       )}
                     </Link>
                     <div className="border-t border-[#d4b896]/20" />
-                    <Link 
-                      to="/addresses" 
-                      onClick={() => setIsMenuOpen(false)} 
+                    <Link
+                      to="/addresses"
+                      onClick={() => setIsMenuOpen(false)}
                       className="block text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-2 transition-opacity"
                       title="Manage Addresses"
                     >
@@ -236,9 +231,9 @@ const Header: React.FC = () => {
                     <div className="border-t border-[#d4b896]/20" />
                     {user?.role === 'Admin' && (
                       <>
-                        <Link 
-                          to="/admin" 
-                          onClick={() => setIsMenuOpen(false)} 
+                        <Link
+                          to="/admin"
+                          onClick={() => setIsMenuOpen(false)}
                           className="block text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-2 transition-opacity"
                           title="Admin Panel"
                         >
@@ -250,7 +245,7 @@ const Header: React.FC = () => {
                   </>
                 ) : (
                   <>
-                    {['/', '/products', '/about'].map((path) => (
+                    {['/', '/products'].map((path) => (
                       <div key={path}>
                         <Link
                           to={path}
@@ -263,9 +258,9 @@ const Header: React.FC = () => {
                         <div className="border-t border-[#d4b896]/20" />
                       </div>
                     ))}
-                    <Link 
-                      to="/cart" 
-                      onClick={() => setIsMenuOpen(false)} 
+                    <Link
+                      to="/cart"
+                      onClick={() => setIsMenuOpen(false)}
                       className="flex items-center justify-between text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-2 transition-opacity"
                       title={`Shopping Cart (${cartItemCount} items)`}
                     >
@@ -277,9 +272,9 @@ const Header: React.FC = () => {
                       )}
                     </Link>
                     <div className="border-t border-[#d4b896]/20" />
-                    <Link 
-                      to="/login" 
-                      onClick={() => setIsMenuOpen(false)} 
+                    <Link
+                      to="/login"
+                      onClick={() => setIsMenuOpen(false)}
                       className="block text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-2 transition-opacity"
                       title="Login to Account"
                     >
