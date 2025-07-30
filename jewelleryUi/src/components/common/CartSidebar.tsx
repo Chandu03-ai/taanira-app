@@ -153,16 +153,16 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ onClose }) => {
                         <button
                           onClick={() => handleQuantityUpdate(item.id, -1)}
                           disabled={isUpdating} // Disable button while updating
-                          className="w-7 h-7 border border-gray-300 rounded flex items-center justify-center text-sm hover:bg-gray-50 transition-colors"
+                          className="w-7 h-7 border text-black border-gray-300 rounded flex items-center justify-center text-sm hover:bg-gray-50 transition-colors"
                           title="Decrease quantity"
                         >
                           -
                         </button>
-                        <span className="text-sm w-6 text-center font-medium">{item.quantity}</span>
+                        <span className="text-sm w-6 text-center text-black font-medium">{item.quantity}</span>
                         <button
                           onClick={() => handleQuantityUpdate(item.id, +1)}
                           disabled={isUpdating} // Disable button while updating
-                          className="w-7 h-7 border border-gray-300 rounded flex items-center justify-center text-sm hover:bg-gray-50 transition-colors"
+                          className="w-7 h-7 border text-black border-gray-300 rounded flex items-center justify-center text-sm hover:bg-gray-50 transition-colors"
                           title="Increase quantity"
                         >
                           +
@@ -191,8 +191,8 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ onClose }) => {
             }`}
           >
             <div className="flex justify-between items-center mb-3">
-              <span className="text-sm font-semibold">SUBTOTAL:</span>
-              <span className="text-sm font-semibold">₹{getTotalPrice().toLocaleString()}</span>
+              <span className="text-sm text-black font-semibold">SUBTOTAL:</span>
+              <span className="text-sm text-black font-semibold">₹{getTotalPrice().toLocaleString()}</span>
             </div>
             <p className="text-xs text-gray-500 mb-4">
               Taxes and shipping fee will be calculated at checkout.

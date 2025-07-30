@@ -60,11 +60,8 @@ const AddressManagementPage: React.FC = () => {
         title={`Manage Addresses - ${SITE_CONFIG.name}`}
         description="Manage your delivery addresses for jewelry orders"
       />
-
-      <Header />
-
       <main className="min-h-screen pt-24 pb-10 bg-gradient-to-b from-white to-gray-50 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto mt-5">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
             <button
               onClick={() => navigate(-1)}

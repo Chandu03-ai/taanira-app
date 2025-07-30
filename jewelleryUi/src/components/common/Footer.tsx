@@ -5,7 +5,7 @@ import { SITE_CONFIG } from '../../constants/siteConfig';
 
 const Footer: React.FC = () => {
   return (
-    <footer className="text-rich-brown font-serif font-light bg-subtle-beige">
+    <footer className="text-rich-brown font-serif border-t border-mocha/30  font-light bg-subtle-beige">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-center">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 sm:gap-8 w-full max-w-6xl text-center">
