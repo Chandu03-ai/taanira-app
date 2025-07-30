@@ -1,6 +1,6 @@
 # routers/adminProductRouter.py
 from bson import ObjectId
-from fastapi import APIRouter, Body, Request
+from fastapi import APIRouter, Request
 from Models.productModel import ProductImportModel
 from Database.productDb import getProductsFromDb, updateManyProductsInDb, insertProductToDb, getProductFromDb, updateProductInDb
 from Utils.utils import hasRequiredRole
@@ -90,6 +90,8 @@ async def updateProductByIdEndpoint(request: Request, productId: str, payload: P
                 "sizeOptions": category.get("sizeOptions", []),
                 "images": payload.images if payload.images else existing.get("images", []),
                 "details": payload.details,
+                "review": payload.review,
+                "isLatest": payload.isLatest,
                 "updatedAt": formatDateTime(),
                 "createdBy": existing.get("createdBy", userId),
                 "createdAt": existing.get("createdAt", formatDateTime()),
