@@ -3,8 +3,6 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '../store/authStore';
-import { SITE_CONFIG } from '../constants/siteConfig';
-import Footer from '../components/common/Footer';
 
 const LoginPage: React.FC = () => {
   const [formData, setFormData] = useState({ username: '', password: '' });
@@ -15,7 +13,6 @@ const LoginPage: React.FC = () => {
   const { login, loading } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
-  const baseFocusClasses = "focus:outline-none focus:ring-0";
 
   // Get the intended destination from location state
   const from = (location.state as any)?.from?.pathname || '/';
@@ -140,7 +137,7 @@ const LoginPage: React.FC = () => {
                 placeholder="Password"
               />
               <div
-                className={`absolute right-0 top-9 sm:top-10 cursor-pointer text-theme-primary p-2 rounded-xl hover:bg-theme-surface transition-all duration-200 ease-in-out ${baseFocusClasses}`}
+                className="absolute right-0 top-[2rem] sm:top-[2.25rem] cursor-pointer text-theme-primary p-1"
                 onClick={() => setShowPassword(prev => !prev)}
               >
                 {showPassword ? <EyeOff size={16} className="sm:w-[18px] sm:h-[18px]" /> : <Eye size={16} className="sm:w-[18px] sm:h-[18px]" />}
