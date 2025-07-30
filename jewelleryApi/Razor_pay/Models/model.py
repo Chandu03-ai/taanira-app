@@ -18,7 +18,7 @@ class PaymentCaptureRequest(BaseModel):
 class Item(BaseModel):
     productId: Optional[str] = None
     quantity: Optional[int] = None
-    price: Optional[int] = None
+    price: Optional[float] = None
     name: Optional[str] = None
     image: Optional[str] = None
     selectedSize: Optional[str] = None
