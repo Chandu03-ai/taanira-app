@@ -70,7 +70,7 @@ const CartPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-subtle-beige pt-16 sm:pt-20 font-serif">
+    <div className="min-h-screen bg-linen pt-16 sm:pt-20 font-serif">
       <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-6 sm:py-8 max-w-7xl">
         {!showAddressSelector ? (
           <>
@@ -142,7 +142,7 @@ const CartPage: React.FC = () => {
               </div>
 
               <div className="lg:col-span-1 order-1 lg:order-2">
-                <div className="card-elegant sticky top-24 lg:top-28">
+                <div className="card-elegant sticky top-24 lg:top-28 bg-subtle-beige">
                   <h2 className="text-lg font-serif font-semibold italic text-rich-brown mb-4">Order Summary</h2>
 
                   <div className="space-y-3 mb-6">

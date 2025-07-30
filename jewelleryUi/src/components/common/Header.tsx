@@ -120,7 +120,7 @@ const Header: React.FC = () => {
                   <UserMenu dropdownPosition="bottom" />
                   <button
                     onClick={() => setShowCartSidebar(true)}
-                    className="flex items-center gap-1 sm:gap-2 hover:opacity-70 transition-opacity relative h-8 sm:h-10 lg:h-12 min-w-0"
+                    className="flex items-center focus:outline-none gap-1 sm:gap-2 hover:opacity-70 transition-opacity relative h-8 sm:h-10 lg:h-12 min-w-0"
                     title={`Shopping Cart (${cartItemCount} items)`}
                   >
                     <span

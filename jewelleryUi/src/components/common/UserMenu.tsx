@@ -90,7 +90,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ dropdownPosition = 'bottom' }) => {
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setIsOpen(prev => !prev)}
-        className="flex items-center space-x-1 sm:space-x-2 hover:opacity-70 transition-all duration-200 ease-in-out h-8 sm:h-10 lg:h-12 outline-none focus:outline-none focus:ring-0 active:outline-none active:ring-0 border-none min-w-0 font-serif italic"
+        className="flex items-center space-x-1 sm:space-x-2 hover:opacity-70 transition-all duration-200 ease-in-out h-8 sm:h-10 lg:h-12 focus:outline-none focus:ring-0 active:outline-none active:ring-0 border-none min-w-0 font-serif italic"
         style={{ color: styles.textColor, fontWeight: styles.fontWeight }}
         title={`${user?.firstname || 'User'} Menu`}
         aria-haspopup="true"

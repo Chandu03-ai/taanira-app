@@ -88,7 +88,7 @@ const UserProfile: React.FC = () => {
           <div className="flex border-b border-subtle-beige">
             <button
               onClick={() => setActiveTab('profile')}
-              className={`flex-1 flex items-center justify-center px-6 py-4 text-sm font-serif font-semibold italic transition-all duration-200 ${
+              className={`flex-1 flex items-center justify-center focus:outline-none px-6 py-4 text-sm font-serif font-semibold italic duration-200 ${
                 activeTab === 'profile'
                   ? 'text-rich-brown border-b-2 border-soft-gold bg-rose-sand/20'
                   : 'text-mocha hover:text-rich-brown hover:bg-subtle-beige/50'
@@ -99,7 +99,7 @@ const UserProfile: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveTab('password')}
-              className={`flex-1 flex items-center justify-center px-6 py-4 text-sm font-serif font-semibold italic transition-all duration-200 ${
+              className={`flex-1 flex items-center justify-center focus:outline-none px-6 py-4 text-sm font-serif font-semibold italic duration-200 ${
                 activeTab === 'password'
                   ? 'text-rich-brown border-b-2 border-soft-gold bg-rose-sand/20'
                   : 'text-mocha hover:text-rich-brown hover:bg-subtle-beige/50'
