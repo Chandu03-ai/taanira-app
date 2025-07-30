@@ -96,7 +96,7 @@ def getProductDetails(slug: str) -> str:
 
 
 async def createProducts(client, cookies, categorySlugs, uploadedImages):
-    for i in range(20):
+    for i in range(10):
         catSlug = categorySlugs[i % len(categorySlugs)]
         product = {
             "name": f"Product {i+1}",
@@ -109,6 +109,8 @@ async def createProducts(client, cookies, categorySlugs, uploadedImages):
             "images": [uploadedImages[i % len(uploadedImages)]],
             "stock": True,
             "details": getProductDetails(catSlug),
+            "review": "The product is of good quality and performs as expected. Satisfied with the purchase.",
+            "isLatest": i < 4,  # First 4 products will have isLatest = True
         }
         try:
             res = await client.post(PRODUCT_URL, cookies=cookies, json=product)
