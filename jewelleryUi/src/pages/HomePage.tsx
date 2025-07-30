@@ -52,17 +52,16 @@ const HomePage: React.FC = () => {
       setCategories([]);
     }
   };
+  
   const fetchProducts = async () => {
     try {
       const response = await apiService.getProducts();
-      const sortedProducts = (response || []).sort((a: Product, b: Product) => {
-        if (a.createdAt && b.createdAt) {
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        }
-        return Number(b.id) - Number(a.id);
-      });
 
-      setProducts(sortedProducts.slice(0, 4));
+
+      const latestProducts = (response || []).filter(product => product.isLatest === true);
+
+      setProducts(latestProducts.slice(0, 4));
+
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {
