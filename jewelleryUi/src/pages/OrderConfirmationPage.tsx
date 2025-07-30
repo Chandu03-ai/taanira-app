@@ -116,9 +116,9 @@ const OrderConfirmationPage: React.FC = () => {
               {/* Order Status */}
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <h2 className="text-xl font-semibold text-gray-800 mb-6">Order Status</h2>
-                
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                  
+
                   <div className={`flex items-center space-x-3 p-4 rounded-lg border ${getPaymentStatusColor(order.status)}`}>
                     <CheckCircle className="h-5 w-5" />
                     <div>
@@ -170,8 +170,8 @@ const OrderConfirmationPage: React.FC = () => {
                           item.image?.startsWith('http')
                             ? item.image
                             : item.image
-                            ? `${staticImageBaseUrl}/${item.image}`
-                            : 'https://www.macsjewelry.com/cdn/shop/files/IMG_4360_594x.progressive.jpg?v=1701478772'
+                              ? `${staticImageBaseUrl}/${item.image}`
+                              : 'https://www.macsjewelry.com/cdn/shop/files/IMG_4360_594x.progressive.jpg?v=1701478772'
                         }
                         alt={item.name}
                         className="w-16 h-16 object-cover rounded-lg flex-shrink-0"
@@ -185,10 +185,16 @@ const OrderConfirmationPage: React.FC = () => {
                       </div>
                       <div className="text-right">
                         <p className="font-medium text-gray-900">
-                          {SITE_CONFIG.currencySymbol}{item.price.toLocaleString()}
+                          {SITE_CONFIG.currencySymbol}{item.price.toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
                         </p>
                         <p className="text-sm text-gray-500">
-                          Total: {SITE_CONFIG.currencySymbol}{(item.price * item.quantity).toLocaleString()}
+                          Total: {SITE_CONFIG.currencySymbol}{(item.price * item.quantity).toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
                         </p>
                       </div>
                     </div>
@@ -216,39 +222,34 @@ const OrderConfirmationPage: React.FC = () => {
             <div className="lg:col-span-1">
               <div className="bg-white rounded-lg shadow-sm p-6 sticky top-24">
                 <h2 className="text-xl font-semibold text-gray-800 mb-6">Order Summary</h2>
-                
+
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Subtotal:</span>
-                    <span className="font-medium">{SITE_CONFIG.currencySymbol}{order?.amount?.toLocaleString()}</span>
+                    <span className="font-medium">
+                      {SITE_CONFIG.currencySymbol}
+                      {order.items
+                        ?.reduce((total, item) => total + item.price * item.quantity, 0)
+                        .toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                    </span>
+
                   </div>
-                  
-                  {/* {order.tax > 0 && (
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Tax:</span>
-                      <span className="font-medium">{SITE_CONFIG.currencySymbol}{order.tax.toLocaleString()}</span>
-                    </div>
-                  )}
-                  
-                  {order.shipping > 0 && (
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Shipping:</span>
-                      <span className="font-medium">{SITE_CONFIG.currencySymbol}{order.shipping.toLocaleString()}</span>
-                    </div>
-                  )}
-                  
-                  {order.discount > 0 && (
-                    <div className="flex justify-between text-sm text-green-600">
-                      <span>Discount:</span>
-                      <span className="font-medium">-{SITE_CONFIG.currencySymbol}{order.discount.toLocaleString()}</span>
-                    </div>
-                  )} */}
-                  
+
+
                   <div className="border-t border-gray-200 pt-3">
                     <div className="flex justify-between">
                       <span className="text-lg font-semibold text-gray-900">Total:</span>
                       <span className="text-lg font-semibold text-gray-900">
-                        {SITE_CONFIG.currencySymbol}{order?.amount?.toLocaleString()}
+                        {SITE_CONFIG.currencySymbol}
+                        {order.items
+                          ?.reduce((total, item) => total + item.price * item.quantity, 0)
+                          .toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
                       </span>
                     </div>
                   </div>
@@ -259,7 +260,7 @@ const OrderConfirmationPage: React.FC = () => {
                     <Download className="h-4 w-4" />
                     <span>Download Invoice</span>
                   </button>
-                  
+
                   {isAuthenticated && (
                     <Link
                       to="/user/orders"
@@ -269,7 +270,7 @@ const OrderConfirmationPage: React.FC = () => {
                       <span>View All Orders</span>
                     </Link>
                   )}
-                  
+
                   <Link
                     to="/products"
                     className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors text-center block"
@@ -292,7 +293,7 @@ const OrderConfirmationPage: React.FC = () => {
                 <h3 className="font-medium text-gray-900 mb-2">Order Processing</h3>
                 <p className="text-sm text-gray-600">We're preparing your jewelry with care and attention to detail.</p>
               </div>
-              
+
               <div className="text-center">
                 <div className="inline-flex items-center justify-center w-12 h-12 bg-purple-100 rounded-full mb-3">
                   <Truck className="h-6 w-6 text-purple-600" />
@@ -300,7 +301,7 @@ const OrderConfirmationPage: React.FC = () => {
                 <h3 className="font-medium text-gray-900 mb-2">Shipping Updates</h3>
                 <p className="text-sm text-gray-600">You'll receive tracking details via email once your order ships.</p>
               </div>
-              
+
               <div className="text-center">
                 <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mb-3">
                   <CheckCircle className="h-6 w-6 text-green-600" />
