@@ -13,3 +13,5 @@ class ProductImportModel(BaseModel):
     images: List[str] = Field(default_factory=list)
     stock: bool = True
     details: Optional[str] = None
+    review: Optional[str] = None
+    isLatest: bool = False

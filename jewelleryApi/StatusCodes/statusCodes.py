@@ -182,4 +182,9 @@ CUSTOM_STATUS_CODES = {
     2159: {"code": 2159, "message": "error while fetching all products by category"},
     2160: {"code": 2160, "message": "successfully sent email to user with trackingId"},
     2161: {"code": 2161, "message": "error while sending email to user with trackingId"},
+
+
+    2062: {"code": 2062, "message": "Old password is incorrect."},
+    2063: {"code": 2063, "message": "password updated successfully."},
+    2064: {"code": 2064, "message": "Error occurred while changing the password."},
 }
