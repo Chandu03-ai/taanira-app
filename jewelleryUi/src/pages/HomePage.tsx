@@ -10,6 +10,7 @@ import Neckless from '../assets/Neckless.jpg';
 import catalog from '../assets/Devi.jpg';
 import Header from '../components/common/Header';
 import { motion } from 'framer-motion';
+import { formatReadableDate } from '../utils/dateUtils';
 
 const container = {
   hidden: {},
@@ -53,18 +54,15 @@ const HomePage: React.FC = () => {
       setCategories([]);
     }
   };
-
   const fetchProducts = async () => {
     try {
       const response = await apiService.getProducts();
-      const sortedProducts = (response || []).sort((a: Product, b: Product) => {
-        if (a.createdAt && b.createdAt) {
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        }
-        return Number(b.id) - Number(a.id);
-      });
 
-      setProducts(sortedProducts.slice(0, 4));
+
+      const latestProducts = (response || []).filter(product => product.isLatest === true);
+
+      setProducts(latestProducts.slice(0, 4));
+
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {
@@ -128,19 +126,19 @@ const HomePage: React.FC = () => {
                 transition={{ delay: hasAnimated ? 1.5 : 0, duration: 1 }}
               >
                 {/* Catalog Section */}
-                  <div className="relative z-10 w-full max-w-4xl px-4 sm:px-6 pb-6 sm:pb-8 md:pb-0 text-left">
-                    <div className="space-y-2 sm:space-y-3 md:space-y-4 lg:space-y-6">
-                      <p className="text-sm sm:text-base md:text-lg font-light leading-relaxed text-white">
-                        {SITE_CONFIG.name} is more than jewelry - it's a celebration of craftsmanship.
-                      </p>
-                      <p className="text-sm sm:text-base md:text-lg font-light leading-relaxed text-white">
-                        Each piece is handcrafted with 92.5% pure silver, ensuring lasting quality and timeless beauty.
-                      </p>
-                      <p className="text-sm sm:text-base md:text-lg font-light leading-relaxed text-white">
-                        From traditional designs to contemporary styles, our collection celebrates the art of silver jewelry making.
-                      </p>
-                    </div>
+                <div className="relative z-10 w-full max-w-4xl px-4 sm:px-6 pb-6 sm:pb-8 md:pb-0 text-left">
+                  <div className="space-y-2 sm:space-y-3 md:space-y-4 lg:space-y-6">
+                    <p className="text-sm sm:text-base md:text-lg font-light leading-relaxed text-white">
+                      {SITE_CONFIG.name} is more than jewelry - it's a celebration of craftsmanship.
+                    </p>
+                    <p className="text-sm sm:text-base md:text-lg font-light leading-relaxed text-white">
+                      Each piece is handcrafted with 92.5% pure silver, ensuring lasting quality and timeless beauty.
+                    </p>
+                    <p className="text-sm sm:text-base md:text-lg font-light leading-relaxed text-white">
+                      From traditional designs to contemporary styles, our collection celebrates the art of silver jewelry making.
+                    </p>
                   </div>
+                </div>
               </motion.p>
             </div>
           </div>

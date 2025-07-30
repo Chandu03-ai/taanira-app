@@ -35,12 +35,12 @@ export interface Product {
   hoverImage: string | undefined;
   id: string;
   name: string;
-  slug?: string; // SEO-friendly URL
-  category: string; // slug or ObjectId reference
+  slug?: string; 
+  category: string; 
   description?: string;
-  initialPrice: number; // what admin paid
-  price: number; // selling price to customer
-  comparePrice?: number; // optional MRP
+  initialPrice: number; 
+  price: number; 
+  comparePrice?: number; 
   images: string[];
   stock: boolean;
   createdAt: string;
@@ -48,6 +48,7 @@ export interface Product {
   reviews?: Review[];
   averageRating?: number;
   reviewCount?: number;
+  isLatest?:boolean;
 }
 
 export interface Category {
@@ -89,17 +90,17 @@ export interface OrderItem {
   quantity: number;
   selectedSize?: string;
   image: string;
-  description?: string; // Added description property
+  description?: string; 
 }
 
 export interface Order {
-  id: string; // Razorpay order ID
-  amount: number; // Total amount in paisa
+  id: string; 
+  amount: number; 
   amount_due: number;
   amount_paid: number;
   attempts: number;
   currency: string;
-  entity: string; // Always "order"
+  entity: string; 
   status: 'created' | 'attempted' | 'paid';
   notes: {
     itemCount: string;
@@ -108,7 +109,7 @@ export interface Order {
   };
   receipt: string;
   offer_id: string | null;
-  createdAt: string; // Unix timestamp (in seconds)
+  createdAt: string; 
   items: OrderItem[];
   trackingNumber:string | null;
   shippingAddress: AddressFormData;

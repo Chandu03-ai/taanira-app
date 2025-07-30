@@ -1,14 +1,15 @@
 export interface ProductFormData {
-    name: string;
-    slug: string;
-    category: string;
-    description: string;
-    details:string;
-    initialPrice: number;
-    price: number;
-    comparePrice: number;
-    images: string[];
-    stock: boolean;
+  name: string;
+  slug: string;
+  category: string;
+  description: string;
+  details: string;
+  initialPrice: number;
+  price: number;
+  comparePrice: number;
+  images: string[];
+  stock: boolean;
+  isLatest?: boolean;
 }
 export interface CategoryFormData {
   name: string;
