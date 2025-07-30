@@ -7,10 +7,7 @@ import { useAuthStore } from '../store/authStore';
 const RegisterPage: React.FC = () => {
   const [formData, setFormData] = useState({
     email: '',
-    firstname: '',
-    lastname: '',
     contact: '',
-    username: '',
     password: '',
     confirmPassword: '',
   });
@@ -38,17 +35,9 @@ const RegisterPage: React.FC = () => {
     e.preventDefault();
     setError('');
 
-    const {
-      email,
-      firstname,
-      lastname,
-      contact,
-      username,
-      password,
-      confirmPassword,
-    } = formData;
+    const { email, contact, password, confirmPassword } = formData;
 
-    if (!email.trim() || !firstname.trim() || !lastname.trim() || !contact.trim() || !username.trim() || !password.trim()) {
+    if (!email.trim() || !contact.trim() || !password.trim()) {
       setError('Please fill in all fields');
       return;
     }
@@ -58,29 +47,32 @@ const RegisterPage: React.FC = () => {
       return;
     }
 
-    if (firstname.length > 12 || lastname.length > 12) {
-      setError('First name and last name must not exceed 12 characters');
-      return;
-    }
-
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
     }
 
-    const { confirmPassword: _, ...registerData } = formData;
+    // 👇 Add username as email
+    const { confirmPassword: _, ...rest } = formData;
+    const registerData = {
+      ...rest,
+      username: email,
+    };
+
     const success = await register(registerData);
 
     if (success) {
-      await sendEmailConfirmation(email);
-      
-      // Redirect to intended destination or home
+      // ✅ Send email without blocking navigation
+      sendEmailConfirmation(email); // fire-and-forget
+
       const redirectTo = from === '/register' ? '/' : from;
       navigate(redirectTo, { replace: true });
     } else {
       setError('Registration failed. Please try again.');
     }
   };
+
+
 
   const floatingLabelVariants = {
     active: { y: -28, scale: 0.8, transition: { duration: 0.2 } },
@@ -120,9 +112,8 @@ const RegisterPage: React.FC = () => {
 
         onFocus={() => setFocusedField(name)}
         onBlur={() => setFocusedField(null)}
-        maxLength={name === 'firstname' || name === 'lastname' ? 12 : undefined}
         inputMode={name === 'contact' ? 'numeric' : undefined}
-        className={`w-full bg-transparent border-b border-theme-primary text-theme-primary placeholder-transparent ${baseFocusClasses} pt-8 pb-2`}
+        className="w-full bg-transparent border-b border-theme-primary text-theme-primary placeholder-transparent focus:outline-none focus:ring-0 pt-8 pb-2"
       />
     </div>
   );
@@ -139,14 +130,9 @@ const RegisterPage: React.FC = () => {
             </div>
           )}
 
-          <div className="flex gap-2 sm:gap-3">
-            <div className="w-1/2">{renderInput('firstname', 'First Name')}</div>
-            <div className="w-1/2">{renderInput('lastname', 'Last Name')}</div>
-          </div>
 
           {renderInput('email', 'Email', 'email')}
           {renderInput('contact', 'Contact (+91)', 'tel')}
-          {renderInput('username', 'Username')}
 
           <div className="relative">
             <motion.label
@@ -166,11 +152,11 @@ const RegisterPage: React.FC = () => {
               onChange={handleChange}
               onFocus={() => setFocusedField('password')}
               onBlur={() => setFocusedField(null)}
-              className={`w-full bg-transparent border-b border-theme-primary text-theme-primary placeholder-transparent ${baseFocusClasses} pt-8 pb-2 text-sm sm:text-base`}
+              className="w-full bg-transparent border-b border-theme-primary text-theme-primary placeholder-transparent focus:outline-none focus:ring-0 pt-8 pb-2 text-sm sm:text-base"
               placeholder="Password"
             />
             <div
-              className={`absolute right-0 top-9 sm:top-10 cursor-pointer text-theme-primary p-1 ${baseFocusClasses}`}
+              className="absolute right-0 top-9 sm:top-10 cursor-pointer text-theme-primary p-1 focus:outline-none focus:ring-0"
               onClick={() => setShowPassword(prev => !prev)}
             >
               {showPassword ? <EyeOff size={16} className="sm:w-[18px] sm:h-[18px]" /> : <Eye size={16} className="sm:w-[18px] sm:h-[18px]" />}
@@ -183,7 +169,7 @@ const RegisterPage: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full bg-theme-secondary text-theme-primary text-xs sm:text-sm font-semibold py-2.5 sm:py-3 rounded-md flex justify-between items-center px-4 sm:px-5 tracking-wider hover:bg-theme-accent transition ${baseFocusClasses}`}
+              className="w-full bg-theme-secondary text-theme-primary text-xs sm:text-sm font-semibold py-2.5 sm:py-3 rounded-md flex justify-between items-center px-4 sm:px-5 tracking-wider hover:bg-theme-accent transition focus:outline-none focus:ring-0"
             >
               <span>{loading ? 'Creating...' : 'CREATE ACCOUNT'}</span>
               <span className="text-base sm:text-lg">→</span>
@@ -191,7 +177,7 @@ const RegisterPage: React.FC = () => {
           </div>
 
           <div className="text-center mt-3 sm:mt-4 text-xs sm:text-sm uppercase tracking-widest text-theme-primary font-medium">
-            <Link to="/login" className={baseFocusClasses}>Back to Login</Link>
+            <Link to="/login" className="focus:outline-none focus:ring-0">Back to Login</Link>
           </div>
         </form>
       </div>

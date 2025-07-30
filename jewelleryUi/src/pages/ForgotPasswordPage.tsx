@@ -28,13 +28,14 @@ const ForgotPasswordPage: React.FC = () => {
     try {
       setLoading(true);
       const response = await passwordService.resetPassword(email);
-      
-      if (response.code === 1009) {
-        setSuccess(true);
-        // Navigate to verify reset page after 2 seconds
-        setTimeout(() => {
-          navigate('/verify-reset', { state: { email } });
-        }, 2000);
+
+      if (response.code) {
+        navigate('/verify-reset', {
+          state: {
+            email,
+            message: response.message, 
+          },
+        });
       } else {
         setError(response.message || 'Failed to send reset email. Please try again.');
       }
@@ -120,7 +121,7 @@ const ForgotPasswordPage: React.FC = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-transparent border-b-2 border-rich-brown text-rich-brown placeholder-transparent focus:outline-none focus:border-soft-gold pt-8 pb-2 text-sm sm:text-base font-serif transition-all duration-200 ease-in-out"
+                className="w-full bg-transparent border-b-2 border-rich-brown text-rich-brown placeholder-transparent focus:outline-none focus:ring-0 focus:border-soft-gold pt-8 pb-2 text-sm sm:text-base font-serif transition-all duration-200 ease-in-out"
                 placeholder="Enter your email"
               />
               <Mail className="absolute right-0 top-8 h-5 w-5 text-rich-brown/60" />
@@ -130,7 +131,7 @@ const ForgotPasswordPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="btn-primary w-full flex justify-between items-center"
+                className="w-full bg-theme-secondary text-theme-primary px-6 py-3 rounded-xl font-serif font-semibold italic hover:bg-theme-accent transition-all duration-200 ease-in-out shadow-sm hover:shadow-md focus:outline-none focus:ring-0 flex justify-between items-center"
               >
                 <span>{loading ? 'Sending...' : 'SEND RESET CODE'}</span>
                 <span className="text-base sm:text-lg">→</span>

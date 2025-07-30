@@ -178,14 +178,14 @@ const AddressForm: React.FC<AddressFormProps> = ({
 
   const inputClasses = `
     w-full px-3 py-2 sm:px-4 sm:py-2.5 border rounded-lg sm:rounded-xl
-    focus:ring-2 focus:ring-[#DEC9A3] focus:border-[#AA732F]
+    focus:outline-none focus:ring-0 focus:border-[#AA732F]
     font-serif italic text-rich-brown placeholder:text-gray-400
     transition-all duration-200 ease-in-out
     min-w-0
   `;
 
   const errorClasses = `
-    border-red-500 focus:border-red-500 focus:ring-red-200
+    border-red-500 focus:border-red-500 focus:ring-0
   `;
 
   const labelClasses = `

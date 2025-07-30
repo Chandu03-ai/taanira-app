@@ -37,8 +37,6 @@ export const useAuthStore = create<AuthState>()(
             const user: User = {
               id: response.result?.id,
               email: response.result?.email,
-              firstname: response.result?.firstname,
-              lastname: response.result?.lastname,
               contact: response.result?.contact,
               username: response.result?.username,
               role: response.result?.role as 'Admin' | 'User' | undefined,
@@ -80,10 +78,8 @@ export const useAuthStore = create<AuthState>()(
             const user: User = {
               id: response.result.id,
               email: response.result.email,
-              firstname: response.result.firstname,
-              lastname: response.result.lastname,
               contact: response.result.contact,
-              username: response.result.username,
+              username: response.result.email,
               role: response.result.role as 'Admin' | 'User' | undefined,
             };
 
@@ -144,8 +140,6 @@ export const useAuthStore = create<AuthState>()(
             const user: User = {
               id: response.result.id,
               email: response.result.email,
-              firstname: response.result.firstname,
-              lastname: response.result.lastname,
               contact: response.result.contact,
               username: response.result.username,
               role: response.result.role as 'Admin' | 'User' | undefined,

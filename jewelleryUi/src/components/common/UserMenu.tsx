@@ -94,14 +94,14 @@ const UserMenu: React.FC<UserMenuProps> = ({ dropdownPosition = 'bottom' }) => {
         onClick={() => setIsOpen(prev => !prev)}
         className={`flex items-center space-x-1 sm:space-x-2 hover:opacity-70 transition-all duration-200 ease-in-out h-8 sm:h-10 lg:h-12 ${baseFocusClasses} active:outline-none active:ring-0 border-none min-w-0 font-serif italic`}
         style={{ color: styles.textColor, fontWeight: styles.fontWeight }}
-        title={`${user?.firstname || 'User'} Menu`}
+        title={`${user?.username || 'User'} Menu`}
         aria-haspopup="true"
         aria-expanded={isOpen}
         aria-controls="user-menu-dropdown"
       >
         {isAdmin && <UserCircle className="h-6 w-6 sm:h-7 sm:w-7 flex-shrink-0" />}
         <span className="text-xs sm:text-sm lg:text-sm tracking-widest truncate max-w-[80px] sm:max-w-none">
-          {user?.username?.toUpperCase() || 'USER'}
+          {user?.username || 'USER'}
         </span>
         {isOpen ? (
           <ChevronUp
@@ -125,7 +125,6 @@ const UserMenu: React.FC<UserMenuProps> = ({ dropdownPosition = 'bottom' }) => {
             } right-0 w-44 xs:w-[calc(100vw-2rem)] sm:w-48 lg:w-52 bg-theme-light rounded-2xl shadow-xl border border-theme-surface py-2 z-50 min-w-max`}
         >
           <div className="px-3 sm:px-4 py-2 sm:py-3 text-sm text-theme-primary border-b border-theme-surface font-serif">
-            <div className="font-semibold italic truncate">{user?.firstname} {user?.lastname}</div>
             <div className="text-xs text-theme-muted/70 font-light truncate mt-1">{user?.email}</div>
           </div>
           

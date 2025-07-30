@@ -65,6 +65,8 @@ export const useProductManagement = () => {
             comparePrice: productData.comparePrice,
             images: productData.images,
             stock: productData.stock,
+            isLatest:productData.isLatest,
+            review:productData.review
           };
 
           await apiService.createProduct(productToCreate);

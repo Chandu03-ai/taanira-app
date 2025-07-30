@@ -4,8 +4,6 @@ import { Review } from "./review";
 export interface User {
   id: string;
   email: string;
-  firstname: string;
-  lastname: string;
   contact: string;
   username: string;
   role?: 'Admin' | 'User';
@@ -20,8 +18,6 @@ export interface LoginRequest {
 
 export interface RegisterRequest {
   email: string;
-  firstname: string;
-  lastname: string;
   contact: string;
   username: string;
   password: string;
@@ -170,7 +166,9 @@ export interface ProductImport {
   details?: string;
   images?: string[];
   stock?: boolean;
-  id?: string; // Allow id for update operations
+  id?: string; 
+  review?:string;
+  isLatest?:boolean;
 }
 
 

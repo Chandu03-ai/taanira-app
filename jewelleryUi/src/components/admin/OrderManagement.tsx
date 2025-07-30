@@ -247,7 +247,7 @@ const ActionsCellRenderer = (params: any) => {
                 value={trackingId}
                 onChange={(e) => setTrackingId(e.target.value)}
                 placeholder="Enter tracking ID"
-                className="w-full max-w-xs border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                className="w-full max-w-xs border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-0 focus:border-indigo-500 transition-colors"
                 disabled={isSubmitting}
               />
 
@@ -494,7 +494,7 @@ const OrderManagement: React.FC = () => {
                   placeholder="Search orders, customers, items..."
                   value={quickFilterText}
                   onChange={(e) => setQuickFilterText(e.target.value)}
-                  className="w-full lg:w-80 pl-10 pr-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white shadow-sm"
+                  className="w-full lg:w-80 pl-10 pr-4 py-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-0 focus:border-indigo-500 transition-all duration-200 bg-white shadow-sm"
                 />
               </div>
 
@@ -503,7 +503,7 @@ const OrderManagement: React.FC = () => {
                 <button
                   onClick={handleRefresh}
                   disabled={isRefreshing}
-                  className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 transition-all duration-200 shadow-sm"
+                  className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 focus:outline-none focus:ring-0 disabled:opacity-50 transition-all duration-200 shadow-sm"
                   title="Refresh data"
                 >
                   <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
@@ -512,7 +512,7 @@ const OrderManagement: React.FC = () => {
 
                 <button
                   onClick={onExportCsv}
-                  className="flex items-center gap-2 px-4 py-3 text-sm font-medium  text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 transition-all duration-200 shadow-sm"
+                  className="flex items-center gap-2 px-4 py-3 text-sm font-medium  text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 focus:outline-none focus:ring-0 disabled:opacity-50 transition-all duration-200 shadow-sm"
                   title="Export to CSV"
                 >
                   <FileDown className="h-4 w-4" />

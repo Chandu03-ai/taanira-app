@@ -484,7 +484,7 @@ const CategoryManagement: React.FC = () => {
                 value={formData.name}
                 onChange={handleInputChange}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4B896] focus:border-transparent outline-none"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-0 focus:border-[#D4B896]"
                 placeholder="Enter category name"
               />
             </div>
@@ -499,7 +499,7 @@ const CategoryManagement: React.FC = () => {
                 name="slug"
                 value={formData.slug}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4B896] focus:border-transparent outline-none"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-0 focus:border-[#D4B896]"
                 placeholder="category-slug"
               />
             </div>
@@ -513,7 +513,7 @@ const CategoryManagement: React.FC = () => {
               id="category-type"
               value={selectedType}
               onChange={handleCategoryTypeChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4B896] focus:border-transparent outline-none"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-0 focus:border-[#D4B896]"
             >
               <option value="handmade">Handmade</option>
               <option value="handloom">Handloom</option>
@@ -538,7 +538,7 @@ const CategoryManagement: React.FC = () => {
                   sizeOptions: newSizeOptions,
                 }));
               }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4B896] focus:border-transparent outline-none"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-0 focus:border-[#D4B896]"
             />
           </div>
 

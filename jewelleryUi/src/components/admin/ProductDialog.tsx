@@ -46,8 +46,8 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
           category: '',
           description: '',
           details: '',
-          initialPrice: 0,
           review: '',
+          initialPrice: 0,
           price: 0,
           comparePrice: 0,
           images: [],
@@ -75,7 +75,7 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
         description: product.description || '',
         initialPrice: product.initialPrice || 0,
         details: product.details || '',
-        review:product.review || '',
+        review: product.review || '',
         price: product.price || 0,
         comparePrice: product.comparePrice || 0,
         images: product.images || [],
@@ -237,7 +237,7 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
         category: formData.category,
         description: formData.description,
         details: formData.details,
-        review:formData.review,
+        review: formData.review,
         initialPrice: formData.initialPrice,
         price: formData.price,
         comparePrice: formData.comparePrice,
@@ -272,7 +272,7 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
                 value={formData.name}
                 onChange={handleNameChange}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4B896] focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-0 focus:border-[#D4B896]"
               />
             </div>
 
@@ -285,7 +285,7 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
                 value={formData.category}
                 onChange={handleInputChange}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4B896] focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-0 focus:border-[#D4B896]"
               >
                 <option value="">Select Category</option>
                 {categories.map((cat) => (
@@ -310,7 +310,7 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
                 min="0"
                 step="0.01"
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4B896] focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-0 focus:border-[#D4B896]"
               />
             </div>
 
@@ -327,7 +327,7 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
                 min="0"
                 step="0.01"
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4B896] focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-0 focus:border-[#D4B896]"
               />
             </div>
 
@@ -343,7 +343,7 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
                 placeholder="Original price"
                 min="0"
                 step="0.01"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4B896] focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-0 focus:border-[#D4B896]"
               />
             </div>
 
@@ -357,7 +357,7 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
                 value={formData.slug}
                 onChange={handleInputChange}
                 placeholder="product-slug"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4B896] focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-0 focus:border-[#D4B896]"
               />
             </div>
           </div>
@@ -372,7 +372,7 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
               onChange={handleInputChange}
               rows={3}
               placeholder="Product description..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4B896] focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-0 focus:border-[#D4B896]"
             />
           </div>
           <div>
@@ -385,10 +385,10 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
               onChange={handleInputChange}
               rows={4}
               placeholder="E.g., purity 92.5 silver, handcrafted with pure zari, made of cotton-silk blend"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4B896] focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-0 focus:border-[#D4B896]"
             />
           </div>
-                    <div>
+          <div>
             <label className="block text-sm font-medium text-[#5f3c2c] mb-2">
               Review
             </label>
@@ -396,9 +396,9 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
               name="review"
               value={formData.review}
               onChange={handleInputChange}
-              rows={4}
+              rows={5}
               placeholder=""
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4B896] focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-0 focus:border-[#D4B896]"
             />
           </div>
 
@@ -414,9 +414,8 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
               onDragOver={handleDrag}
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
-              className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
-                dragActive ? 'border-[#D4B896] bg-[#F2E9D8]' : 'border-gray-300 hover:border-[#D4B896] hover:bg-gray-50'
-              }`}
+              className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${dragActive ? 'border-[#D4B896] bg-[#F2E9D8]' : 'border-gray-300 hover:border-[#D4B896] hover:bg-gray-50'
+                }`}
             >
               <Upload className="h-8 w-8 text-[#5f3c2c] mx-auto mb-2" />
               <p className="text-sm text-[#5f3c2c]">

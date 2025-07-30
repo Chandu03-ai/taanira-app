@@ -4,7 +4,7 @@ import { X, ShoppingBag } from 'lucide-react';
 import { useCartStore } from '../../store/cartStore';
 import { useAuthStore } from '../../store/authStore';
 import { staticImageBaseUrl } from '../../constants/siteConfig';
-
+import { useLocation } from 'react-router-dom';
 interface CartSidebarProps {
   onClose: () => void;
 }
@@ -23,7 +23,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ onClose }) => {
   const [showContent, setShowContent] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false); // State to manage update loading
   const baseFocusClasses = "focus:outline-none focus:ring-0";
-
+  const reactRouterLocation = useLocation();
   useEffect(() => {
     const timer = setTimeout(() => setShowContent(true), 200);
     // When the sidebar opens, sync the cart with the server to get the latest state
@@ -36,7 +36,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ onClose }) => {
   const handleCheckout = () => {
     onClose();
     // Pass current location for post-login redirect if needed
-    navigate('/cart', { state: { from: location } });
+    navigate('/cart', { state: { from: reactRouterLocation } });
   };
 
   const handleQuantityUpdate = async (id: string, delta: number) => {
@@ -103,9 +103,8 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ onClose }) => {
         </div>
 
         <div
-          className={`flex-1 overflow-y-auto p-4 transition-opacity duration-700 scrollbar-thin scrollbar-thumb-theme-muted scrollbar-track-transparent ${
-            showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-          }`}
+          className={`flex-1 overflow-y-auto p-4 transition-opacity duration-700 scrollbar-thin scrollbar-thumb-theme-muted scrollbar-track-transparent ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+            }`}
         >
           {items.length === 0 ? (
             <div className="text-center mt-8 animate-fadeInSlow">
@@ -188,9 +187,8 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ onClose }) => {
 
         {items.length > 0 && (
           <div
-            className={`border-t border-theme-surface p-4 bg-theme-light transition-opacity duration-700 sticky bottom-0 ${
-              showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-            }`}
+            className={`border-t border-theme-surface p-4 bg-theme-light transition-opacity duration-700 sticky bottom-0 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+              }`}
           >
             <div className="flex justify-between items-center mb-3">
               <span className="text-sm text-theme-primary font-semibold">SUBTOTAL:</span>

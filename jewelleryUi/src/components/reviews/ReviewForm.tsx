@@ -112,7 +112,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
             placeholder="Share your thoughts about this jewelry piece..."
             rows={4}
             maxLength={500}
-            className="w-full px-3 py-2 border border-subtle-beige rounded-lg focus:ring-2 focus:ring-soft-gold focus:border-soft-gold transition-all duration-200 ease-in-out font-serif text-rich-brown placeholder:text-mocha/60 resize-none"
+            className="w-full px-3 py-2 border border-subtle-beige rounded-lg focus:outline-none focus:ring-0 focus:border-soft-gold transition-all duration-200 ease-in-out font-serif text-rich-brown placeholder:text-mocha/60 resize-none"
           />
           <div className="text-xs text-mocha/70 mt-1 font-serif italic">
             {comment.length}/500 characters
@@ -126,7 +126,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
               type="button"
               onClick={onCancel}
               disabled={loading}
-              className="px-4 py-2 text-sm font-serif font-semibold italic text-rich-brown bg-subtle-beige rounded-lg hover:bg-rose-sand transition-all duration-200 ease-in-out disabled:opacity-50"
+              className="px-4 py-2 text-sm font-serif font-semibold italic text-rich-brown bg-subtle-beige rounded-lg hover:bg-rose-sand transition-all duration-200 ease-in-out disabled:opacity-50 focus:outline-none focus:ring-0"
             >
               Cancel
             </button>
@@ -134,7 +134,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
           <button
             type="submit"
             disabled={loading || rating === 0}
-            className="flex items-center space-x-2 px-4 py-2 text-sm font-serif font-semibold italic text-white bg-rich-brown rounded-lg hover:bg-mocha transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center space-x-2 px-4 py-2 text-sm font-serif font-semibold italic text-white bg-rich-brown rounded-lg hover:bg-mocha transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-0"
           >
             {loading ? (
               <>

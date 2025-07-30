@@ -8,8 +8,6 @@ const UserProfile: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState<'profile' | 'password'>('profile');
   const [formData, setFormData] = useState({
-    firstname: user?.firstname || '',
-    lastname: user?.lastname || '',
     contact: user?.contact || '',
     email: user?.email || '',
   });
@@ -18,8 +16,6 @@ const UserProfile: React.FC = () => {
   useEffect(() => {
     if (user) {
       setFormData({
-        firstname: user.firstname,
-        lastname: user.lastname,
         contact: user.contact,
         email: user.email,
       });
@@ -36,7 +32,7 @@ const UserProfile: React.FC = () => {
   const handleSave = async () => {
     setLoading(true);
     try {
-      if (!formData.firstname.trim() || !formData.lastname.trim() || !formData.contact.trim()) {
+      if (!formData.contact.trim()) {
         alert('Please fill in all required fields');
         return;
       }
@@ -53,8 +49,6 @@ const UserProfile: React.FC = () => {
   const handleCancel = () => {
     if (user) {
       setFormData({
-        firstname: user.firstname,
-        lastname: user.lastname,
         contact: user.contact,
         email: user.email,
       });
@@ -145,38 +139,6 @@ const UserProfile: React.FC = () => {
               )}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-[#4A3F36]">
-              <div>
-                <label className="block text-xs sm:text-sm mb-1 font-serif italic">First Name</label>
-                {isEditing ? (
-                  <input
-                    type="text"
-                    name="firstname"
-                    value={formData.firstname}
-                    onChange={handleChange}
-                    className="w-full border-b-2 border-[#4A3F36] bg-transparent text-sm focus:outline-none focus:border-soft-gold py-2 font-serif transition-all duration-200 ease-in-out"
-                  />
-                ) : (
-                  <p className="py-2 font-serif">{user.firstname}</p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-xs sm:text-sm mb-1 font-serif italic">Last Name</label>
-                {isEditing ? (
-                  <input
-                    type="text"
-                    name="lastname"
-                    value={formData.lastname}
-                    onChange={handleChange}
-                    className="w-full border-b-2 border-[#4A3F36] bg-transparent text-sm focus:outline-none focus:border-soft-gold py-2 font-serif transition-all duration-200 ease-in-out"
-                  />
-                ) : (
-                  <p className="py-2 font-serif">{user.lastname}</p>
-                )}
-              </div>
-            </div>
-
             <div className="mt-6 text-[#4A3F36]">
               <label className="block text-xs sm:text-sm mb-1 font-serif italic">Email Address</label>
               <p className="bg-[#F2ECE4] px-4 py-3 rounded-xl text-sm font-serif">
@@ -192,7 +154,7 @@ const UserProfile: React.FC = () => {
                   name="contact"
                   value={formData.contact}
                   onChange={handleChange}
-                  className="w-full border-b-2 border-[#4A3F36] bg-transparent text-sm focus:outline-none focus:border-soft-gold py-2 font-serif transition-all duration-200 ease-in-out"
+                 className="w-full border-b-2 border-[#4A3F36] bg-transparent text-sm focus:outline-none focus:ring-0 focus:border-soft-gold py-2 font-serif transition-all duration-200 ease-in-out"
                 />
               ) : (
                 <p className="py-2 font-serif">{user.contact}</p>

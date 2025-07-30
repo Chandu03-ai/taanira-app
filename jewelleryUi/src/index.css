@@ -3,8 +3,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Import Merriweather font */
-
 /* CSS Custom Properties for Theme Colors */
 :root {
   --color-theme-primary: #4A3F36;
@@ -23,7 +21,6 @@ html {
   overflow-x: hidden;
 }
 
-/* Base typography */
 body {
   font-family: 'Merriweather', Georgia, serif;
   color: var(--color-theme-primary);
@@ -31,21 +28,10 @@ body {
   overflow-x: hidden;
 }
 
-/* Global focus styles - remove blue outline */
+/* Global focus styles - remove all default focus outlines */
 *:focus {
   outline: none !important;
   box-shadow: none !important;
-}
-
-/* Custom focus styles for accessibility */
-button:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible,
-a:focus-visible {
-  outline: 2px solid var(--color-theme-secondary) !important;
-  outline-offset: 2px !important;
-  box-shadow: 0 0 0 3px rgba(222, 201, 163, 0.2) !important;
 }
 
 /* Remove default browser focus styles */
@@ -55,50 +41,12 @@ textarea:focus,
 button:focus {
   outline: none;
   box-shadow: none;
-  border-color: var(--color-theme-secondary);
+  border-color: inherit;
 }
 
 /* Modal body scroll prevention */
 body.modal-open {
   overflow: hidden;
-}
-
-/* Enhanced focus states */
-.focus-ring {
-  @apply focus:outline-none;
-}
-
-/* Elegant button styles */
-.btn-primary {
-  @apply bg-theme-secondary text-theme-primary px-6 py-3 rounded-xl font-serif font-semibold italic hover:bg-theme-accent transition-all duration-200 ease-in-out shadow-sm hover:shadow-md focus:outline-none;
-}
-
-.btn-secondary {
-  @apply border-2 border-theme-secondary text-theme-primary px-6 py-3 rounded-xl font-serif font-semibold italic hover:bg-theme-secondary hover:text-theme-primary transition-all duration-200 ease-in-out shadow-sm hover:shadow-md focus:outline-none;
-}
-
-.btn-danger {
-  @apply bg-red-600 text-white px-6 py-3 rounded-xl font-serif font-semibold italic hover:bg-red-700 transition-all duration-200 ease-in-out shadow-sm hover:shadow-md focus:outline-none;
-}
-
-/* Elegant input styles */
-.input-elegant {
-  @apply w-full px-4 py-3 border border-theme-muted/30 rounded-xl bg-white font-serif text-theme-primary placeholder-theme-muted/60 focus:border-theme-secondary focus:outline-none transition-all duration-200 ease-in-out;
-}
-
-/* Card styles */
-.card-elegant {
-  @apply bg-white rounded-2xl shadow-sm border border-theme-surface/50 p-6 transition-all duration-200 ease-in-out hover:shadow-md;
-}
-
-/* Modal overlay */
-.modal-overlay {
-  @apply fixed inset-0 z-50 bg-theme-primary/80 backdrop-blur-sm;
-}
-
-/* Modal content */
-.modal-content {
-  @apply fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl border border-theme-surface max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto;
 }
 
 /* Custom animations */
@@ -115,7 +63,6 @@ body.modal-open {
   animation: marquee 30s linear infinite;
 }
 
-/* Enhanced typewriter animation */
 @keyframes typewriter {
   from {
     width: 0;
@@ -141,11 +88,6 @@ body.modal-open {
   animation: typewriter 3s steps(40, end), blink 1s infinite;
 }
 
-/* Staggered animation utilities */
-.animate-fade-in-up {
-  animation: fadeInUp 0.8s ease-out forwards;
-}
-
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -157,8 +99,8 @@ body.modal-open {
   }
 }
 
-.animate-fade-in-left {
-  animation: fadeInLeft 0.8s ease-out forwards;
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
 }
 
 @keyframes fadeInLeft {
@@ -172,8 +114,8 @@ body.modal-open {
   }
 }
 
-.animate-fade-in-right {
-  animation: fadeInRight 0.8s ease-out forwards;
+.animate-fade-in-left {
+  animation: fadeInLeft 0.8s ease-out forwards;
 }
 
 @keyframes fadeInRight {
@@ -187,7 +129,10 @@ body.modal-open {
   }
 }
 
-/* Smooth scale animation */
+.animate-fade-in-right {
+  animation: fadeInRight 0.8s ease-out forwards;
+}
+
 @keyframes smoothScale {
   0% {
     transform: scale(0.95);
@@ -211,7 +156,19 @@ body.modal-open {
   overflow: hidden;
 }
 
-/* Smooth scrolling */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 
 /* Loading spinner */
 .spinner {
@@ -262,43 +219,6 @@ body.modal-open {
   }
 }
 
-/* Responsive design utilities */
-@media (max-width: 640px) {
-  .container {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .grid-responsive {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 480px) {
-  .grid-responsive {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Enhanced hover effects */
-.hover-lift {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.hover-lift:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-}
-
-/* Smooth transitions for all interactive elements */
-* {
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-
 /* Accessibility improvements */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -331,7 +251,6 @@ body.modal-open {
   --ag-range-selection-border-color: #d4b896;
 }
 
-/* Beautiful AG Grid Theme */
 .ag-theme-alpine-custom {
   --ag-header-height: 50px;
   --ag-row-height: 120px;
@@ -438,7 +357,6 @@ body.modal-open {
   cursor: not-allowed;
 }
 
-/* Floating Filter Styles */
 .ag-theme-alpine-custom .ag-floating-filter-input {
   border: 1px solid #d1d5db;
   border-radius: 8px;
@@ -454,7 +372,6 @@ body.modal-open {
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
-/* Filter Menu Styles */
 .ag-theme-alpine-custom .ag-filter-toolpanel-header {
   background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
   color: white;
@@ -477,51 +394,6 @@ body.modal-open {
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .ag-theme-alpine-custom {
-    --ag-font-size: 12px;
-    --ag-row-height: 100px;
-    --ag-header-height: 44px;
-    --ag-cell-horizontal-padding: 12px;
-    --ag-cell-vertical-padding: 8px;
-  }
-  
-  .ag-theme-alpine-custom .ag-cell {
-    padding: 8px 12px;
-  }
-  
-  .ag-theme-alpine-custom .ag-header-cell {
-    font-size: 11px;
-    padding: 8px 12px;
-  }
-  
-  .ag-theme-alpine-custom .ag-paging-panel {
-    padding: 12px;
-    font-size: 12px;
-  }
-  
-  .ag-theme-alpine-custom .ag-paging-page-summary-panel {
-    display: none;
-  }
-  
-  .ag-theme-alpine-custom .ag-paging-button {
-    min-width: 32px;
-    height: 32px;
-    font-size: 12px;
-  }
-}
-
-@media (max-width: 480px) {
-  .ag-theme-alpine-custom {
-    --ag-row-height: 80px;
-    --ag-header-height: 40px;
-    --ag-cell-horizontal-padding: 8px;
-    --ag-cell-vertical-padding: 6px;
-  }
-}
-
-/* Custom scrollbar for AG Grid */
 .ag-theme-alpine-custom .ag-body-horizontal-scroll-viewport::-webkit-scrollbar,
 .ag-theme-alpine-custom .ag-body-vertical-scroll-viewport::-webkit-scrollbar {
   width: 8px;
@@ -545,7 +417,6 @@ body.modal-open {
   background: linear-gradient(135deg, #e5cfb5 0%, #e5cfb5 100%);
 }
 
-/* Loading overlay */
 .ag-theme-alpine-custom .ag-overlay-loading-wrapper {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(4px);
@@ -557,7 +428,6 @@ body.modal-open {
   font-weight: 500;
 }
 
-/* Selection styles */
 .ag-theme-alpine-custom .ag-row-selected {
   background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%) !important;
   border-left: 3px solid #6366f1;
@@ -567,12 +437,10 @@ body.modal-open {
   border-color: rgba(99, 102, 241, 0.2);
 }
 
-/* Column resize handle */
 .ag-theme-alpine-custom .ag-header-cell-resize::after {
   background: linear-gradient(135deg, #e5cfb5 0%, #e5cfb5 100%);
 }
 
-/* Menu and popup styles */
 .ag-theme-alpine-custom .ag-menu {
   border: 1px solid #e5e7eb;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
@@ -585,7 +453,6 @@ body.modal-open {
   color: #6366f1;
 }
 
-/* Checkbox styles */
 .ag-theme-alpine-custom .ag-checkbox-input-wrapper {
   border-radius: 4px;
   border: 2px solid #d1d5db;
@@ -601,6 +468,7 @@ body.modal-open {
   border-color: #6366f1;
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
+
 .ag-theme-alpine .ag-header-cell {
   font-weight: 500;
   text-transform: uppercase;
@@ -652,7 +520,6 @@ body.modal-open {
   cursor: not-allowed;
 }
 
-/* Floating Filter Styles */
 .ag-theme-alpine .ag-floating-filter-input {
   border: 1px solid #d1d5db;
   border-radius: 4px;
@@ -666,7 +533,6 @@ body.modal-open {
   box-shadow: 0 0 0 2px rgba(212, 184, 150, 0.2);
 }
 
-/* Filter Menu Styles */
 .ag-theme-alpine .ag-filter-toolpanel-header {
   background-color: #f5e9dc;
   color: #5f3c2c;
@@ -684,7 +550,94 @@ body.modal-open {
   border-color: #b79b7d;
 }
 
+.ag-theme-alpine .ag-body-horizontal-scroll-viewport::-webkit-scrollbar,
+.ag-theme-alpine .ag-body-vertical-scroll-viewport::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.ag-theme-alpine .ag-body-horizontal-scroll-viewport::-webkit-scrollbar-track,
+.ag-theme-alpine .ag-body-vertical-scroll-viewport::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.ag-theme-alpine .ag-body-horizontal-scroll-viewport::-webkit-scrollbar-thumb,
+.ag-theme-alpine .ag-body-vertical-scroll-viewport::-webkit-scrollbar-thumb {
+  background: #d4b896;
+  border-radius: 4px;
+}
+
+.ag-theme-alpine .ag-body-horizontal-scroll-viewport::-webkit-scrollbar-thumb:hover,
+.ag-theme-alpine .ag-body-vertical-scroll-viewport::-webkit-scrollbar-thumb:hover {
+  background: #b79b7d;
+}
+
+.ag-theme-alpine .ag-overlay-loading-wrapper {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.ag-theme-alpine .ag-overlay-loading-center {
+  color: #5f3c2c;
+  font-size: 14px;
+}
+
+.ag-theme-alpine .ag-row-selected {
+  background-color: rgba(212, 184, 150, 0.1) !important;
+}
+
+.ag-theme-alpine .ag-row-selected .ag-cell {
+  border-color: rgba(212, 184, 150, 0.3);
+}
+
+.ag-theme-alpine .ag-header-cell-resize::after {
+  background-color: #d4b896;
+}
+
+.ag-theme-alpine .ag-menu {
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.ag-theme-alpine .ag-menu-option-active {
+  background-color: #f5e9dc;
+  color: #5f3c2c;
+}
+
+/* Responsive Design for AG Grid */
 @media (max-width: 768px) {
+  .ag-theme-alpine-custom {
+    --ag-font-size: 12px;
+    --ag-row-height: 100px;
+    --ag-header-height: 44px;
+    --ag-cell-horizontal-padding: 12px;
+    --ag-cell-vertical-padding: 8px;
+  }
+  
+  .ag-theme-alpine-custom .ag-cell {
+    padding: 8px 12px;
+  }
+  
+  .ag-theme-alpine-custom .ag-header-cell {
+    font-size: 11px;
+    padding: 8px 12px;
+  }
+  
+  .ag-theme-alpine-custom .ag-paging-panel {
+    padding: 12px;
+    font-size: 12px;
+  }
+  
+  .ag-theme-alpine-custom .ag-paging-page-summary-panel {
+    display: none;
+  }
+  
+  .ag-theme-alpine-custom .ag-paging-button {
+    min-width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+
   .ag-theme-alpine {
     --ag-font-size: 12px;
     --ag-row-height: 60px;
@@ -712,239 +665,11 @@ body.modal-open {
   }
 }
 
-/* Custom scrollbar for AG Grid */
-.ag-theme-alpine .ag-body-horizontal-scroll-viewport::-webkit-scrollbar,
-.ag-theme-alpine .ag-body-vertical-scroll-viewport::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-.ag-theme-alpine .ag-body-horizontal-scroll-viewport::-webkit-scrollbar-track,
-.ag-theme-alpine .ag-body-vertical-scroll-viewport::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
-}
-
-.ag-theme-alpine .ag-body-horizontal-scroll-viewport::-webkit-scrollbar-thumb,
-.ag-theme-alpine .ag-body-vertical-scroll-viewport::-webkit-scrollbar-thumb {
-  background: #d4b896;
-  border-radius: 4px;
-}
-
-.ag-theme-alpine .ag-body-horizontal-scroll-viewport::-webkit-scrollbar-thumb:hover,
-.ag-theme-alpine .ag-body-vertical-scroll-viewport::-webkit-scrollbar-thumb:hover {
-  background: #b79b7d;
-}
-
-/* Loading overlay */
-.ag-theme-alpine .ag-overlay-loading-wrapper {
-  background-color: rgba(255, 255, 255, 0.9);
-}
-
-.ag-theme-alpine .ag-overlay-loading-center {
-  color: #5f3c2c;
-  font-size: 14px;
-}
-
-/* Selection styles */
-.ag-theme-alpine .ag-row-selected {
-  background-color: rgba(212, 184, 150, 0.1) !important;
-}
-
-.ag-theme-alpine .ag-row-selected .ag-cell {
-  border-color: rgba(212, 184, 150, 0.3);
-}
-
-/* Column resize handle */
-.ag-theme-alpine .ag-header-cell-resize::after {
-  background-color: #d4b896;
-}
-
-/* Menu and popup styles */
-.ag-theme-alpine .ag-menu {
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-.ag-theme-alpine .ag-menu-option-active {
-  background-color: #f5e9dc;
-  color: #5f3c2c;
-}
-/* Enhanced button styles */
-.btn-primary {
-  @apply bg-black text-white px-6 py-3 rounded-md font-medium hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 active:scale-95;
-}
-
-.btn-secondary {
-  @apply border-2 border-black text-black px-6 py-3 rounded-md font-medium hover:bg-black hover:text-white transition-all duration-300 transform hover:scale-105 active:scale-95;
-}
-
-/* Smooth quantity selector animations */
-.quantity-selector {
-  @apply transition-all duration-200 ease-in-out;
-}
-
-.quantity-selector button {
-  @apply transition-all duration-200 ease-in-out transform;
-}
-
-.quantity-selector button:hover:not(:disabled) {
-  @apply scale-110;
-}
-
-.quantity-selector button:active:not(:disabled) {
-  @apply scale-95;
-}
-
-.quantity-selector button:disabled {
-  @apply opacity-50 cursor-not-allowed transform-none;
-}
-
-/* Prevent layout shift during state changes */
-.preorder-button-container {
-  @apply min-h-[48px] flex items-center justify-center;
-}
-
-/* Card hover effects */
-.card-hover {
-  @apply transition-all duration-500 hover:shadow-xl hover:scale-105;
-}
-
-/* Gradient text effect */
-.gradient-text {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Backdrop blur utilities */
-.backdrop-blur-custom {
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-/* Mobile-first responsive grid */
-.responsive-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-}
-
-@media (min-width: 640px) {
-  .responsive-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
-  }
-}
-
-@media (min-width: 768px) {
-  .responsive-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .responsive-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-/* Additional responsive utilities */
 @media (max-width: 480px) {
-  .container {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
-  }
-  
-  /* Ensure buttons are touch-friendly */
-  button, .btn {
-    min-height: 44px;
-    min-width: 44px;
-  }
-  
-  /* Improve form inputs on mobile */
-  input, select, textarea {
-    font-size: 16px; /* Prevents zoom on iOS */
-  }
-}
-
-/* Prevent horizontal scroll */
-html, body {
-  overflow-x: hidden;
-  width: 100%;
-}
-
-/* Ensure all containers respect viewport width */
-* {
-  box-sizing: border-box;
-}
-
-/* Improve touch targets */
-@media (hover: none) and (pointer: coarse) {
-  button, a, input[type="button"], input[type="submit"] {
-    min-height: 44px;
-    min-width: 44px;
-  }
-}
-
-/* Better line clamping for older browsers */
-.line-clamp-1 {
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.line-clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* Responsive text utilities */
-@media (max-width: 640px) {
-  .text-responsive-sm {
-    font-size: 0.875rem;
-  }
-  
-  .text-responsive-base {
-    font-size: 1rem;
-  }
-  
-  .text-responsive-lg {
-    font-size: 1.125rem;
-  }
-}
-
-/* Improved focus states for accessibility */
-@media (prefers-reduced-motion: no-preference) {
-  :focus-visible {
-    outline: 2px solid #3b82f6;
-    outline-offset: 2px;
-    transition: outline-offset 0.2s ease;
-  }
-}
-/* Enhanced focus indicators for accessibility */
-.focus-visible:focus {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
-}
-
-/* Smooth page transitions */
-.page-transition {
-  animation: pageTransition 0.5s ease-in-out;
-}
-
-@keyframes pageTransition {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  .ag-theme-alpine-custom {
+    --ag-row-height: 80px;
+    --ag-header-height: 40px;
+    --ag-cell-horizontal-padding: 8px;
+    --ag-cell-vertical-padding: 6px;
   }
 }

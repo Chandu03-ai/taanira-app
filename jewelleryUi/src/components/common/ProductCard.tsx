@@ -96,7 +96,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   return (
     <>
       <article
-        className="group bg-theme-surface rounded-2xl p-4 transition-all duration-300 hover:shadow-md w-full"
+        className="group rounded-2xl p-4 transition-all duration-300 hover:bg-theme-surface shadow-md w-full"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >

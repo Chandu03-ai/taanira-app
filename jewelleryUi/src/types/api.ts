@@ -11,10 +11,8 @@ export interface LoginResponse {
   contact: string;
   createdDate: string;
   email: string;
-  firstname: string;
   id: string;
   keycloakId: string;
-  lastname: string;
   role?: string;
   username: string;
 }

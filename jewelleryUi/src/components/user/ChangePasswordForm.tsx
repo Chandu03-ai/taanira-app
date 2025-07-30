@@ -145,7 +145,7 @@ const ChangePasswordForm: React.FC = () => {
             onChange={handleChange}
             onFocus={() => setFocusedField('oldPassword')}
             onBlur={() => setFocusedField(null)}
-            className="w-full bg-transparent border-b-2 border-rich-brown text-rich-brown placeholder-transparent focus:outline-none focus:border-soft-gold pt-8 pb-2 text-sm sm:text-base font-serif transition-all duration-200 ease-in-out"
+            className="w-full bg-transparent border-b-2 border-rich-brown text-rich-brown placeholder-transparent focus:outline-none focus:ring-0 focus:border-soft-gold pt-8 pb-2 text-sm sm:text-base font-serif transition-all duration-200 ease-in-out"
             placeholder="Enter current password"
           />
           <button
@@ -176,7 +176,7 @@ const ChangePasswordForm: React.FC = () => {
             onChange={handleChange}
             onFocus={() => setFocusedField('newPassword')}
             onBlur={() => setFocusedField(null)}
-            className="w-full bg-transparent border-b-2 border-rich-brown text-rich-brown placeholder-transparent focus:outline-none focus:border-soft-gold pt-8 pb-2 text-sm sm:text-base font-serif transition-all duration-200 ease-in-out"
+            className="w-full bg-transparent border-b-2 border-rich-brown text-rich-brown placeholder-transparent focus:outline-none focus:ring-0 focus:border-soft-gold pt-8 pb-2 text-sm sm:text-base font-serif transition-all duration-200 ease-in-out"
             placeholder="Enter new password"
           />
           <button
@@ -207,7 +207,7 @@ const ChangePasswordForm: React.FC = () => {
             onChange={handleChange}
             onFocus={() => setFocusedField('confirmPassword')}
             onBlur={() => setFocusedField(null)}
-            className="w-full bg-transparent border-b-2 border-rich-brown text-rich-brown placeholder-transparent focus:outline-none focus:border-soft-gold pt-8 pb-2 text-sm sm:text-base font-serif transition-all duration-200 ease-in-out"
+            className="w-full bg-transparent border-b-2 border-rich-brown text-rich-brown placeholder-transparent focus:outline-none focus:ring-0 focus:border-soft-gold pt-8 pb-2 text-sm sm:text-base font-serif transition-all duration-200 ease-in-out"
             placeholder="Confirm new password"
           />
           <button
@@ -244,7 +244,7 @@ const ChangePasswordForm: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            className="btn-primary w-full flex justify-between items-center"
+            className="w-full bg-theme-secondary text-theme-primary px-6 py-3 rounded-xl font-serif font-semibold italic hover:bg-theme-accent transition-all duration-200 ease-in-out shadow-sm hover:shadow-md focus:outline-none focus:ring-0 flex justify-between items-center"
           >
             <span>{loading ? 'Changing Password...' : 'CHANGE PASSWORD'}</span>
             <span className="text-base sm:text-lg">→</span>

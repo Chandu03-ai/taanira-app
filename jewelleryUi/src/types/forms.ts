@@ -28,8 +28,6 @@ export interface LoginFormData {
 
 export interface RegisterFormData {
   email: string;
-  firstname: string;
-  lastname: string;
   contact: string;
   username: string;
   password: string;

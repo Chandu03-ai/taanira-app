@@ -136,7 +136,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                   type="number"
                   value={priceRange.min}
                   onChange={(e) => handlePriceChange('min', parseInt(e.target.value) || 0)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-0 focus:border-purple-500"
                   placeholder="0"
                 />
               </div>
@@ -146,7 +146,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                   type="number"
                   value={priceRange.max}
                   onChange={(e) => handlePriceChange('max', parseInt(e.target.value) || 10000)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-0 focus:border-purple-500"
                   placeholder="10000"
                 />
               </div>

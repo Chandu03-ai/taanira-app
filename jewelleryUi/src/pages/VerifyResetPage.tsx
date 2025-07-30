@@ -20,6 +20,7 @@ const VerifyResetPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const email = location.state?.email || '';
+  const message = location.state?.message || ''; // 👈 get message
 
   useEffect(() => {
     if (!email) {
@@ -67,10 +68,10 @@ const VerifyResetPage: React.FC = () => {
         setSuccess(true);
         // Navigate to login after 3 seconds
         setTimeout(() => {
-          navigate('/login', { 
-            state: { 
-              message: 'Password reset successfully! Please log in with your new password.' 
-            } 
+          navigate('/login', {
+            state: {
+              message: 'Password reset successfully! Please log in with your new password.'
+            }
           });
         }, 3000);
       } else {
@@ -130,6 +131,12 @@ const VerifyResetPage: React.FC = () => {
         </div>
 
         <div className="bg-white rounded-2xl shadow-lg p-8">
+          {message && (
+            <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-xl text-sm font-serif italic mb-6">
+              {message}
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-xl text-sm font-serif italic">
@@ -156,7 +163,7 @@ const VerifyResetPage: React.FC = () => {
                 onChange={handleChange}
                 onFocus={() => setFocusedField('token')}
                 onBlur={() => setFocusedField(null)}
-                className="w-full bg-transparent border-b-2 border-rich-brown text-rich-brown placeholder-transparent focus:outline-none focus:border-soft-gold pt-8 pb-2 text-sm sm:text-base font-serif transition-all duration-200 ease-in-out"
+                className="w-full bg-transparent border-b-2 border-rich-brown text-rich-brown placeholder-transparent focus:outline-none focus:ring-0 focus:border-soft-gold pt-8 pb-2 text-sm sm:text-base font-serif transition-all duration-200 ease-in-out"
                 placeholder="Enter verification code"
               />
             </div>
@@ -180,7 +187,7 @@ const VerifyResetPage: React.FC = () => {
                 onChange={handleChange}
                 onFocus={() => setFocusedField('newPassword')}
                 onBlur={() => setFocusedField(null)}
-                className="w-full bg-transparent border-b-2 border-rich-brown text-rich-brown placeholder-transparent focus:outline-none focus:border-soft-gold pt-8 pb-2 text-sm sm:text-base font-serif transition-all duration-200 ease-in-out"
+                className="w-full bg-transparent border-b-2 border-rich-brown text-rich-brown placeholder-transparent focus:outline-none focus:ring-0 focus:border-soft-gold pt-8 pb-2 text-sm sm:text-base font-serif transition-all duration-200 ease-in-out"
                 placeholder="Enter new password"
               />
               <button
@@ -211,7 +218,7 @@ const VerifyResetPage: React.FC = () => {
                 onChange={handleChange}
                 onFocus={() => setFocusedField('confirmPassword')}
                 onBlur={() => setFocusedField(null)}
-                className="w-full bg-transparent border-b-2 border-rich-brown text-rich-brown placeholder-transparent focus:outline-none focus:border-soft-gold pt-8 pb-2 text-sm sm:text-base font-serif transition-all duration-200 ease-in-out"
+                className="w-full bg-transparent border-b-2 border-rich-brown text-rich-brown placeholder-transparent focus:outline-none focus:ring-0 focus:border-soft-gold pt-8 pb-2 text-sm sm:text-base font-serif transition-all duration-200 ease-in-out"
                 placeholder="Confirm new password"
               />
               <button
@@ -227,7 +234,7 @@ const VerifyResetPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="btn-primary w-full flex justify-between items-center"
+                className="w-full bg-theme-secondary text-theme-primary px-6 py-3 rounded-xl font-serif font-semibold italic hover:bg-theme-accent transition-all duration-200 ease-in-out shadow-sm hover:shadow-md focus:outline-none focus:ring-0 flex justify-between items-center"
               >
                 <span>{loading ? 'Resetting...' : 'RESET PASSWORD'}</span>
                 <span className="text-base sm:text-lg">→</span>

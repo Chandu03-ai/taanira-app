@@ -111,7 +111,7 @@ const LoginPage: React.FC = () => {
                 onFocus={() => setFocusedField('username')}
                 onBlur={() => setFocusedField(null)}
                 // Crucial: Increased pt (padding-top) for space
-                className={`w-full bg-transparent border-b-2 border-theme-primary text-theme-primary placeholder-transparent ${baseFocusClasses} focus:border-theme-secondary pt-8 pb-2 text-sm sm:text-base font-serif transition-all duration-200 ease-in-out`}
+                className="w-full bg-transparent border-b-2 border-theme-primary text-theme-primary placeholder-transparent focus:outline-none focus:ring-0 focus:border-theme-secondary pt-8 pb-2 text-sm sm:text-base font-serif transition-all duration-200 ease-in-out"
                 placeholder="Email"
               />
             </div>
@@ -136,7 +136,7 @@ const LoginPage: React.FC = () => {
                 onFocus={() => setFocusedField('password')}
                 onBlur={() => setFocusedField(null)}
                 // Crucial: Increased pt (padding-top) for space
-                className={`w-full bg-transparent border-b-2 border-theme-primary text-theme-primary placeholder-transparent ${baseFocusClasses} focus:border-theme-secondary pt-8 pb-2 text-sm sm:text-base font-serif transition-all duration-200 ease-in-out`}
+                className="w-full bg-transparent border-b-2 border-theme-primary text-theme-primary placeholder-transparent focus:outline-none focus:ring-0 focus:border-theme-secondary pt-8 pb-2 text-sm sm:text-base font-serif transition-all duration-200 ease-in-out"
                 placeholder="Password"
               />
               <div
@@ -148,14 +148,14 @@ const LoginPage: React.FC = () => {
             </div>
 
             <div className="text-right text-xs sm:text-sm uppercase tracking-widest text-theme-primary font-serif font-semibold italic mt-2">
-              <Link to="/forgot-password" className={`hover:text-theme-muted transition-colors ${baseFocusClasses}`}>Forgot your password?</Link>
+              <Link to="/forgot-password" className="hover:text-theme-muted transition-colors focus:outline-none focus:ring-0">Forgot your password?</Link>
             </div>
 
             <div className="pt-4 sm:pt-6">
               <button
                 type="submit"
                 disabled={loading}
-                className={`btn-primary w-full flex justify-between items-center ${baseFocusClasses}`}
+                className="w-full bg-theme-secondary text-theme-primary px-6 py-3 rounded-xl font-serif font-semibold italic hover:bg-theme-accent transition-all duration-200 ease-in-out shadow-sm hover:shadow-md focus:outline-none focus:ring-0 flex justify-between items-center"
               >
                 <span>{loading ? 'Signing in...' : 'SIGN IN'}</span>
                 <span className="text-base sm:text-lg">→</span>
@@ -163,7 +163,7 @@ const LoginPage: React.FC = () => {
             </div>
 
             <div className="text-center mt-3 sm:mt-4 text-xs sm:text-sm uppercase tracking-widest text-theme-primary font-serif font-semibold italic">
-              <Link to="/register" className={baseFocusClasses}>Create Account</Link>
+              <Link to="/register" className="focus:outline-none focus:ring-0">Create Account</Link>
             </div>
           </form>
         </div>
