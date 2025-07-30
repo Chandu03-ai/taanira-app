@@ -192,8 +192,8 @@ async def getOrderStats(request: Request):
         # Compute stats
         totalOrders = len(orders)
         pendingOrders = sum(1 for order in orders if order.get("status") == "pending")
-        completedOrders = sum(1 for order in orders if order.get("status") == "completed")
-        totalRevenue = sum(order.get("amount", 0) for order in orders if isinstance(order.get("amount"), (int, float)))
+        completedOrders = sum(1 for order in orders if order.get("status") == "paid")
+        totalRevenue = sum(order.get("amount", 0) for order in orders if order.get("status") == "paid" and isinstance(order.get("amount"), (int, float)))
 
         stats = {"totalOrders": totalOrders, "pendingOrders": pendingOrders, "completedOrders": completedOrders, "totalRevenue": totalRevenue}
 
