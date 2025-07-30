@@ -7,10 +7,8 @@ import SEOHead from '../components/seo/SEOHead';
 import { SITE_CONFIG, staticImageBaseUrl } from '../constants/siteConfig';
 import Footer from '../components/common/Footer';
 import Neckless from '../assets/Neckless.jpg';
-import catalog from '../assets/Devi.jpg';
-import Header from '../components/common/Header';
+import Header from '../components/common/Header'; // Make sure this import is correct
 import { motion } from 'framer-motion';
-import { formatReadableDate } from '../utils/dateUtils';
 
 const container = {
   hidden: {},
@@ -57,12 +55,14 @@ const HomePage: React.FC = () => {
   const fetchProducts = async () => {
     try {
       const response = await apiService.getProducts();
+      const sortedProducts = (response || []).sort((a: Product, b: Product) => {
+        if (a.createdAt && b.createdAt) {
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        }
+        return Number(b.id) - Number(a.id);
+      });
 
-
-      const latestProducts = (response || []).filter(product => product.isLatest === true);
-
-      setProducts(latestProducts.slice(0, 4));
-
+      setProducts(sortedProducts.slice(0, 4));
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {
@@ -229,7 +229,6 @@ const HomePage: React.FC = () => {
       </div>
     </>
   );
-
 };
 
 export default HomePage;
