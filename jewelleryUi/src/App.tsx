@@ -32,12 +32,15 @@ function AppContent() {
   }, [initialize]);
 
   const hideFooterRoutes = ['/login', '/register', '/admin'];
+  const hideHeaderRoutes = ['/']; 
+
   const shouldShowFooter = !hideFooterRoutes.some(path => location.pathname.startsWith(path));
+  const shouldShowHeader = !hideHeaderRoutes.includes(location.pathname); 
 
   return (
     <RouteGuard>
       <div className="min-h-screen bg-gray-50 flex flex-col">
-        <Header />
+        {shouldShowHeader && <Header />}
         <main className="flex-1">
           <Routes>
             <Route path="/" element={<HomePage />} />
