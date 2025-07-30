@@ -66,16 +66,22 @@ const ProductDetailPage: React.FC = () => {
   const hasSizeOptions = category?.sizeOptions && Array.isArray(category.sizeOptions) && category.sizeOptions.length > 0;
   // Determine the effective size to pass to cart functions:
   // Use selectedSize if product has size options, otherwise use undefined for "no size"
-  const effectiveSelectedSize = hasSizeOptions ? selectedSize : undefined;
+  const existingCartItem = product ? items.find(
+    item => item.productId === product.id
+  ) : undefined;
 
-  // Derive productQuantity and inCart directly from the 'items' array,
-  // which is now correctly being observed from the Zustand store.
+  const effectiveSelectedSize = hasSizeOptions
+    ? (selectedSize || existingCartItem?.selectedSize)
+    : undefined;
+
   const cartItem = product ? items.find(
-    item => item.productId === product.id && (item.selectedSize ?? '') === (effectiveSelectedSize ?? '')
+    item => item.productId === product.id &&
+      (item.selectedSize ?? '') === (effectiveSelectedSize ?? '')
   ) : undefined;
 
   const productQuantity = cartItem ? cartItem.quantity : 0;
   const inCart = !!cartItem;
+
 
 
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -110,26 +116,6 @@ const ProductDetailPage: React.FC = () => {
     navigate('/login');
   };
 
-  const handleQuantityChange = (e: React.MouseEvent, change: number) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (!isAuthenticated) {
-      setShowLoginPrompt(true);
-      return;
-    }
-
-    // Ensure product and a matching cartItem exist before attempting to update quantity
-    if (!product || !cartItem) return;
-
-    const newQuantity = productQuantity + change;
-
-    if (newQuantity <= 0) {
-      removeItem(cartItem.id); // Use the existing cartItem's ID
-    } else {
-      updateQuantity(cartItem.id, change); // Use the existing cartItem's ID
-    }
-  };
 
   const nextImage = () => {
     if (product?.images) {
@@ -243,27 +229,20 @@ const ProductDetailPage: React.FC = () => {
                   OUT OF STOCK
                 </button>
               ) : inCart ? (
-                <div className="flex items-center justify-center space-x-4 py-3 relative">
-                  <button
-                    onClick={(e) => handleQuantityChange(e, -1)}
-                    className="w-8 h-8 flex items-center justify-center border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-110 active:scale-95 shadow-sm hover:shadow-md"
-                    aria-label="Decrease quantity"
-                    title="Decrease quantity"
+                // Changed from flex-col to flex-row and added gap-2 for spacing
+                <div className="flex flex-row items-center gap-2 mt-4">
+                  <Link
+                    to="/cart"
+                    className="flex-1 text-center py-3 text-xs font-serif font-semibold italic border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md"
                   >
-                    <Minus className="w-3 h-3" />
-                  </button>
-
-                  <span className="text-base font-serif font-semibold text-rich-brown min-w-[2rem] text-center">
-                    {productQuantity}
-                  </span>
+                    Go to Cart
+                  </Link>
 
                   <button
-                    onClick={(e) => handleQuantityChange(e, 1)}
-                    className="w-8 h-8 flex items-center justify-center border-2 border-rich-brown text-rich-brown rounded-xl hover:bg-rich-brown hover:text-white transition-all duration-200 ease-in-out transform hover:scale-110 active:scale-95 shadow-sm hover:shadow-md"
-                    aria-label="Increase quantity"
-                    title="Increase quantity"
+                    onClick={() => removeItem(cartItem.id)}
+                    className="flex-1 py-3 text-xs font-serif font-semibold italic border-2 border-red-500 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md"
                   >
-                    <Plus className="w-3 h-3" />
+                    Remove
                   </button>
                 </div>
               ) : (
@@ -275,6 +254,8 @@ const ProductDetailPage: React.FC = () => {
                   Preorder
                 </button>
               )}
+
+
 
               <div className="pt-6 border-t border-rich-brown/20">
                 <div className="flex space-x-6 border-b border-rich-brown/20 mb-4 ">
