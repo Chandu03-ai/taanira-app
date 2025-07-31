@@ -69,7 +69,7 @@ const UserProfile: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#FAF9F6] py-20 sm:py-24 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -161,12 +161,6 @@ const UserProfile: React.FC = () => {
               )}
             </div>
 
-            <div className="mt-6 text-[#4A3F36]">
-              <label className="block text-xs sm:text-sm mb-1 font-serif italic">Username</label>
-              <p className="bg-[#F2ECE4] px-4 py-3 rounded-xl text-sm font-serif">
-                {user.username} <span className="text-xs italic">(Cannot be changed)</span>
-              </p>
-            </div>
 
             {user.role && (
               <div className="mt-6 text-[#4A3F36]">

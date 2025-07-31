@@ -1,14 +1,14 @@
 // Header.tsx
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, ShoppingBag, User } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useCategoryStore } from '../../store/categoryStore';
 import { useCartStore } from '../../store/cartStore';
 import SEOHead from '../seo/SEOHead';
 import { SITE_CONFIG } from '../../constants/siteConfig';
 import CartSidebar from './CartSidebar';
-import UserMenu from './UserMenu';
+import BagIcon from '../icons/BagIcon';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -113,35 +113,52 @@ const Header: React.FC = () => {
               </div>
 
               {/* Right */}
-              <div className="flex items-center space-x-2 sm:space-x-3">
-                <div
-                  className={`flex items-center space-x-2 sm:space-x-3 ${
-                    showText ? 'opacity-100 animate-fadeInSlow' : 'opacity-0'
+              <div
+                className={`flex items-center space-x-2 sm:space-x-3 ${showText ? 'opacity-100 animate-fadeInSlow' : 'opacity-0'
                   }`}
-                >
-                  <UserMenu dropdownPosition="bottom" />
-                  <button
-                    onClick={() => setShowCartSidebar(true)}
-                    className={`flex items-center ${baseFocusClasses} gap-1 sm:gap-2 hover:opacity-70 transition-opacity relative p-2 min-w-0`}
-                    title={`Shopping Cart (${cartItemCount} items)`}
+              >
+                {/* Show LOGIN only when not authenticated */}
+                {!isAuthenticated && (
+                  <Link
+                    to="/login"
+                    state={{ from: location }}
+                    className={`text-xs sm:text-sm tracking-widest whitespace-nowrap font-serif italic hover:opacity-70 transition-all ${baseFocusClasses}`}
+                    style={{ color: headerStyles.textColor, fontWeight: headerStyles.fontWeight }}
+                    title="Login"
                   >
-                    <span
-                      className="hidden md:inline text-xs sm:text-sm tracking-widest whitespace-nowrap"
-                      style={{ color: headerStyles.textColor, fontWeight: headerStyles.fontWeight }}
-                    >
-                      CART
-                    </span>
-                    <div className="relative flex items-center">
-                      <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: headerStyles.textColor }} />
-                      {cartItemCount > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-red-500 text-theme-light text-[10px] sm:text-xs rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center font-medium">
-                          {cartItemCount > 99 ? '99+' : cartItemCount}
-                        </span>
-                      )}
-                    </div>
-                  </button>
-                </div>
+                    LOGIN
+                  </Link>
+                )}
+
+                {/* CART - always visible */}
+                <button
+                  onClick={() => setShowCartSidebar(true)}
+                  className={`flex items-center ${baseFocusClasses} gap-1 sm:gap-2 hover:opacity-70 transition-opacity relative p-2 min-w-0`}
+                  title={`Shopping Cart (${cartItemCount} items)`}
+                >
+                  <span
+                    className="hidden md:inline text-xs sm:text-sm tracking-widest whitespace-nowrap"
+                    style={{ color: headerStyles.textColor, fontWeight: headerStyles.fontWeight }}
+                  >
+                    CART
+                  </span>
+                  <div className="relative flex items-center">
+                    <div className="w-5 h-5 sm:w-6 sm:h-6 -mt-1 sm:-mt-1">
+  <BagIcon stroke={isHomePage ? '#F8F6F3' : '#4A3F36'} />
+</div>
+
+                    {cartItemCount > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-red-500 text-theme-light text-[10px] sm:text-xs rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center font-medium">
+                        {cartItemCount > 99 ? '99+' : cartItemCount}
+                      </span>
+                    )}
+                  </div>
+
+                </button>
               </div>
+
+
+
             </div>
           </div>
         </header>

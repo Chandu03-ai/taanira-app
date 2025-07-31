@@ -97,16 +97,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode}) => {
   return (
     <>
       <article
-        className={`group rounded-xl sm:rounded-2xl p-3 sm:p-4 transition-all duration-300 hover:bg-theme-surface shadow-sm hover:shadow-md w-full ${
-          viewMode === 'list' ? 'flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6' : ''
-        }`}
+        className={`group rounded-xl sm:rounded-2xl p-3 sm:p-4 transition-all duration-300 hover:bg-theme-surface shadow-sm hover:shadow-md w-full ${viewMode === 'list' ? 'flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6' : ''
+          }`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
         <Link to={`/product/${product.slug || product.id}`} className={`block mb-3 ${baseFocusClasses}`}>
-          <div className={`relative overflow-hidden rounded-lg sm:rounded-xl bg-theme-light ${
-            viewMode === 'list' ? 'w-full sm:w-48 aspect-square sm:flex-shrink-0' : 'aspect-square'
-          }`}>
+          <div className={`relative overflow-hidden rounded-lg sm:rounded-xl bg-theme-light ${viewMode === 'list' ? 'w-full sm:w-48 aspect-square sm:flex-shrink-0' : 'aspect-square'
+            }`}>
             <img
               src={productImages[0]}
               alt={product.name}
@@ -133,26 +131,27 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode}) => {
 
         <div className={`space-y-2 sm:space-y-3 ${viewMode === 'list' ? 'flex-1 text-left sm:text-left' : 'text-center'}`}>
           <Link to={`/product/${product.slug || product.id}`} className={baseFocusClasses}>
-            <h3 className={`font-serif text-theme-primary hover:text-theme-muted transition-colors line-clamp-2 leading-tight ${
-              viewMode === 'list' ? 'text-lg sm:text-xl mb-2' : 'text-sm sm:text-base lg:text-lg'
-            }`}>
+            <h3 className={`font-serif text-theme-primary hover:text-theme-muted transition-colors line-clamp-2 leading-tight ${viewMode === 'list' ? 'text-lg sm:text-xl mb-2' : 'text-sm sm:text-base lg:text-lg'
+              }`}>
               {product.name}
             </h3>
           </Link>
 
           <div className={`flex items-center gap-2 sm:gap-3 ${viewMode === 'list' ? 'justify-start' : 'justify-center'}`}>
-            <span className={`font-serif text-theme-primary font-medium ${
-              viewMode === 'list' ? 'text-lg sm:text-xl' : 'text-sm sm:text-base'
-            }`}>
+            <span className={`font-serif text-theme-primary font-medium ${viewMode === 'list' ? 'text-lg sm:text-xl' : 'text-sm sm:text-base'
+              }`}>
               {SITE_CONFIG.currencySymbol}{(product.price || 0).toLocaleString()}
             </span>
-            {product.comparePrice && product.comparePrice > product.price && (
-              <span className={`text-theme-muted line-through font-serif ${
-                viewMode === 'list' ? 'text-base sm:text-lg' : 'text-xs sm:text-sm'
-              }`}>
-                {SITE_CONFIG.currencySymbol}{product.comparePrice.toLocaleString()}
-              </span>
-            )}
+            {typeof product.comparePrice === 'number' &&
+              product.comparePrice > 0 &&
+              product.comparePrice > product.price && (
+                <span className={`text-theme-muted line-through font-serif ${viewMode === 'list' ? 'text-base sm:text-lg' : 'text-xs sm:text-sm'
+                  }`}>
+                  {SITE_CONFIG.currencySymbol}{product.comparePrice.toLocaleString()}
+                </span>
+              )}
+
+
           </div>
 
           <div className={`${viewMode === 'list' ? 'pt-3 sm:pt-4' : 'pt-2 sm:pt-3'}`}>
@@ -164,9 +163,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode}) => {
                 OUT OF STOCK
               </button>
             ) : inCart ? (
-              <div className={`flex flex-col gap-2 sm:gap-3 w-full ${
-                viewMode === 'list' ? 'sm:flex-row sm:max-w-md' : 'sm:flex-row'
-              }`}>
+              <div className={`flex flex-col gap-2 sm:gap-3 w-full ${viewMode === 'list' ? 'sm:flex-row sm:max-w-md' : 'sm:flex-row'
+                }`}>
                 <div className="w-full">
                   <Link
                     to="/cart"
@@ -187,9 +185,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode}) => {
             ) : (
               <button
                 onClick={handleAddToCart}
-                className={`w-full py-2.5 sm:py-3 text-xs sm:text-sm font-serif font-semibold italic border-2 border-theme-primary text-theme-primary rounded-lg sm:rounded-xl hover:bg-theme-primary hover:text-theme-light transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md ${
-                  viewMode === 'list' ? 'max-w-xs' : ''
-                } ${baseFocusClasses}`}
+                className={`w-full py-2.5 sm:py-3 text-xs sm:text-sm font-serif font-semibold italic border-2 border-theme-primary text-theme-primary rounded-lg sm:rounded-xl hover:bg-theme-primary hover:text-theme-light transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md ${viewMode === 'list' ? 'max-w-xs' : ''
+                  } ${baseFocusClasses}`}
                 title="Add to Cart"
               >
                 Preorder
