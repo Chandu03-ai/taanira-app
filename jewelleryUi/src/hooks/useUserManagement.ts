@@ -40,7 +40,7 @@ export const useUserManagement = () => {
   const sendTrackingId = async (userId: string, trackingNumber: string, orderId: string) => {
     try {
       setTrackingLoading(userId);
-      const result = await adminService.sendTrackingId(userId, trackingNumber, orderId);
+      const result = await adminService.sendTrackingId(trackingNumber, orderId);
 
       
       if (result.code === 10000) {

@@ -35,37 +35,25 @@ const UserMenu: React.FC<UserMenuProps> = ({ dropdownPosition = 'bottom' }) => {
   }, []);
 
   // Define menu items based on user role
-  const getMenuItems = () => {
-    const currentPath = location.pathname;
-    const userRole = user?.role || 'User';
-    
-    let menuItems = [];
-    
-    if (userRole === 'Admin') {
-      // Admin menu items
-      const adminItems = [
-        { label: 'Profile', path: '/profile' },
-        { label: 'Shop', path: '/products' },
-        { label: 'Admin Panel', path: '/admin' },
-      ];
-      
-      // Filter out current page
-      menuItems = adminItems.filter(item => currentPath !== item.path);
-    } else {
-      // User menu items
-      const userItems = [
-        { label: 'Profile', path: '/profile' },
-        { label: 'Shop', path: '/products' },
-        { label: 'Orders', path: '/user/orders' },
-        { label: 'Addresses', path: '/addresses' },
-      ];
-      
-      // Filter out current page
-      menuItems = userItems.filter(item => currentPath !== item.path);
-    }
-    
-    return menuItems;
-  };
+const getMenuItems = () => {
+  const currentPath = location.pathname;
+  const userRole = user?.role || 'User';
+
+  // Show only "Profile" for Admin
+  if (userRole === 'Admin') {
+    return currentPath !== '/profile' ? [{ label: 'Profile', path: '/profile' }] : [];
+  }
+
+  // Normal user menu
+  const userItems = [
+    { label: 'Profile', path: '/profile' },
+    { label: 'Shop', path: '/products' },
+    { label: 'Orders', path: '/user/orders' },
+    { label: 'Addresses', path: '/addresses' },
+  ];
+  return userItems.filter(item => currentPath !== item.path);
+};
+
 
   const handleLogout = () => {
     logout();
