@@ -12,8 +12,8 @@ const ProductsPage: React.FC = () => {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedParentCategoryId, setSelectedParentCategoryId] = useState<string>('');
-  const [selectedSubcategoryId, setSelectedSubcategoryId] = useState<string>('');
-  const [categoryType, setCategoryType] = useState<string>(''); // Empty initially
+  const [selectedSubcategoryId, ] = useState<string>('');
+  const [categoryType, ] = useState<string>(''); // Empty initially
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('featured');
@@ -200,21 +200,22 @@ const ProductsPage: React.FC = () => {
             ) : (
               <div
                 className={`grid gap-4 sm:gap-6 ${viewMode === 'grid'
-                    ? 'grid-cols-2 md:grid-cols-4'
-                    : 'grid-cols-1'
+                  ? 'grid-cols-2 md:grid-cols-4'
+                  : 'grid-cols-1 sm:grid-cols-1'
                   }`}
               >
+
                 {products.map((product, index) => (
                   <div
                     key={product.id}
-                    className={`transform transition-all duration-700 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
-                      }`}
+                    className={`transform transition-all duration-700 w-full ${viewMode === 'list' ? 'max-w-lg mx-auto' : ''
+                      } ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
                     style={{
                       transitionDelay: `${Math.min(index * 50, 800)}ms`,
                       animationFillMode: 'both'
                     }}
                   >
-                    <ProductCard product={product} />
+                    <ProductCard product={product} viewMode={viewMode} />
                   </div>
                 ))}
               </div>

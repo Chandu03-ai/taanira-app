@@ -12,8 +12,6 @@ const SitemapPage = () => {
           <ul className="space-y-4 text-sm sm:text-base text-rich-brown font-serif italic leading-relaxed pl-4 list-disc">
             <li><Link to="/" className="hover:underline">Home</Link></li>
             <li><Link to="/products" className="hover:underline">Jewelry Collection</Link></li>
-            <li><Link to="/about" className="hover:underline">About Us</Link></li>
-            <li><Link to="/contact" className="hover:underline">Contact</Link></li>
             <li><Link to="/privacy" className="hover:underline">Privacy Policy</Link></li>
             <li><Link to="/terms" className="hover:underline">Terms & Conditions</Link></li>
             <li><Link to="/sitemap" className="hover:underline">Sitemap</Link></li>

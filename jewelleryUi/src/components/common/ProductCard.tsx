@@ -10,6 +10,7 @@ import { apiService } from '../../services/api';
 interface ProductCardProps {
   product: Product;
   showQuickView?: boolean;
+  viewMode?: 'grid' | 'list';
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
