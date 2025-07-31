@@ -2,8 +2,7 @@ import { SITE_CONFIG } from "../constants/siteConfig";
 
 const PrivacyPage = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-subtle-beige font-serif">
-      {/* Main Content */}
+    <div className="min-h-screen flex flex-col py-20 bg-theme-background font-serif">
       <div className="flex-grow flex items-center justify-center px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-xs sm:max-w-sm lg:max-w-2xl">
           <h2 className="text-3xl sm:text-4xl font-serif italic font-semibold text-rich-brown text-center mb-8 sm:mb-10">

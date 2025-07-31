@@ -5,9 +5,8 @@ import { apiService } from '../services/api';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import SEOHead from '../components/seo/SEOHead';
 import { SITE_CONFIG, staticImageBaseUrl } from '../constants/siteConfig';
-import Footer from '../components/common/Footer';
 import Neckless from '../assets/Neckless.jpg';
-import Header from '../components/common/Header'; // Make sure this import is correct
+import Header from '../components/common/Header';
 import { motion } from 'framer-motion';
 
 const container = {
@@ -127,13 +126,13 @@ const HomePage: React.FC = () => {
                 {/* Catalog Section */}
                 <div className="relative z-10 w-full max-w-3xl px-4 sm:px-6 pb-6 sm:pb-8 md:pb-0 text-center lg:text-left">
                   <div className="space-y-3 sm:space-y-4 md:space-y-5 lg:space-y-6">
-                    <p className="text-sm sm:text-base md:text-lg font-light leading-relaxed text-white">
+                    <p className="text-sm sm:text-base text-center md:text-lg font-light leading-relaxed text-white">
                       {SITE_CONFIG.name} is more than jewelry - it's a celebration of craftsmanship.
                     </p>
-                    <p className="text-sm sm:text-base md:text-lg font-light leading-relaxed text-white">
+                    <p className="text-sm sm:text-base text-center md:text-lg font-light leading-relaxed text-white">
                       Each piece is handcrafted with 92.5% pure silver, ensuring lasting quality and timeless beauty.
                     </p>
-                    <p className="text-sm sm:text-base md:text-lg font-light leading-relaxed text-white">
+                    <p className="text-sm sm:text-base text-center md:text-lg font-light leading-relaxed text-white">
                       From traditional designs to contemporary styles, our collection celebrates the art of silver jewelry making.
                     </p>
                   </div>
@@ -171,40 +170,40 @@ const HomePage: React.FC = () => {
             {/* Optimized Product Grid */}
             <div className="w-full">
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 max-w-6xl mx-auto"
-                >
-                  {products.map((product) => (
-                    <Link
-                      to={`/product/${product.slug}`}
-                      key={product.id}
-                      className="group block w-full"
-                    >
-                      {/* Product Image Container */}
-                      <div className="relative w-full aspect-[3/4] border border-[#d4b896] rounded-lg sm:rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 bg-white">
-                        <img
-                          src={`${staticImageBaseUrl}/${product.images[0]}`}
-                          alt={product.name}
-                          className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-300"
-                        />
-                        {/* Badge */}
-                        <div className="absolute top-2 left-2 sm:top-3 sm:left-3">
-                          <span className="bg-[#D4B896] text-[#1C1A17] text-[10px] sm:text-xs px-2 py-1 sm:px-3 sm:py-1.5 rounded-full font-medium">
-                            PreOrder
-                          </span>
-                        </div>
+              >
+                {products.map((product) => (
+                  <Link
+                    to={`/product/${product.slug}`}
+                    key={product.id}
+                    className="group block w-full"
+                  >
+                    {/* Product Image Container */}
+                    <div className="relative w-full aspect-[3/4] border border-[#d4b896] rounded-lg sm:rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 bg-white">
+                      <img
+                        src={`${staticImageBaseUrl}/${product.images[0]}`}
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-300"
+                      />
+                      {/* Badge */}
+                      <div className="absolute top-2 left-2 sm:top-3 sm:left-3">
+                        <span className="bg-[#D4B896] text-[#1C1A17] text-[10px] sm:text-xs px-2 py-1 sm:px-3 sm:py-1.5 rounded-full font-medium">
+                          PreOrder
+                        </span>
                       </div>
+                    </div>
 
-                      {/* Product Info */}
-                      <div className="text-center mt-3 sm:mt-4 px-1">
-                        <h3 className="text-xs sm:text-sm md:text-base text-[#aa732f] font-medium leading-tight mb-2 line-clamp-2 min-h-[2.5rem] sm:min-h-[3rem]">
-                          {product.name}
-                        </h3>
-                        <p className="text-sm sm:text-base text-[#aa732f] font-semibold">
-                          ₹{product.price}
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
+                    {/* Product Info */}
+                    <div className="text-center mt-3 sm:mt-4 px-1">
+                      <h3 className="text-xs sm:text-sm md:text-base text-[#aa732f] font-medium leading-tight mb-2 line-clamp-2 min-h-[2.5rem] sm:min-h-[3rem]">
+                        {product.name}
+                      </h3>
+                      <p className="text-sm sm:text-base text-[#aa732f] font-semibold">
+                        ₹{product.price}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
             </div>
 
             <div className="text-center mt-8 sm:mt-12 md:mt-16">

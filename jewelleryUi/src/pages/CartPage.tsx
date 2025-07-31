@@ -284,7 +284,7 @@ React.useEffect(() => {
                 <div className="mt-6 sm:mt-8 text-center">
                   <button
                     onClick={() => setShowAddressSelector(false)}
-                    className="btn-primary px-8 sm:px-12 py-3 sm:py-4 text-sm sm:text-base rounded-lg"
+                    className="btn-primary bg-theme-primary text-theme-light px-8 sm:px-12 py-3 sm:py-4 text-sm sm:text-base rounded-lg"
                   >
                     Continue to Payment
                   </button>
