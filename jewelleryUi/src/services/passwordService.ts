@@ -1,9 +1,6 @@
 import BaseService from './baseService';
 import { ApiResponse } from '../types/api';
 
-interface ResetPasswordRequest {
-  email: string;
-}
 
 interface UpdatePasswordRequest {
   email: string;

@@ -10,7 +10,7 @@ interface CategoryState {
   setSelectedCategory: (category: string | null) => void;
 }
 
-export const useCategoryStore = create<CategoryState>((set, get) => ({
+export const useCategoryStore = create<CategoryState>((set) => ({
   categories: [],
   selectedCategory: null,
   loading: false,

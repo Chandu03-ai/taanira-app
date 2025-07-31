@@ -4,21 +4,9 @@ import { User } from '../types';
 import { authService } from '../services';
 import { RESPONSE_CODES } from '../constants/appConstants';
 import { useCartStore } from './cartStore';
-import { SendEmailResponse } from '../types/api';
+import { AuthState } from '../types/api';
 
-interface AuthState {
-  user: User | null;
-  isAuthenticated: boolean;
-  loading: boolean;
-  emailStatus: SendEmailResponse | null;
-  login: (credentials: { username: string; password: string }) => Promise<{ success: boolean; reason?: string }>;
-  register: (userData: any) => Promise<boolean>;
-  sendEmailConfirmation: (email: string) => Promise<void>;
-  logout: () => void;
-  verifyToken: () => Promise<boolean>;
-  updateUser: (user: User) => void;
-  initialize: () => Promise<void>;
-}
+
 
 export const useAuthStore = create<AuthState>()(
   persist(

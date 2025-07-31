@@ -1,4 +1,3 @@
-import { API_BASE_URL } from '../constants/appConstants';
 import { ApiResponse } from '../types/api';
 
 class BaseService {

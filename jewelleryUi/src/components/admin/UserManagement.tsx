@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Users, Crown, Mail, Phone, Send, Package } from 'lucide-react';
+import { Users, Crown, Mail, Phone} from 'lucide-react';
 import { RoleChangeDialog, TrackingConfirmDialog } from '../../types/admin';
 import LoadingSpinner from '../common/LoadingSpinner';
 import ConfirmDialog from '../common/ConfirmDialog';
@@ -16,8 +16,6 @@ const UserManagement: React.FC = () => {
   const {
     users,
     loading,
-    trackingLoading,
-    userOrderCounts,
     notification,
     setNotification,
     sendTrackingId,

@@ -1,5 +1,4 @@
 import { AddressFormData } from "./address";
-import { Review } from "./review";
 
 export interface User {
   id: string;

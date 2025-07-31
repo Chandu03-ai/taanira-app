@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Instagram, Twitter, Youtube } from 'lucide-react';
+import { FaYoutube, FaFacebook, FaInstagram } from 'react-icons/fa';
 import { SITE_CONFIG } from '../../constants/siteConfig';
 
 const Footer: React.FC = () => {
@@ -20,13 +20,13 @@ const Footer: React.FC = () => {
               </p>
               <div className="flex justify-center space-x-3">
                 <a href={SITE_CONFIG.social.facebook} target="_blank" rel="noopener noreferrer">
-                  <Facebook className="h-4 w-4 sm:h-5 sm:w-5 text-[#1877F2] hover:text-[#145DBF] transition-all duration-200 ease-in-out" />
+                  <FaFacebook className="h-4 w-4 sm:h-5 sm:w-5 text-[#1877F2] hover:text-[#145DBF] transition-all duration-200 ease-in-out" />
                 </a>
                 <a href={SITE_CONFIG.social.instagram} target="_blank" rel="noopener noreferrer">
-                  <Instagram className="h-4 w-4 sm:h-5 sm:w-5 text-[#E4405F] hover:text-[#C13584] transition-all duration-200 ease-in-out" />
+                  <FaInstagram  className="h-4 w-4 sm:h-5 sm:w-5 text-[#E4405F] hover:text-[#C13584] transition-all duration-200 ease-in-out" />
                 </a>
                 <a href={SITE_CONFIG.social.youtube} target="_blank" rel="noopener noreferrer">
-                  <Youtube className="h-4 w-4 sm:h-5 sm:w-5 text-[#FF0000] hover:text-[#CC0000] transition-all duration-200 ease-in-out" />
+                  <FaYoutube  className="h-4 w-4 sm:h-5 sm:w-5 text-[#FF0000] hover:text-[#CC0000] transition-all duration-200 ease-in-out" />
                 </a>
               </div>
             </div>

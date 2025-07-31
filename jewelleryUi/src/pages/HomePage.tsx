@@ -25,7 +25,7 @@ const letter = {
 };
 
 const HomePage: React.FC = () => {
-  const [, setCategories] = useState<Category[]>([]);
+  const [,setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasAnimated, setHasAnimated] = useState(false);
@@ -118,7 +118,7 @@ const HomePage: React.FC = () => {
               >
                 {renderLetters(SITE_CONFIG.shortName)}
               </motion.h1>
-              <motion.p
+              <motion.div
                 className="text-sm sm:text-base md:text-lg lg:text-xl font-serif font-light italic tracking-wide text-soft-gold mx-auto leading-relaxed"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -138,7 +138,7 @@ const HomePage: React.FC = () => {
                     </p>
                   </div>
                 </div>
-              </motion.p>
+              </motion.div>
             </div>
           </div>
         </section>

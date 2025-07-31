@@ -19,7 +19,6 @@ const RegisterPage: React.FC = () => {
   const { register, loading, sendEmailConfirmation } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
-  const baseFocusClasses = "focus:outline-none focus:ring-0";
 
   // Get the intended destination from location state
   const from = (location.state as any)?.from?.pathname || '/';

@@ -19,11 +19,9 @@ import {
   Search,
   RefreshCw,
   FileDown,
-  User,
   Calendar,
   MapPin,
   Send,
-  Truck,
   Pencil,
   Copy, // Added Copy icon
   Check // Added Check icon
