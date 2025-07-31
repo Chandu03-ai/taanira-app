@@ -64,7 +64,7 @@ const RegisterPage: React.FC = () => {
       // ✅ Send email without blocking navigation
       sendEmailConfirmation(email); // fire-and-forget
 
-      const redirectTo = from === '/register' ? '/' : from;
+      const redirectTo = from === '/register' || from === '/login' ? '/' : from;
       navigate(redirectTo, { replace: true });
     } else {
       setError('Registration failed. Please try again.');

@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Product } from '../types';
 import { apiService } from '../services/api';
-import { useCartStore } from '../store/cartStore'; // Correct import
+import { useCartStore } from '../store/cartStore';
 import { useAuthStore } from '../store/authStore';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import SEOHead from '../components/seo/SEOHead';
@@ -20,11 +20,14 @@ const ProductDetailPage: React.FC = () => {
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [category, setCategory] = useState<any>(null);
+  const [isUpdatingCart, setIsUpdatingCart] = useState(false); // New state to manage loading for cart actions
 
-  // CORRECTED: Destructure the state (items) and actions from useCartStore using a selector
+
+  // Destructure the state (items) and actions from useCartStore using a selector
   const addItem = useCartStore(state => state.addItem);
   const removeItem = useCartStore(state => state.removeItem);
-  const items = useCartStore(state => state.items); // <--- Select 'items' here
+  const items = useCartStore(state => state.items); // Select 'items' here
+  const guestItems = useCartStore(state => state.guestItems); // Select 'guestItems' for guest users
 
   const { isAuthenticated } = useAuthStore();
   const baseFocusClasses = "focus:outline-none focus:ring-0";
@@ -46,14 +49,13 @@ const ProductDetailPage: React.FC = () => {
       }
     };
     loadCategory();
-  }, [product]); // Removed selectedSize from dependency array as it's not needed for category loading
+  }, [product]);
 
   const loadProduct = async () => {
     try {
       const productData = await apiService.getProductBySlug(slug!);
       setProduct(productData);
-      // Reset selected size when a new product is loaded (good practice)
-      setSelectedSize('');
+      setSelectedSize(''); // Reset selected size when a new product is loaded
     } catch (error) {
       console.error('Error loading product:', error);
       setProduct(null);
@@ -63,9 +65,11 @@ const ProductDetailPage: React.FC = () => {
   };
 
   const hasSizeOptions = category?.sizeOptions && Array.isArray(category.sizeOptions) && category.sizeOptions.length > 0;
-  // Determine the effective size to pass to cart functions:
-  // Use selectedSize if product has size options, otherwise use undefined for "no size"
-  const existingCartItem = product ? items.find(
+
+  // Get active items based on authentication status
+  const activeItems = isAuthenticated ? items : guestItems;
+
+  const existingCartItem = product ? activeItems.find(
     item => item.productId === product.id
   ) : undefined;
 
@@ -73,39 +77,46 @@ const ProductDetailPage: React.FC = () => {
     ? (selectedSize || existingCartItem?.selectedSize)
     : undefined;
 
-  const cartItem = product ? items.find(
+  const cartItem = product ? activeItems.find(
     item => item.productId === product.id &&
       (item.selectedSize ?? '') === (effectiveSelectedSize ?? '')
   ) : undefined;
 
   const inCart = !!cartItem;
 
-
-
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-
-    if (!isAuthenticated) {
-      setShowLoginPrompt(true);
-      return;
-    }
 
     if (hasSizeOptions && !selectedSize) {
       alert('Please select a size before adding to cart');
       return;
     }
 
-    if (product && product.stock) {
-      addItem(product, 1, effectiveSelectedSize);
-      const button = e.currentTarget as HTMLButtonElement;
-      const originalText = button.textContent;
-      button.textContent = 'ADDED!';
-      button.style.backgroundColor = '#10b981';
-      setTimeout(() => {
-        button.textContent = originalText!;
-        button.style.backgroundColor = '';
-      }, 1200);
+    if (!product || !product.stock || isUpdatingCart) return;
+
+    setIsUpdatingCart(true); // Set loading state
+    try {
+      await addItem(product, 1, effectiveSelectedSize);
+    } catch (error) {
+      console.error("Failed to add item to cart:", error);
+      // Optionally, show a user-friendly error message
+    } finally {
+      setIsUpdatingCart(false); // Reset loading state
+    }
+  };
+
+  const handleRemoveFromCart = async () => {
+    if (!cartItem || isUpdatingCart) return;
+
+    setIsUpdatingCart(true); // Set loading state
+    try {
+      await removeItem(cartItem.id);
+    } catch (error) {
+      console.error("Failed to remove item from cart:", error);
+      // Optionally, show a user-friendly error message
+    } finally {
+      setIsUpdatingCart(false); // Reset loading state
     }
   };
 
@@ -113,7 +124,6 @@ const ProductDetailPage: React.FC = () => {
     setShowLoginPrompt(false);
     navigate('/login');
   };
-
 
   const nextImage = () => {
     if (product?.images) {
@@ -178,22 +188,22 @@ const ProductDetailPage: React.FC = () => {
             <div className="space-y-4 sm:space-y-6">
               <div className="relative bg-theme-surface rounded-xl sm:rounded-2xl overflow-hidden">
                 <div className="aspect-square">
-                  <img 
-                    src={productImages[currentImageIndex]} 
-                    alt={product.name} 
-                    className="w-full h-full object-cover rounded-xl sm:rounded-2xl" 
+                  <img
+                    src={productImages[currentImageIndex]}
+                    alt={product.name}
+                    className="w-full h-full object-cover rounded-xl sm:rounded-2xl"
                   />
                 </div>
                 {productImages.length > 1 && (
                   <>
-                    <button 
-                      onClick={prevImage} 
+                    <button
+                      onClick={prevImage}
                       className={`absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-theme-light rounded-full p-2 sm:p-3 shadow-md hover:shadow-lg ${baseFocusClasses}`}
                     >
                       <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
                     </button>
-                    <button 
-                      onClick={nextImage} 
+                    <button
+                      onClick={nextImage}
                       className={`absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-theme-light rounded-full p-2 sm:p-3 shadow-md hover:shadow-lg ${baseFocusClasses}`}
                     >
                       <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
@@ -201,7 +211,7 @@ const ProductDetailPage: React.FC = () => {
                   </>
                 )}
               </div>
-              
+
               {/* Thumbnail Images for larger screens */}
               {productImages.length > 1 && (
                 <div className="hidden sm:flex gap-2 lg:gap-3 overflow-x-auto">
@@ -209,12 +219,11 @@ const ProductDetailPage: React.FC = () => {
                     <button
                       key={index}
                       onClick={() => setCurrentImageIndex(index)}
-                      className={`flex-shrink-0 w-16 h-16 lg:w-20 lg:h-20 rounded-lg overflow-hidden border-2 transition-all ${
-                        currentImageIndex === index ? 'border-theme-primary' : 'border-theme-surface hover:border-theme-secondary'
-                      }`}
+                      className={`flex-shrink-0 w-16 h-16 lg:w-20 lg:h-20 rounded-lg overflow-hidden border-2 transition-all ${currentImageIndex === index ? 'border-theme-primary' : 'border-theme-surface hover:border-theme-secondary'
+                        }`}
                     >
-                      <img 
-                        src={image} 
+                      <img
+                        src={image}
                         alt={`${product.name} view ${index + 1}`}
                         className="w-full h-full object-cover"
                       />
@@ -232,11 +241,11 @@ const ProductDetailPage: React.FC = () => {
                 </h1>
                 <div className="flex items-center space-x-3 sm:space-x-4">
                   <div className="text-xl sm:text-2xl lg:text-3xl font-medium">₹ {product.price.toLocaleString()}</div>
-                {product.comparePrice && product.comparePrice > product.price && (
+                  {product.comparePrice && product.comparePrice > product.price && (
                     <div className="text-lg sm:text-xl lg:text-2xl line-through text-theme-primary/60">
-                    ₹ {product.comparePrice.toLocaleString()}
-                  </div>
-                )}
+                      ₹ {product.comparePrice.toLocaleString()}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -263,38 +272,39 @@ const ProductDetailPage: React.FC = () => {
 
               {/* Action Buttons */}
               <div className="space-y-3 sm:space-y-4">
-              {!product.stock ? (
-                <button
-                  disabled
-                  className={`w-full py-3 sm:py-4 text-sm sm:text-base font-serif font-semibold italic border-2 border-theme-muted text-theme-muted rounded-xl cursor-not-allowed ${baseFocusClasses}`}
-                >
-                  OUT OF STOCK
-                </button>
-              ) : inCart ? (
-                <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
-                  <Link
-                    to="/cart"
-                    className={`w-full sm:flex-1 text-center py-3 sm:py-4 text-sm sm:text-base font-serif font-semibold italic border-2 border-theme-primary text-theme-primary rounded-xl hover:bg-theme-primary hover:text-theme-light transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md ${baseFocusClasses}`}
-                  >
-                    Go to Cart
-                  </Link>
-
+                {!product.stock ? (
                   <button
-                    onClick={() => removeItem(cartItem.id)}
-                    className={`w-full sm:flex-1 py-3 sm:py-4 text-sm sm:text-base font-serif font-semibold italic border-2 border-red-500 text-red-500 rounded-xl hover:bg-red-500 hover:text-theme-light transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md ${baseFocusClasses}`}
+                    disabled
+                    className={`w-full py-3 sm:py-4 text-sm sm:text-base font-serif font-semibold italic border-2 border-theme-muted text-theme-muted rounded-xl cursor-not-allowed ${baseFocusClasses}`}
                   >
-                    Remove
+                    OUT OF STOCK
                   </button>
-                </div>
-              ) : (
-                <button
-                  onClick={handleAddToCart}
-                  className={`w-full py-3 sm:py-4 text-sm sm:text-base font-serif font-semibold italic border-2 border-theme-primary text-theme-primary rounded-xl hover:bg-theme-primary hover:text-theme-light transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md ${baseFocusClasses}`}
-                  title="Add to Cart"
-                >
-                  Preorder
-                </button>
-              )}
+                ) : inCart ? (
+                  <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
+                    <Link
+                      to="/cart"
+                      className={`w-full sm:flex-[2] text-center py-3 sm:py-4 text-sm sm:text-base font-serif font-semibold italic border-2 border-theme-primary text-theme-primary rounded-xl hover:bg-theme-primary hover:text-theme-light transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md ${baseFocusClasses}`}
+                   >
+                      Go to Cart
+                    </Link>
+                    <button
+                      onClick={handleRemoveFromCart} 
+                      disabled={isUpdatingCart} 
+                      className={`w-full sm:flex-1 py-3 sm:py-4 text-sm sm:text-base font-serif font-semibold italic border-2 border-red-500 text-red-500 rounded-xl hover:bg-red-500 hover:text-theme-light transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md ${baseFocusClasses} ${isUpdatingCart ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    >
+                      {isUpdatingCart ? 'Removing...' : 'Remove'}
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={isUpdatingCart} // Disable during update
+                    className={`w-full py-3 sm:py-4 text-sm sm:text-base font-serif font-semibold italic border-2 border-theme-primary text-theme-primary rounded-xl hover:bg-theme-primary hover:text-theme-light transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md ${baseFocusClasses} ${isUpdatingCart ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    title="Add to Cart"
+                  >
+                    {isUpdatingCart ? 'Adding...' : 'Preorder'}
+                  </button>
+                )}
               </div>
 
               {/* Product Details Tabs */}
@@ -304,11 +314,10 @@ const ProductDetailPage: React.FC = () => {
                     <button
                       key={tab}
                       onClick={() => setTab(tab as any)}
-                      className={`pb-2 sm:pb-3 italic font-semibold uppercase tracking-wide text-xs sm:text-sm lg:text-base ${baseFocusClasses} ${
-                        currentTab === tab 
-                          ? 'border-b-2 border-theme-primary text-theme-primary' 
-                          : 'text-theme-primary/70 hover:text-theme-primary'
-                      }`}
+                      className={`pb-2 sm:pb-3 italic font-semibold uppercase tracking-wide text-xs sm:text-sm lg:text-base ${baseFocusClasses} ${currentTab === tab
+                        ? 'border-b-2 border-theme-primary text-theme-primary'
+                        : 'text-theme-primary/70 hover:text-theme-primary'
+                        }`}
                     >
                       {tab}
                     </button>

@@ -11,7 +11,7 @@ import { staticImageBaseUrl } from '../constants/siteConfig';
 import { AddressFormData, Address } from '../types/address';
 
 const CartPage: React.FC = () => {
-  const { items, removeItem, updateQuantity, getTotalPrice } = useCartStore();
+  const { items, guestItems, removeItem, updateQuantity, getTotalPrice } = useCartStore();
   const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
   const { selectedAddress, addAddress, updateAddress, loadAddresses } = useAddressStore();
@@ -22,7 +22,11 @@ const CartPage: React.FC = () => {
   const [editingAddress, setEditingAddress] = React.useState<Address | null>(null);
   const [formLoading, setFormLoading] = React.useState(false);
 
+  // Get active items based on authentication status
+  const activeItems = isAuthenticated ? items : guestItems;
 React.useEffect(() => {
+  if (!isAuthenticated) return; // Skip address loading for guest users
+  
   (async () => {
     try {
       const fetchedAddresses = await loadAddresses();
@@ -37,7 +41,7 @@ React.useEffect(() => {
       console.error('Error loading addresses:', err);
     }
   })();
-}, []);
+}, [isAuthenticated]);
 
 
 
@@ -46,10 +50,12 @@ React.useEffect(() => {
     return (
       <div className="min-h-screen bg-theme-background flex flex-col items-center justify-center px-4 text-center">
         <ShoppingBag className="h-16 w-16 text-theme-muted mb-4" />
-        <h2 className="text-2xl font-bold text-theme-primary mb-2">Please log in to view your cart</h2>
-        <p className="text-theme-muted mb-8">You need to be logged in to manage your cart and proceed with checkout.</p>
+        <h2 className="text-2xl font-bold text-theme-primary mb-2">Login to Complete Your Order</h2>
+        <p className="text-theme-muted mb-4">You have {guestItems.length} item{guestItems.length !== 1 ? 's' : ''} in your cart.</p>
+        <p className="text-theme-muted mb-8">Login to add delivery address and complete your purchase.</p>
         <Link
           to="/login"
+          state={{ from: { pathname: '/cart' } }}
           className="bg-theme-primary text-theme-light px-8 py-3 rounded font-semibold hover:bg-theme-dark transition-colors"
         >
           Login
@@ -59,7 +65,7 @@ React.useEffect(() => {
   }
 
   const handleQuantityChange = (cartItemId: string, delta: number) => {
-    const item = items.find(i => i.id === cartItemId);
+    const item = activeItems.find(i => i.id === cartItemId);
     if (!item) return;
 
     const newQty = item.quantity + delta;
@@ -104,7 +110,7 @@ React.useEffect(() => {
     }
   };
 
-  if (items.length === 0) {
+  if (activeItems.length === 0) {
     return (
       <div className="min-h-screen bg-theme-background flex items-center justify-center px-4">
         <div className="text-center">
@@ -129,7 +135,7 @@ React.useEffect(() => {
           <>
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 lg:mb-10 gap-4">
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-serif font-semibold italic text-theme-primary">
-                MY BAG ({items.length})
+                MY BAG ({activeItems.length})
               </h1>
               <button
                 onClick={() => navigate('/')}
@@ -143,7 +149,7 @@ React.useEffect(() => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 items-start">
               {/* Cart Items */}
               <div className="lg:col-span-2 space-y-4 sm:space-y-6">
-                {items.map((item) => (
+                {activeItems.map((item) => (
                   <div key={item.id} className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-4 lg:space-x-6 pb-4 sm:pb-6 border-b border-theme-secondary/30 last:border-b-0">
                     {/* Product Image */}
                     <img

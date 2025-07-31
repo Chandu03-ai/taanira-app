@@ -12,6 +12,7 @@ interface CartSidebarProps {
 const CartSidebar: React.FC<CartSidebarProps> = ({ onClose }) => {
   const {
     items,
+    guestItems,
     removeItem,
     updateQuantity,
     getTotalPrice,
@@ -24,6 +25,9 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ onClose }) => {
   const [isUpdating, setIsUpdating] = useState(false); // State to manage update loading
   const baseFocusClasses = "focus:outline-none focus:ring-0";
   const reactRouterLocation = useLocation();
+  
+  // Get active items based on authentication status
+  const activeItems = isAuthenticated ? items : guestItems;
   useEffect(() => {
     const timer = setTimeout(() => setShowContent(true), 200);
     // When the sidebar opens, sync the cart with the server to get the latest state
@@ -35,6 +39,11 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ onClose }) => {
 
   const handleCheckout = () => {
     onClose();
+    if (!isAuthenticated) {
+      // Redirect to login with current location for post-login redirect
+      navigate('/login', { state: { from: reactRouterLocation } });
+      return;
+    }
     // Pass current location for post-login redirect if needed
     navigate('/cart', { state: { from: reactRouterLocation } });
   };
@@ -42,10 +51,6 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ onClose }) => {
   const handleQuantityUpdate = async (id: string, delta: number) => {
     if (isUpdating) return; // Prevent multiple clicks while an update is in progress
 
-    if (!isAuthenticated) {
-      navigate('/login');
-      return;
-    }
 
     // No need to calculate newQuantity here, the store's updateQuantity will handle it
     // and call removeItem if the resulting quantity is <= 0.
@@ -63,26 +68,6 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ onClose }) => {
     }
   };
 
-  if (!isAuthenticated) {
-    return (
-      <div className="fixed inset-0 z-50 overflow-hidden">
-        <div className="absolute inset-0 bg-theme-dark bg-opacity-50" onClick={onClose}></div>
-        <div className="absolute right-0 top-0 h-full w-full max-w-xs sm:max-w-sm lg:max-w-md bg-theme-light shadow-xl flex flex-col items-center justify-center text-center px-4">
-          <ShoppingBag className="w-16 h-16 text-theme-muted mb-4" />
-          <p className="text-theme-primary text-sm sm:text-base mb-2">You need to be logged in to access your cart.</p>
-          <button
-            onClick={() => {
-              onClose();
-              navigate('/login');
-            }}
-            className={`bg-theme-primary text-theme-light px-6 py-2 rounded hover:bg-theme-dark ${baseFocusClasses}`}
-          >
-            Login to Continue
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden lg:overflow-visible">
@@ -91,7 +76,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ onClose }) => {
       <div className="absolute right-0 top-0 h-full w-full max-w-sm sm:max-w-md bg-theme-light shadow-2xl flex flex-col transition-transform duration-300 ease-in-out">
         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-theme-surface bg-theme-light sticky top-0 z-10">
           <h2 className="text-lg sm:text-xl font-semibold text-theme-primary truncate">
-            MY BAG ({items.length})
+            MY BAG ({activeItems.length})
           </h2>
           <button
             onClick={onClose}
@@ -106,7 +91,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ onClose }) => {
           className={`flex-1 overflow-y-auto p-4 sm:p-6 transition-opacity duration-700 scrollbar-thin scrollbar-thumb-theme-muted scrollbar-track-transparent ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
             }`}
         >
-          {items.length === 0 ? (
+          {activeItems.length === 0 ? (
             <div className="text-center mt-12 sm:mt-16 animate-fadeInSlow">
               <ShoppingBag className="h-16 w-16 sm:h-20 sm:w-20 text-theme-muted mx-auto mb-4 sm:mb-6" />
               <p className="text-base sm:text-lg text-theme-muted mb-6 sm:mb-8">Your bag is empty</p>
@@ -121,7 +106,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ onClose }) => {
             </div>
           ) : (
             <div className="space-y-4 sm:space-y-6">
-              {items.map((item, index) => (
+              {activeItems.map((item, index) => (
                 <div
                   key={item.id}
                   className="flex items-start space-x-3 sm:space-x-4 border-b border-theme-surface pb-4 sm:pb-6 last:border-b-0 animate-fadeInSlow"
@@ -185,7 +170,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ onClose }) => {
           )}
         </div>
 
-        {items.length > 0 && (
+        {activeItems.length > 0 && (
           <div
             className={`border-t border-theme-surface p-4 sm:p-6 bg-theme-light transition-opacity duration-700 sticky bottom-0 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
               }`}
@@ -203,7 +188,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ onClose }) => {
               className={`w-full bg-theme-primary text-theme-light py-3 sm:py-4 text-sm sm:text-base rounded-lg font-medium hover:bg-theme-dark transition-colors ${baseFocusClasses}`}
               title="Proceed to checkout"
             >
-              PROCEED TO CHECKOUT
+              {isAuthenticated ? 'PROCEED TO CHECKOUT' : 'LOGIN TO CHECKOUT'}
             </button>
           </div>
         )}

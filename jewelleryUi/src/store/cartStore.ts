@@ -1,12 +1,12 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { CartItem, Product } from '../types';
+import { CartItem, Product, GuestCartItem } from '../types';
 import { useAuthStore } from './authStore';
 import { cartService } from '../services/cartService';
 
-
 interface CartState {
   items: CartItem[];
+  guestItems: GuestCartItem[];
   totalItems: number; 
   totalPrice: number;
 
@@ -22,48 +22,55 @@ interface CartState {
   isProductInCart: (productId: string, selectedSize?: string) => boolean;
   syncWithServer: () => Promise<void>; 
   resetCartStore: () => void;
-  getUniqueItemCount: () => number; 
+  getUniqueItemCount: () => number;
+  
+  // Guest cart actions
+  addGuestItem: (product: Product, quantity: number, selectedSize?: string) => void;
+  removeGuestItem: (itemId: string) => void;
+  updateGuestQuantity: (itemId: string, delta: number) => void;
+  clearGuestCart: () => void;
+  mergeGuestCartWithServer: () => Promise<void>;
 }
 
 export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       items: [],
+      guestItems: [],
       totalItems: 0,
       totalPrice: 0,
 
-      // Action to add an item to the cart
+      // Universal add item - works for both guest and authenticated users
       addItem: async (product, quantity, selectedSize) => {
         const { isAuthenticated } = useAuthStore.getState();
+        
         if (!isAuthenticated) {
-          console.warn("User not authenticated. Cannot add item to cart.");
+          // Add to guest cart
+          get().addGuestItem(product, quantity, selectedSize);
           return;
         }
 
-        // Normalize selectedSize to undefined if it's an empty string or null for consistent lookup
+        // Authenticated user flow (existing logic)
         const effectiveSize = selectedSize || undefined;
-
         const existingItem = get().items.find(
           item => item.productId === product.id && item.selectedSize === effectiveSize
         );
 
         if (existingItem) {
-          // If item already exists, update its quantity by the given 'quantity' (delta)
           await get().updateQuantity(existingItem.id, quantity);
         } else {
           try {
-            // Call backend service to add new item
             const backendResponse = await cartService.addToCart(product.id, quantity, effectiveSize);
-            const backendItem = backendResponse.result; // Assuming backendResponse.result is the CartItem
+            const backendItem = backendResponse.result;
 
             if (!backendItem || !backendItem.id) {
               throw new Error("Backend did not return a valid cart item with an ID.");
             }
 
             const newItem: CartItem = {
-              id: backendItem.id, // Use the ID provided by the backend
+              id: backendItem.id,
               productId: product.id,
-              quantity: backendItem.quantity, // Use quantity from backend response
+              quantity: backendItem.quantity,
               selectedSize: effectiveSize,
               product,
             };
@@ -76,18 +83,115 @@ export const useCartStore = create<CartState>()(
             });
           } catch (err) {
             console.error('Failed to add to cart:', err);
-            // Handle error, e.g., show a notification to the user
           }
         }
-        // Sync with server after any cart modification to ensure UI reflects backend state
         await get().syncWithServer();
+      },
+
+      // Guest cart management
+      addGuestItem: (product, quantity, selectedSize) => {
+        const effectiveSize = selectedSize || undefined;
+        const existingItem = get().guestItems.find(
+          item => item.productId === product.id && item.selectedSize === effectiveSize
+        );
+
+        if (existingItem) {
+          get().updateGuestQuantity(existingItem.id, quantity);
+        } else {
+          const newGuestItem: GuestCartItem = {
+            id: `guest-${Date.now()}-${Math.random()}`,
+            productId: product.id,
+            quantity,
+            selectedSize: effectiveSize,
+            product,
+          };
+
+          set((state) => {
+            const newGuestItems = [...state.guestItems, newGuestItem];
+            const updatedTotalItems = newGuestItems.reduce((sum, item) => sum + item.quantity, 0);
+            const updatedTotalPrice = newGuestItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+            return { 
+              guestItems: newGuestItems, 
+              totalItems: updatedTotalItems, 
+              totalPrice: updatedTotalPrice 
+            };
+          });
+        }
+      },
+
+      removeGuestItem: (itemId) => {
+        set((state) => {
+          const newGuestItems = state.guestItems.filter(item => item.id !== itemId);
+          const updatedTotalItems = newGuestItems.reduce((sum, item) => sum + item.quantity, 0);
+          const updatedTotalPrice = newGuestItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+          return { 
+            guestItems: newGuestItems, 
+            totalItems: updatedTotalItems, 
+            totalPrice: updatedTotalPrice 
+          };
+        });
+      },
+
+      updateGuestQuantity: (itemId, delta) => {
+        const item = get().guestItems.find(item => item.id === itemId);
+        if (!item) return;
+
+        const newQuantity = item.quantity + delta;
+        if (newQuantity <= 0) {
+          get().removeGuestItem(itemId);
+          return;
+        }
+
+        set((state) => {
+          const newGuestItems = state.guestItems.map(item =>
+            item.id === itemId ? { ...item, quantity: newQuantity } : item
+          );
+          const updatedTotalItems = newGuestItems.reduce((sum, item) => sum + item.quantity, 0);
+          const updatedTotalPrice = newGuestItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+          return { 
+            guestItems: newGuestItems, 
+            totalItems: updatedTotalItems, 
+            totalPrice: updatedTotalPrice 
+          };
+        });
+      },
+
+      clearGuestCart: () => {
+        set({ guestItems: [], totalItems: 0, totalPrice: 0 });
+      },
+
+      // Merge guest cart with server when user logs in
+      mergeGuestCartWithServer: async () => {
+        const { guestItems } = get();
+        if (guestItems.length === 0) return;
+
+        try {
+          // Add each guest item to server cart
+          for (const guestItem of guestItems) {
+            await cartService.addToCart(
+              guestItem.productId, 
+              guestItem.quantity, 
+              guestItem.selectedSize
+            );
+          }
+
+          // Clear guest cart after successful merge
+          get().clearGuestCart();
+          
+          // Sync with server to get updated cart
+          await get().syncWithServer();
+        } catch (error) {
+          console.error('Failed to merge guest cart:', error);
+        }
       },
 
       // Action to remove an item from the cart
       removeItem: async (itemId) => {
         const { isAuthenticated } = useAuthStore.getState();
+        
         if (!isAuthenticated) {
-          console.warn("User not authenticated. Cannot remove item from cart.");
+          // Remove from guest cart
+          get().removeGuestItem(itemId);
           return;
         }
 
@@ -97,7 +201,6 @@ export const useCartStore = create<CartState>()(
           return;
         }
 
-        // Optimistic UI update: Remove the item immediately
         set((state) => {
           const newItems = state.items.filter(i => i.id !== itemId);
           const updatedTotalItems = newItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -106,11 +209,9 @@ export const useCartStore = create<CartState>()(
         });
 
         try {
-          // Call backend service to remove item
           await cartService.removeFromCart(itemToRemove.id, itemToRemove.selectedSize);
         } catch (err) {
           console.error('Failed to remove cart item on server:', err);
-          // Revert UI state if backend call fails (e.g., add item back)
           set((state) => {
             const revertedItems = [...state.items, itemToRemove];
             const updatedTotalItems = revertedItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -118,15 +219,16 @@ export const useCartStore = create<CartState>()(
             return { items: revertedItems, totalItems: updatedTotalItems, totalPrice: updatedTotalPrice };
           });
         }
-        // Sync with server after any cart modification to ensure UI reflects backend state
         await get().syncWithServer();
       },
 
       // Action to update the quantity of an existing item by a delta (+1 or -1)
       updateQuantity: async (itemId, delta) => {
         const { isAuthenticated } = useAuthStore.getState();
+        
         if (!isAuthenticated) {
-          console.warn("User not authenticated. Cannot update item quantity.");
+          // Update guest cart
+          get().updateGuestQuantity(itemId, delta);
           return;
         }
 
@@ -139,12 +241,10 @@ export const useCartStore = create<CartState>()(
         const newQuantity = itemToUpdate.quantity + delta;
 
         if (newQuantity <= 0) {
-          // If quantity drops to 0 or less, remove the item
           await get().removeItem(itemId);
           return;
         }
 
-        // Optimistic UI update: Update the state immediately
         set((state) => {
           const newItems = state.items.map((item) =>
             item.id === itemId ? { ...item, quantity: newQuantity } : item
@@ -155,11 +255,9 @@ export const useCartStore = create<CartState>()(
         });
 
         try {
-          // Send only the delta to the backend (assuming backend handles the new total quantity)
           await cartService.updateCartItem(itemToUpdate.id, delta);
         } catch (err) {
           console.error("Failed to update cart item quantity on server:", err);
-          // Revert UI state if the backend call fails
           set((state) => {
             const revertedItems = state.items.map((item) =>
               item.id === itemId ? { ...item, quantity: itemToUpdate.quantity } : item
@@ -169,7 +267,6 @@ export const useCartStore = create<CartState>()(
             return { items: revertedItems, totalItems: updatedTotalItems, totalPrice: updatedTotalPrice };
           });
         }
-        // Sync with server after any cart modification to ensure UI reflects backend state
         await get().syncWithServer();
       },
 
@@ -189,7 +286,6 @@ export const useCartStore = create<CartState>()(
 
         const originalSelectedSize = itemToUpdate.selectedSize;
 
-        // Optimistic UI update
         set((state) => {
           const newItems = state.items.map(i =>
             i.id === itemId ? { ...i, selectedSize } : i
@@ -200,11 +296,9 @@ export const useCartStore = create<CartState>()(
         });
 
         try {
-          // Assuming cartService.updateCartItemSize takes productId and new size
           await cartService.updateCartItemSize(itemToUpdate.productId, selectedSize);
         } catch (err) {
           console.error('Failed to update item size on server:', err);
-          // Revert if error
           set((state) => {
             const revertedItems = state.items.map(i => i.id === itemId ? { ...i, selectedSize: originalSelectedSize } : i);
             const updatedTotalItems = revertedItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -212,13 +306,20 @@ export const useCartStore = create<CartState>()(
             return { items: revertedItems, totalItems: updatedTotalItems, totalPrice: updatedTotalPrice };
           });
         }
-        // Sync with server after any cart modification to ensure UI reflects backend state
         await get().syncWithServer();
       },
 
       // Action to clear the entire cart
-        clearCart: async (cartIdsToRemove) => {
-        const { items } = get();
+      clearCart: async (cartIdsToRemove) => {
+        const { items, guestItems } = get();
+        const { isAuthenticated } = useAuthStore.getState();
+
+        if (!isAuthenticated) {
+          // Clear guest cart
+          get().clearGuestCart();
+          return;
+        }
+
         const filteredItems = cartIdsToRemove
           ? items.filter(item => !cartIdsToRemove.includes(item.id))
           : [];
@@ -229,8 +330,7 @@ export const useCartStore = create<CartState>()(
           totalPrice: filteredItems.reduce((sum, i) => sum + i.product.price * i.quantity, 0),
         });
 
-        const { isAuthenticated } = useAuthStore.getState();
-        if (isAuthenticated && cartIdsToRemove?.length) {
+        if (cartIdsToRemove?.length) {
           try {
             await Promise.all(cartIdsToRemove.map(id => cartService.removeFromCart(id)));
           } catch (err) {
@@ -241,7 +341,11 @@ export const useCartStore = create<CartState>()(
 
       // Getter: Calculates total price of items in the cart
       getTotalPrice: () => {
-        return get().items.reduce(
+        const { isAuthenticated } = useAuthStore.getState();
+        const { items, guestItems } = get();
+        
+        const activeItems = isAuthenticated ? items : guestItems;
+        return activeItems.reduce(
           (total, item) => total + (item.product?.price || 0) * item.quantity,
           0
         );
@@ -249,54 +353,74 @@ export const useCartStore = create<CartState>()(
 
       // Getter: Calculates total count of all items (sum of quantities)
       getItemCount: () => {
-        return get().items.reduce((count, item) => count + item.quantity, 0);
+        const { isAuthenticated } = useAuthStore.getState();
+        const { items, guestItems } = get();
+        
+        const activeItems = isAuthenticated ? items : guestItems;
+        return activeItems.reduce((count, item) => count + item.quantity, 0);
       },
 
       // Getter: Calculates number of unique items in the cart
       getUniqueItemCount: () => {
-        return get().items.length;
+        const { isAuthenticated } = useAuthStore.getState();
+        const { items, guestItems } = get();
+        
+        const activeItems = isAuthenticated ? items : guestItems;
+        return activeItems.length;
       },
 
       // Getter: Gets the quantity of a specific product (with optional size) in the cart
       getProductQuantity: (productId: string, selectedSize?: string) => {
-        const effectiveSize = selectedSize || undefined; // Normalize for consistent lookup
-        return get().items.find(item =>
+        const { isAuthenticated } = useAuthStore.getState();
+        const { items, guestItems } = get();
+        
+        const effectiveSize = selectedSize || undefined;
+        const activeItems = isAuthenticated ? items : guestItems;
+        
+        return activeItems.find(item =>
           item.productId === productId && item.selectedSize === effectiveSize
         )?.quantity || 0;
       },
 
       // Getter: Checks if a specific product (with optional size) is in the cart
       isProductInCart: (productId: string, selectedSize?: string) => {
-        const effectiveSize = selectedSize || undefined; // Normalize for consistent lookup
-        return get().items.some(item =>
+        const { isAuthenticated } = useAuthStore.getState();
+        const { items, guestItems } = get();
+        
+        const effectiveSize = selectedSize || undefined;
+        const activeItems = isAuthenticated ? items : guestItems;
+        
+        return activeItems.some(item =>
           item.productId === productId && item.selectedSize === effectiveSize
         );
       },
 
       // Action to reset the cart store to its initial empty state
       resetCartStore: () => {
-        set({ items: [], totalItems: 0, totalPrice: 0 });
+        set({ items: [], guestItems: [], totalItems: 0, totalPrice: 0 });
       },
 
       // Action to synchronize the local cart state with the backend cart
       syncWithServer: async () => {
         const { isAuthenticated } = useAuthStore.getState();
         if (!isAuthenticated) {
-          // If not authenticated, clear local cart (or handle as guest cart)
-          set({ items: [], totalItems: 0, totalPrice: 0 });
+          // For guest users, calculate totals from guest items
+          const { guestItems } = get();
+          const updatedTotalItems = guestItems.reduce((sum, item) => sum + item.quantity, 0);
+          const updatedTotalPrice = guestItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+          set({ totalItems: updatedTotalItems, totalPrice: updatedTotalPrice });
           return;
         }
 
         try {
           const response = await cartService.getCart();
           if (response.result) {
-            // Ensure backend response items match CartItem structure
             const fetchedItems: CartItem[] = response.result.map(backendItem => ({
               id: backendItem.id,
               productId: backendItem.productId,
               quantity: backendItem.quantity,
               selectedSize: backendItem.selectedSize || undefined,
-              product: backendItem.product, // Assuming backend provides full product data
+              product: backendItem.product,
             }));
 
             const updatedTotalItems = fetchedItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -304,21 +428,19 @@ export const useCartStore = create<CartState>()(
 
             set({ items: fetchedItems, totalItems: updatedTotalItems, totalPrice: updatedTotalPrice });
           } else {
-            set({ items: [], totalItems: 0, totalPrice: 0 }); // Clear if no result
+            set({ items: [], totalItems: 0, totalPrice: 0 });
           }
         } catch (err) {
           console.error('Failed to sync cart:', err);
-          // Optionally, show an error message to the user
         }
       },
     }),
     {
-      name: 'cart-storage', // Name for localStorage key
-      // Only persist 'items' to local storage. 'totalItems' and 'totalPrice' are derived.
-      partialize: (state) => ({ items: state.items }),
-      // You might need to add a custom deserialize function if 'Product' objects
-      // contain non-serializable data or if you want to re-fetch product details
-      // on hydration to ensure they are up-to-date. For now, assuming direct JSON.parse works.
+      name: 'cart-storage',
+      partialize: (state) => ({ 
+        items: state.items, 
+        guestItems: state.guestItems 
+      }),
     }
   )
 );

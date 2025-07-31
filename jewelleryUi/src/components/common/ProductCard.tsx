@@ -4,7 +4,6 @@ import { Product } from '../../types';
 import { useCartStore } from '../../store/cartStore';
 import { useAuthStore } from '../../store/authStore';
 import { SITE_CONFIG, staticImageBaseUrl } from '../../constants/siteConfig';
-import LoginPromptModal from './LoginPromptModal';
 import { apiService } from '../../services/api';
 
 interface ProductCardProps {
@@ -15,13 +14,12 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode}) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [showSizeSelector, setShowSizeSelector] = useState(false);
   const [category, setCategory] = useState<any>(null);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const { addItem, items, removeItem } = useCartStore();
+  const { addItem, items, guestItems, removeItem } = useCartStore();
 
   const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
@@ -41,7 +39,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode}) => {
   }, [product.category]);
 
   const hasSizeOptions = category?.sizeOptions?.length > 0;
-  const existingCartItem = items.find(
+  
+  // Get active items based on authentication status
+  const activeItems = isAuthenticated ? items : guestItems;
+  
+  const existingCartItem = activeItems.find(
     item => item.productId === product.id
   );
 
@@ -50,7 +52,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode}) => {
     : undefined;
 
 
-  const cartItem = items.find(
+  const cartItem = activeItems.find(
     item => item.productId === product.id &&
       (item.selectedSize ?? '') === (effectiveSelectedSize ?? '')
   );
@@ -66,7 +68,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode}) => {
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
-    if (!isAuthenticated) return setShowLoginPrompt(true);
     if (hasSizeOptions && !selectedSize) return setShowSizeSelector(true);
     if (!product.stock || isUpdating) return;
 
@@ -163,33 +164,32 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode}) => {
                 OUT OF STOCK
               </button>
             ) : inCart ? (
-              <div className={`flex flex-col gap-2 sm:gap-3 w-full ${viewMode === 'list' ? 'sm:flex-row sm:max-w-md' : 'sm:flex-row'
-                }`}>
-                <div className="w-full">
-                  <Link
-                    to="/cart"
-                    className={`block w-full px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-serif font-semibold italic border-2 border-theme-primary text-theme-primary rounded-lg sm:rounded-xl hover:bg-theme-primary hover:text-theme-light transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md text-center ${baseFocusClasses}`}
-                  >
-                    Go to Cart
-                  </Link>
-                </div>
-                <div className="w-full">
-                  <button
-                    onClick={() => removeItem(cartItem!.id)}
-                    className={`w-full px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-serif font-semibold italic border-2 border-red-600 text-red-600 rounded-lg sm:rounded-xl hover:bg-red-600 hover:text-theme-light transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md ${baseFocusClasses}`}
-                  >
-                    Remove
-                  </button>
-                </div>
+              <div className="flex gap-2 w-full">
+                <Link
+                  to="/cart"
+               className={`flex-[2] px-2 sm:px-3 py-2.5 sm:py-3 text-xs sm:text-sm font-serif font-semibold italic border-2 border-theme-primary text-theme-primary rounded-lg sm:rounded-xl hover:bg-theme-primary hover:text-theme-light transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md text-center ${baseFocusClasses}`}
+                  title="Go to Cart"
+                >
+                  Go To Cart
+                </Link>
+                <button
+                  onClick={() => removeItem(cartItem!.id)}
+                  disabled={isUpdating}
+                  className={`flex-1 px-2 sm:px-3 py-2.5 sm:py-3 text-xs sm:text-sm font-serif font-semibold italic border-2 border-red-500 text-red-500 rounded-lg sm:rounded-xl hover:bg-red-500 hover:text-theme-light transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md ${baseFocusClasses}`}
+                  title="Remove from Cart"
+                >
+                  Remove
+                </button>
               </div>
             ) : (
               <button
                 onClick={handleAddToCart}
-                className={`w-full py-2.5 sm:py-3 text-xs sm:text-sm font-serif font-semibold italic border-2 border-theme-primary text-theme-primary rounded-lg sm:rounded-xl hover:bg-theme-primary hover:text-theme-light transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md ${viewMode === 'list' ? 'max-w-xs' : ''
-                  } ${baseFocusClasses}`}
+                disabled={isUpdating}
+                className={`w-full py-2.5 sm:py-3 text-xs sm:text-sm font-serif font-semibold italic border-2 border-theme-primary text-theme-primary rounded-lg sm:rounded-xl hover:bg-theme-primary hover:text-theme-light transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md ${viewMode === 'list' ? 'max-w-xs' : ''
+                  } ${baseFocusClasses} ${isUpdating ? 'opacity-50 cursor-not-allowed' : ''}`}
                 title="Add to Cart"
               >
-                Preorder
+                {isUpdating ? 'Adding...' : 'Preorder'}
               </button>
             )}
 
@@ -223,17 +223,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode}) => {
         </div>
       )}
 
-      {/* Login Prompt */}
-      {showLoginPrompt && (
-        <LoginPromptModal
-          show={showLoginPrompt}
-          onClose={() => setShowLoginPrompt(false)}
-          onLogin={() => {
-            setShowLoginPrompt(false);
-            navigate('/login');
-          }}
-        />
-      )}
     </>
   );
 };

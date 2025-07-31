@@ -37,6 +37,8 @@ export const useAuthStore = create<AuthState>()(
             });
 
             const cartStore = useCartStore.getState();
+            // Merge guest cart when user logs in
+            await cartStore.mergeGuestCartWithServer();
             await cartStore.syncWithServer();
 
             return { success: true };
@@ -77,6 +79,8 @@ export const useAuthStore = create<AuthState>()(
             });
 
             const cartStore = useCartStore.getState();
+            // Merge guest cart when user registers
+            await cartStore.mergeGuestCartWithServer();
             await cartStore.syncWithServer();
 
             return true;
