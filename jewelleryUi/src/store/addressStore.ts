@@ -13,7 +13,8 @@ interface AddressState {
   deleteAddress: (id: string) => Promise<void>;
   setSelectedAddress: (address: Address | null) => void;
   setDefaultAddress: (id: string) => Promise<void>;
-  loadAddresses: () => Promise<void>;
+  loadAddresses: () => Promise<Address[]>;
+
   clearAddresses: () => void;
 }
 
@@ -116,7 +117,7 @@ export const useAddressStore = create<AddressState>()(
         const { user } = useAuthStore.getState();
         if (!user) {
           set({ addresses: [], selectedAddress: null, loading: false });
-          return;
+          return [];
         }
 
         set({ loading: true });
@@ -149,6 +150,8 @@ export const useAddressStore = create<AddressState>()(
               selectedAddress: newSelectedAddress,
               loading: false
             });
+
+            return loadedAddresses;
           } else {
             console.error('Failed to load addresses:', response.message || 'Unknown error');
             set({
@@ -156,6 +159,7 @@ export const useAddressStore = create<AddressState>()(
               selectedAddress: null,
               loading: false
             });
+            return [];
           }
         } catch (error) {
           console.error('Error loading addresses:', error);
@@ -164,8 +168,10 @@ export const useAddressStore = create<AddressState>()(
             selectedAddress: null,
             loading: false
           });
+          return [];
         }
-      },
+      }
+      ,
 
       clearAddresses: () => {
         set({ addresses: [], selectedAddress: null });

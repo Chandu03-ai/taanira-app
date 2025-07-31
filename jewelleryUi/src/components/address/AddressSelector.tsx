@@ -65,12 +65,17 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({ showTitle = true, onE
     setIndividualActionLoadingId(addressId);
     try {
       await setDefaultAddress(addressId);
+      const newlyDefaultAddress = addresses.find(addr => addr.id === addressId);
+      if (newlyDefaultAddress) {
+        setSelectedAddress(newlyDefaultAddress); // ✅ Automatically select the default address
+      }
     } catch (error) {
       console.error('Error setting default address:', error);
     } finally {
       setIndividualActionLoadingId(null);
     }
   };
+
 
   if (loading) {
     return (
@@ -100,6 +105,11 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({ showTitle = true, onE
         {addresses.map((address) => (
           <div
             key={address.id}
+            onClick={() => {
+              if (!address.isDefault && individualActionLoadingId !== address.id) {
+                handleSetDefault(address.id);
+              }
+            }}
             className={`
               relative p-4 sm:p-6 border rounded-xl shadow-sm cursor-pointer
               transition-all duration-200 ease-in-out
@@ -108,7 +118,6 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({ showTitle = true, onE
                 : 'border-gray-200 hover:border-gray-300 bg-white'
               }
             `}
-            onClick={() => setSelectedAddress(address)}
           >
             {selectedAddress?.id === address.id && (
               <CheckCircle className="absolute top-3 right-3 w-5 h-5 text-[#10b981]" />

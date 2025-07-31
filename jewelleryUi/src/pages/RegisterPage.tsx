@@ -86,7 +86,7 @@ const RegisterPage: React.FC = () => {
     <div className="relative">
       <motion.label
         htmlFor={name}
-        className="absolute left-0 text-theme-primary text-base italic font-light pointer-events-none origin-left top-8"
+        className="absolute left-0 text-theme-primary text-sm sm:text-base italic font-light pointer-events-none origin-left top-8 sm:top-9"
         animate={focusedField === name || formData[name] ? 'active' : 'inactive'}
         variants={floatingLabelVariants}
       >
@@ -113,24 +113,30 @@ const RegisterPage: React.FC = () => {
         onFocus={() => setFocusedField(name)}
         onBlur={() => setFocusedField(null)}
         inputMode={name === 'contact' ? 'numeric' : undefined}
-        className="w-full bg-transparent border-b border-theme-primary text-theme-primary placeholder-transparent focus:outline-none focus:ring-0 pt-8 pb-2"
+        className="w-full bg-transparent border-b-2 border-theme-primary text-theme-primary placeholder-transparent focus:outline-none focus:ring-0 focus:border-theme-secondary pt-8 sm:pt-10 pb-2 sm:pb-3 text-sm sm:text-base font-serif transition-all duration-200 ease-in-out"
       />
-
     </div>
   );
 
   return (
     <div className="min-h-screen bg-theme-background flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-      <div className="w-full max-w-xs sm:max-w-sm lg:max-w-md">
-        <h2 className="text-3xl sm:text-4xl font-serif text-theme-primary text-center mb-8 sm:mb-10">Create Account</h2>
+      <div className="w-full max-w-sm sm:max-w-md lg:max-w-lg">
+        <div className="text-center mb-8 sm:mb-12">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif text-theme-primary mb-2">
+            Create Account
+          </h2>
+          <p className="text-sm sm:text-base text-theme-muted font-serif italic">
+            Join our jewelry community
+          </p>
+        </div>
 
-        <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg border border-theme-surface p-6 sm:p-8 lg:p-10">
+          <form className="space-y-6 sm:space-y-8" onSubmit={handleSubmit}>
           {error && (
-            <div className="bg-red-100 border border-red-300 text-red-800 px-3 sm:px-4 py-2 mb-8 rounded text-sm">
+            <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-xl text-sm sm:text-base font-serif italic">
               {error}
             </div>
           )}
-
 
           {renderInput('email', 'Email', 'email')}
           {renderInput('contact', 'Contact (+91)', 'tel')}
@@ -138,7 +144,7 @@ const RegisterPage: React.FC = () => {
           <div className="relative">
             <motion.label
               htmlFor="password"
-              className="absolute left-0 text-theme-primary text-sm sm:text-base italic font-light pointer-events-none origin-left top-8"
+              className="absolute left-0 text-theme-primary text-sm sm:text-base italic font-light pointer-events-none origin-left top-8 sm:top-9"
               animate={focusedField === 'password' || formData.password ? 'active' : 'inactive'}
               variants={floatingLabelVariants}
             >
@@ -153,14 +159,14 @@ const RegisterPage: React.FC = () => {
               onChange={handleChange}
               onFocus={() => setFocusedField('password')}
               onBlur={() => setFocusedField(null)}
-              className="w-full bg-transparent border-b border-theme-primary text-theme-primary placeholder-transparent focus:outline-none focus:ring-0 pt-8 pb-2 text-sm sm:text-base"
+              className="w-full bg-transparent border-b-2 border-theme-primary text-theme-primary placeholder-transparent focus:outline-none focus:ring-0 focus:border-theme-secondary pt-8 sm:pt-10 pb-2 sm:pb-3 text-sm sm:text-base font-serif transition-all duration-200 ease-in-out"
               placeholder="Password"
             />
             <div
-              className="absolute right-0 top-9 sm:top-10 cursor-pointer text-theme-primary p-1 focus:outline-none focus:ring-0"
+              className="absolute right-0 top-8 sm:top-9 cursor-pointer text-theme-primary p-2 hover:bg-theme-surface rounded-lg transition-colors focus:outline-none focus:ring-0"
               onClick={() => setShowPassword(prev => !prev)}
             >
-              {showPassword ? <EyeOff size={16} className="sm:w-[18px] sm:h-[18px]" /> : <Eye size={16} className="sm:w-[18px] sm:h-[18px]" />}
+              {showPassword ? <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" /> : <Eye className="w-4 h-4 sm:w-5 sm:h-5" />}
             </div>
           </div>
 
@@ -170,17 +176,23 @@ const RegisterPage: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-theme-secondary text-theme-primary text-xs sm:text-sm font-semibold py-2.5 sm:py-3 rounded-md flex justify-between items-center px-4 sm:px-5 tracking-wider hover:bg-theme-accent transition focus:outline-none focus:ring-0"
+              className="w-full bg-theme-secondary text-theme-primary text-sm sm:text-base font-semibold py-3 sm:py-4 rounded-xl flex justify-between items-center px-6 tracking-wider hover:bg-theme-accent transition-all duration-200 ease-in-out shadow-sm hover:shadow-md focus:outline-none focus:ring-0"
             >
               <span>{loading ? 'Creating...' : 'CREATE ACCOUNT'}</span>
-              <span className="text-base sm:text-lg">→</span>
+              <span className="text-lg sm:text-xl">→</span>
             </button>
           </div>
 
-          <div className="text-center mt-3 sm:mt-4 text-xs sm:text-sm uppercase tracking-widest text-theme-primary font-medium">
-            <Link to="/login" className="focus:outline-none focus:ring-0">Back to Login</Link>
+          <div className="text-center mt-4 sm:mt-6">
+            <Link 
+              to="/login" 
+              className="text-xs sm:text-sm uppercase tracking-widest text-theme-primary font-serif font-semibold italic hover:text-theme-muted transition-colors focus:outline-none focus:ring-0"
+            >
+              Back to Login
+            </Link>
           </div>
         </form>
+        </div>
       </div>
     </div>
   );

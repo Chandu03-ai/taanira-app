@@ -48,23 +48,20 @@ const Dialog: React.FC<DialogProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-theme-primary/10 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6"
+      className="fixed inset-0 z-50 bg-theme-primary/10 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 lg:p-8"
       onClick={handleBackdropClick}
     >
-
-
-      <div className={`bg-theme-light rounded-2xl shadow-2xl border border-theme-surface w-full ${maxWidthClasses[maxWidth]} sm:mx-0 mx-2 max-h-[90vh] transform transition-all flex flex-col overflow-hidden`}>
-
-        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-theme-surface flex-shrink-0">
-          <h2 className="text-xl font-serif font-semibold italic text-theme-primary">{title}</h2>
+      <div className={`bg-theme-light rounded-xl sm:rounded-2xl shadow-2xl border border-theme-surface w-full ${maxWidthClasses[maxWidth]} mx-4 sm:mx-6 max-h-[95vh] sm:max-h-[90vh] transform transition-all flex flex-col overflow-hidden`}>
+        <div className="flex items-center justify-between p-4 sm:p-6 lg:p-8 border-b border-theme-surface flex-shrink-0">
+          <h2 className="text-lg sm:text-xl lg:text-2xl font-serif font-semibold italic text-theme-primary">{title}</h2>
           <button
             onClick={onClose}
-            className={`text-theme-muted hover:text-theme-primary transition-all duration-200 ease-in-out p-2 rounded-xl hover:bg-theme-surface ${baseFocusClasses}`}
+            className={`text-theme-muted hover:text-theme-primary transition-all duration-200 ease-in-out p-2 sm:p-3 rounded-xl hover:bg-theme-surface ${baseFocusClasses}`}
           >
-            <X className="h-6 w-6" />
+            <X className="h-5 w-5 sm:h-6 sm:w-6" />
           </button>
         </div>
-        <div className="p-4 sm:p-6 font-serif text-theme-primary overflow-y-auto flex-grow">
+        <div className="p-4 sm:p-6 lg:p-8 font-serif text-theme-primary overflow-y-auto flex-grow">
           {children}
         </div>
       </div>

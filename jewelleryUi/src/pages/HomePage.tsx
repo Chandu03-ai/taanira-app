@@ -109,9 +109,9 @@ const HomePage: React.FC = () => {
           </div>
 
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center px-4 sm:px-6 z-10 max-w-4xl mx-auto">
+            <div className="text-center px-4 sm:px-6 lg:px-8 z-10 max-w-4xl mx-auto">
               <motion.h1
-                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif italic font-light text-sand mb-4 sm:mb-6"
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif italic font-light text-sand mb-4 sm:mb-6"
                 variants={container}
                 initial="hidden"
                 animate="visible"
@@ -125,8 +125,8 @@ const HomePage: React.FC = () => {
                 transition={{ delay: hasAnimated ? 1.5 : 0, duration: 1 }}
               >
                 {/* Catalog Section */}
-                <div className="relative z-10 w-full max-w-4xl px-4 sm:px-6 pb-6 sm:pb-8 md:pb-0 text-left">
-                  <div className="space-y-2 sm:space-y-3 md:space-y-4 lg:space-y-6">
+                <div className="relative z-10 w-full max-w-3xl px-4 sm:px-6 pb-6 sm:pb-8 md:pb-0 text-center lg:text-left">
+                  <div className="space-y-3 sm:space-y-4 md:space-y-5 lg:space-y-6">
                     <p className="text-sm sm:text-base md:text-lg font-light leading-relaxed text-white">
                       {SITE_CONFIG.name} is more than jewelry - it's a celebration of craftsmanship.
                     </p>
@@ -144,14 +144,14 @@ const HomePage: React.FC = () => {
         </section>
 
         {/* Intro Section */}
-        <section className="py-6 sm:py-8 md:py-12 px-4 sm:px-6 text-center max-w-4xl mx-auto bg-theme-background">
+        <section className="py-8 sm:py-12 md:py-16 px-4 sm:px-6 lg:px-8 text-center max-w-4xl mx-auto bg-theme-background">
           <div>
-            <p className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold leading-relaxed text-burntumber italic mb-2 sm:mb-3">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold leading-relaxed text-burntumber italic mb-4 sm:mb-6">
               {SITE_CONFIG.tagline}
             </p>
             <Link
               to="/products"
-              className="inline-block font-serif font-bold italic mt-8 sm:mt-10 md:mt-12 text-xs sm:text-sm text-burntumber tracking-widest border-b border-soft-gold pb-1 hover:border-rose-sand transition-all duration-200 ease-in-out"
+              className="inline-block font-serif font-bold italic mt-6 sm:mt-8 md:mt-10 text-sm sm:text-base text-burntumber tracking-widest border-b border-soft-gold pb-1 hover:border-rose-sand transition-all duration-200 ease-in-out"
               title="Explore our jewelry collection"
             >
               EXPLORE COLLECTION →
@@ -160,64 +160,57 @@ const HomePage: React.FC = () => {
         </section>
 
         {/* Product Cards Section */}
-        <section className="py-6 sm:py-8 md:py-16 px-3 sm:px-4 md:px-6 bg-theme-background">
+        <section className="py-8 sm:py-12 md:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-theme-background">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-8 sm:mb-10 md:mb-12 font-serif italic">
-              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-light text-burntumber mb-4 sm:mb-6 tracking-wide">
+            <div className="text-center mb-8 sm:mb-12 md:mb-16 font-serif italic">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light text-burntumber mb-6 sm:mb-8 tracking-wide">
                 Latest Products
               </h2>
             </div>
 
             {/* Optimized Product Grid */}
-            <div className="w-full flex justify-center">
-              <div className="max-w-7xl w-full px-2 sm:px-4 lg:px-6">
-
-                <div className="
-      grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 
-      xl:flex xl:flex-wrap xl:justify-center 
-      gap-4 xl:gap-6"
+            <div className="w-full">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 max-w-6xl mx-auto"
                 >
                   {products.map((product) => (
                     <Link
                       to={`/product/${product.slug}`}
                       key={product.id}
-                      className="group block w-full max-w-[220px] xl:mx-3 xl:mb-6"
+                      className="group block w-full"
                     >
                       {/* Product Image Container */}
-                      <div className="relative w-full aspect-[3/4] border border-[#d4b896] rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 bg-white">
+                      <div className="relative w-full aspect-[3/4] border border-[#d4b896] rounded-lg sm:rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 bg-white">
                         <img
                           src={`${staticImageBaseUrl}/${product.images[0]}`}
                           alt={product.name}
                           className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-300"
                         />
                         {/* Badge */}
-                        <div className="absolute top-2 left-2">
-                          <span className="bg-[#D4B896] text-[#1C1A17] text-[10px] sm:text-xs px-2 py-1 rounded-full font-medium">
+                        <div className="absolute top-2 left-2 sm:top-3 sm:left-3">
+                          <span className="bg-[#D4B896] text-[#1C1A17] text-[10px] sm:text-xs px-2 py-1 sm:px-3 sm:py-1.5 rounded-full font-medium">
                             PreOrder
                           </span>
                         </div>
                       </div>
 
                       {/* Product Info */}
-                      <div className="text-center mt-2 px-1">
-                        <h3 className="text-xs sm:text-sm text-[#aa732f] font-medium leading-tight mb-1 line-clamp-2 min-h-[2rem]">
+                      <div className="text-center mt-3 sm:mt-4 px-1">
+                        <h3 className="text-xs sm:text-sm md:text-base text-[#aa732f] font-medium leading-tight mb-2 line-clamp-2 min-h-[2.5rem] sm:min-h-[3rem]">
                           {product.name}
                         </h3>
-                        <p className="text-xs sm:text-sm text-[#aa732f] font-semibold">
+                        <p className="text-sm sm:text-base text-[#aa732f] font-semibold">
                           ₹{product.price}
                         </p>
                       </div>
                     </Link>
                   ))}
                 </div>
-              </div>
             </div>
 
-
-            <div className="text-center mt-6 sm:mt-8 md:mt-12">
+            <div className="text-center mt-8 sm:mt-12 md:mt-16">
               <Link
                 to="/products"
-                className="inline-block bg-champagne text-coal px-6 sm:px-8 md:px-12 py-2.5 sm:py-3 md:py-4 text-xs sm:text-sm tracking-widest hover:bg-sand transition-colors rounded-sm"
+                className="inline-block bg-champagne text-coal px-8 sm:px-10 md:px-12 py-3 sm:py-4 text-sm sm:text-base tracking-widest hover:bg-sand transition-colors rounded-lg"
                 title="View all products"
               >
                 VIEW ALL PRODUCTS

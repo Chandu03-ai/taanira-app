@@ -22,9 +22,25 @@ const CartPage: React.FC = () => {
   const [editingAddress, setEditingAddress] = React.useState<Address | null>(null);
   const [formLoading, setFormLoading] = React.useState(false);
 
-  React.useEffect(() => {
-    loadAddresses();
-  }, [loadAddresses]);
+React.useEffect(() => {
+  (async () => {
+    try {
+      const fetchedAddresses = await loadAddresses();
+
+      const defaultAddress = fetchedAddresses.find(addr => addr.isDefault);
+      const fallback = fetchedAddresses[0];
+
+      if (defaultAddress || fallback) {
+        useAddressStore.getState().setSelectedAddress(defaultAddress || fallback);
+      }
+    } catch (err) {
+      console.error('Error loading addresses:', err);
+    }
+  })();
+}, []);
+
+
+
 
   if (!isAuthenticated) {
     return (
@@ -107,27 +123,29 @@ const CartPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-theme-background pt-16 sm:pt-20 font-serif">
-      <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-6 sm:py-8 max-w-6xl">
+    <div className="min-h-screen bg-theme-background pt-16 sm:pt-20 lg:pt-24 font-serif">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10 max-w-7xl">
         {!showAddressSelector ? (
           <>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4">
-              <h1 className="text-lg sm:text-xl lg:text-2xl font-serif font-semibold italic text-theme-primary">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 lg:mb-10 gap-4">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-serif font-semibold italic text-theme-primary">
                 MY BAG ({items.length})
               </h1>
               <button
                 onClick={() => navigate('/')}
-                className="text-theme-primary hover:text-theme-muted p-2 rounded-xl hover:bg-theme-secondary transition-all shadow-sm"
+                className="text-theme-primary hover:text-theme-muted p-2 sm:p-3 rounded-xl hover:bg-theme-secondary transition-all shadow-sm"
                 title="Close and continue shopping"
               >
-                <X className="h-6 w-6" />
+                <X className="h-5 w-5 sm:h-6 sm:w-6" />
               </button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-              <div className="space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 items-start">
+              {/* Cart Items */}
+              <div className="lg:col-span-2 space-y-4 sm:space-y-6">
                 {items.map((item) => (
-                  <div key={item.id} className="flex items-start space-x-4 pb-4 border-b border-theme-secondary/30">
+                  <div key={item.id} className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-4 lg:space-x-6 pb-4 sm:pb-6 border-b border-theme-secondary/30 last:border-b-0">
+                    {/* Product Image */}
                     <img
                       src={
                         item.product.images[0]?.startsWith('http')
@@ -135,27 +153,41 @@ const CartPage: React.FC = () => {
                           : `${staticImageBaseUrl}/${item.product.images[0]}`
                       }
                       alt={item.product.name}
-                      className="w-20 h-20 object-cover rounded-xl"
+                      className="w-full sm:w-24 lg:w-28 h-48 sm:h-24 lg:h-28 object-cover rounded-xl flex-shrink-0"
                     />
-                    <div className="flex-1 text-theme-primary">
-                      <h3 className="text-base font-semibold italic mb-1 line-clamp-2">{item.product.name}</h3>
+
+                    {/* Product Details */}
+                    <div className="flex-1 text-theme-primary space-y-3 sm:space-y-2">
+                      <h3 className="text-base sm:text-lg font-semibold italic line-clamp-2 leading-tight">
+                        {item.product.name}
+                      </h3>
                       {item.selectedSize && (
-                        <p className="text-sm text-theme-muted mb-1">Size: {item.selectedSize}</p>
+                        <p className="text-sm sm:text-base text-theme-muted">Size: {item.selectedSize}</p>
                       )}
-                      <div className="text-base mb-3">
+                      <div className="text-base sm:text-lg font-medium">
                         {item.quantity} x Rs. {item.product.price.toLocaleString()}
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <button onClick={() => handleQuantityChange(item.id, -1)} className="w-8 h-8 border rounded-xl">
-                          <Minus className="h-3 w-3" />
-                        </button>
-                        <span className="w-8 text-center">{item.quantity}</span>
-                        <button onClick={() => handleQuantityChange(item.id, 1)} className="w-8 h-8 border rounded-xl">
-                          <Plus className="h-3 w-3" />
-                        </button>
+
+                      {/* Quantity Controls */}
+                      <div className="flex items-center justify-between sm:justify-start space-x-4 sm:space-x-6">
+                        <div className="flex items-center space-x-3">
+                          <button
+                            onClick={() => handleQuantityChange(item.id, -1)}
+                            className="w-8 h-8 sm:w-10 sm:h-10 border border-theme-primary rounded-lg sm:rounded-xl flex items-center justify-center hover:bg-theme-surface transition-colors"
+                          >
+                            <Minus className="h-3 w-3 sm:h-4 sm:w-4" />
+                          </button>
+                          <span className="w-8 sm:w-10 text-center text-base sm:text-lg font-medium">{item.quantity}</span>
+                          <button
+                            onClick={() => handleQuantityChange(item.id, 1)}
+                            className="w-8 h-8 sm:w-10 sm:h-10 border border-theme-primary rounded-lg sm:rounded-xl flex items-center justify-center hover:bg-theme-surface transition-colors"
+                          >
+                            <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
+                          </button>
+                        </div>
                         <button
                           onClick={() => handleRemoveItem(item.id, item.product.name)}
-                          className="text-sm italic text-theme-primary hover:text-red-500"
+                          className="text-sm sm:text-base italic text-theme-primary hover:text-red-500 transition-colors"
                         >
                           Remove
                         </button>
@@ -165,24 +197,26 @@ const CartPage: React.FC = () => {
                 ))}
               </div>
 
-              <div>
-                <div className="card-elegant sticky rounded-lg p-5 bg-theme-surface">
-                  <h2 className="text-lg font-semibold italic mb-4">Order Summary</h2>
+              {/* Order Summary */}
+              <div className="lg:col-span-1">
+                <div className="card-elegant sticky top-24 rounded-xl p-5 sm:p-6 lg:p-8 bg-theme-surface">
+                  <h2 className="text-lg sm:text-xl font-semibold italic mb-4 sm:mb-6">Order Summary</h2>
 
-                  <div className="space-y-3 mb-6">
+                  <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
                     <div className="flex justify-between">
-                      <span className="text-sm italic">SUBTOTAL:</span>
-                      <span className="text-sm font-semibold">Rs. {getTotalPrice().toLocaleString()}</span>
+                      <span className="text-sm sm:text-base italic">SUBTOTAL:</span>
+                      <span className="text-sm sm:text-base font-semibold">Rs. {getTotalPrice().toLocaleString()}</span>
                     </div>
-                    <div className="text-xs italic text-theme-muted">
+                    <div className="text-xs sm:text-sm italic text-theme-muted">
                       Taxes and shipping will be calculated at checkout.
                     </div>
-                    <div className="flex items-start text-xs italic text-theme-primary space-x-2">
+                    <div className="flex items-start text-xs sm:text-sm italic text-theme-primary space-x-2 sm:space-x-3">
                       <input
                         type="checkbox"
                         id="terms"
                         checked={agreedToTerms}
                         onChange={(e) => setAgreedToTerms(e.target.checked)}
+                        className="mt-1"
                       />
                       <label htmlFor="terms">I agree with the Terms and Conditions.</label>
                     </div>
@@ -190,7 +224,7 @@ const CartPage: React.FC = () => {
 
                   {selectedAddress ? (
                     <>
-                      <div className="space-y-2 mb-4 text-sm text-theme-primary">
+                      <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-6 text-sm sm:text-base text-theme-primary">
                         <div>
                           <div className="font-semibold italic">{selectedAddress.addressType}</div>
                           <div>{selectedAddress.fullName}</div>
@@ -202,7 +236,7 @@ const CartPage: React.FC = () => {
                         </div>
                         <button
                           onClick={() => setShowAddressSelector(true)}
-                          className="text-theme-muted underline text-xs hover:text-theme-primary"
+                          className="text-theme-muted underline text-xs sm:text-sm hover:text-theme-primary transition-colors"
                         >
                           Change Address
                         </button>
@@ -216,7 +250,7 @@ const CartPage: React.FC = () => {
                   ) : (
                     <button
                       onClick={() => setShowAddressSelector(true)}
-                      className={`btn-primary p-2 rounded-md w-full mt-4 ${!agreedToTerms ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      className={`btn-primary py-3 sm:py-4 rounded-lg w-full text-sm sm:text-base font-semibold ${!agreedToTerms ? 'opacity-50 cursor-not-allowed' : ''}`}
                       disabled={!agreedToTerms}
                     >
                       SELECT DELIVERY ADDRESS
@@ -227,34 +261,37 @@ const CartPage: React.FC = () => {
             </div>
           </>
         ) : (
-          <div>
-            <div className="flex items-center justify-between mb-6">
-              <button
-                onClick={() => setShowAddressSelector(false)}
-                className="text-theme-primary hover:text-theme-muted flex items-center space-x-2"
-              >
-                <X className="h-5 w-5" />
-                <span>Back to Cart</span>
-              </button>
-              <button
-                onClick={handleOpenAddressForm}
-                className="text-sm bg-theme-primary text-theme-light px-4 py-2 rounded hover:bg-theme-dark"
-              >
-                + Add New Address
-              </button>
-            </div>
-            <AddressSelector />
-            {selectedAddress && (
-              <div className="mt-6 text-center">
+          <>
+            {/* Address Selection View */}
+            <div>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4">
                 <button
                   onClick={() => setShowAddressSelector(false)}
-                  className="btn-primary px-8"
+                  className="text-theme-primary hover:text-theme-muted flex items-center space-x-2 sm:space-x-3"
                 >
-                  Continue to Payment
+                  <X className="h-5 w-5" />
+                  <span className="text-sm sm:text-base">Back to Cart</span>
+                </button>
+                <button
+                  onClick={handleOpenAddressForm}
+                  className="w-full sm:w-auto text-sm sm:text-base bg-theme-primary text-theme-light px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg hover:bg-theme-dark transition-colors"
+                >
+                  + Add New Address
                 </button>
               </div>
-            )}
-          </div>
+              <AddressSelector />
+              {selectedAddress && (
+                <div className="mt-6 sm:mt-8 text-center">
+                  <button
+                    onClick={() => setShowAddressSelector(false)}
+                    className="btn-primary px-8 sm:px-12 py-3 sm:py-4 text-sm sm:text-base rounded-lg"
+                  >
+                    Continue to Payment
+                  </button>
+                </div>
+              )}
+            </div>
+          </>
         )}
       </div>
 

@@ -172,46 +172,85 @@ const ProductDetailPage: React.FC = () => {
       />
 
       <div className="min-h-screen bg-theme-background text-theme-primary font-serif">
-        <div className="container mx-auto mt-[83px] px-4 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <div className="space-y-4">
-              <div className="relative bg-theme-surface lg:ml-24  rounded-2xl overflow-hidden">
+        <div className="container mx-auto pt-20 sm:pt-24 lg:pt-28 px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 xl:gap-16">
+            {/* Image Section */}
+            <div className="space-y-4 sm:space-y-6">
+              <div className="relative bg-theme-surface rounded-xl sm:rounded-2xl overflow-hidden">
                 <div className="aspect-square">
-                  <img src={productImages[currentImageIndex]} alt={product.name} className="w-full h-full object-cover rounded-2xl" />
+                  <img 
+                    src={productImages[currentImageIndex]} 
+                    alt={product.name} 
+                    className="w-full h-full object-cover rounded-xl sm:rounded-2xl" 
+                  />
                 </div>
                 {productImages.length > 1 && (
                   <>
-                    <button onClick={prevImage} className={`absolute left-4 top-1/2 transform -translate-y-1/2 bg-theme-light rounded-full p-2 shadow-md hover:shadow-lg ${baseFocusClasses}`}>
-                      <ChevronLeft className="h-6 w-6" />
+                    <button 
+                      onClick={prevImage} 
+                      className={`absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-theme-light rounded-full p-2 sm:p-3 shadow-md hover:shadow-lg ${baseFocusClasses}`}
+                    >
+                      <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
                     </button>
-                    <button onClick={nextImage} className={`absolute right-4 top-1/2 transform -translate-y-1/2 bg-theme-light rounded-full p-2 shadow-md hover:shadow-lg ${baseFocusClasses}`}>
-                      <ChevronRight className="h-6 w-6" />
+                    <button 
+                      onClick={nextImage} 
+                      className={`absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-theme-light rounded-full p-2 sm:p-3 shadow-md hover:shadow-lg ${baseFocusClasses}`}
+                    >
+                      <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
                     </button>
                   </>
                 )}
               </div>
+              
+              {/* Thumbnail Images for larger screens */}
+              {productImages.length > 1 && (
+                <div className="hidden sm:flex gap-2 lg:gap-3 overflow-x-auto">
+                  {productImages.map((image, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentImageIndex(index)}
+                      className={`flex-shrink-0 w-16 h-16 lg:w-20 lg:h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                        currentImageIndex === index ? 'border-theme-primary' : 'border-theme-surface hover:border-theme-secondary'
+                      }`}
+                    >
+                      <img 
+                        src={image} 
+                        alt={`${product.name} view ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
-            <div className="space-y-6">
-              <h1 className="text-3xl italic font-semibold text-theme-primary">{product.name}</h1>
-              <div className="flex items-center space-x-4 mb-4">
-                <div className="text-xl font-medium">₹ {product.price.toLocaleString()}</div>
+            {/* Product Info Section */}
+            <div className="space-y-4 sm:space-y-6 lg:space-y-8">
+              <div className="space-y-3 sm:space-y-4">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl italic font-semibold text-theme-primary leading-tight">
+                  {product.name}
+                </h1>
+                <div className="flex items-center space-x-3 sm:space-x-4">
+                  <div className="text-xl sm:text-2xl lg:text-3xl font-medium">₹ {product.price.toLocaleString()}</div>
                 {product.comparePrice && product.comparePrice > product.price && (
-                  <div className="text-lg line-through text-theme-primary/60">
+                    <div className="text-lg sm:text-xl lg:text-2xl line-through text-theme-primary/60">
                     ₹ {product.comparePrice.toLocaleString()}
                   </div>
                 )}
+                </div>
               </div>
 
               {hasSizeOptions && (
-                <div className="space-y-2">
-                  <label className="block text-sm italic">Size <span className="text-red-500">*</span></label>
-                  <div className="grid grid-cols-4 gap-2">
+                <div className="space-y-3 sm:space-y-4">
+                  <label className="block text-sm sm:text-base italic font-medium">
+                    Size <span className="text-red-500">*</span>
+                  </label>
+                  <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3">
                     {category.sizeOptions.map((size: string) => (
                       <button
                         key={size}
                         onClick={() => setSelectedSize(size)}
-                        className={`py-2 px-3 border rounded-md text-sm transition-colors italic ${baseFocusClasses} ${selectedSize === size
+                        className={`py-2.5 sm:py-3 px-3 sm:px-4 border rounded-lg text-sm sm:text-base transition-colors italic ${baseFocusClasses} ${selectedSize === size
                           ? 'border-theme-primary bg-theme-primary text-theme-light'
                           : 'border-theme-primary/40 text-theme-primary hover:border-theme-primary'}`}
                       >
@@ -222,26 +261,27 @@ const ProductDetailPage: React.FC = () => {
                 </div>
               )}
 
+              {/* Action Buttons */}
+              <div className="space-y-3 sm:space-y-4">
               {!product.stock ? (
                 <button
                   disabled
-                  className={`w-full mt-4 py-3 text-xs font-serif font-semibold italic border-2 border-theme-muted text-theme-muted rounded-xl cursor-not-allowed ${baseFocusClasses}`}
+                  className={`w-full py-3 sm:py-4 text-sm sm:text-base font-serif font-semibold italic border-2 border-theme-muted text-theme-muted rounded-xl cursor-not-allowed ${baseFocusClasses}`}
                 >
                   OUT OF STOCK
                 </button>
               ) : inCart ? (
-                // Changed from flex-col to flex-row and added gap-2 for spacing
-                <div className="flex flex-row items-center gap-2 mt-4">
+                <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
                   <Link
                     to="/cart"
-                    className={`flex-1 text-center py-3 text-xs font-serif font-semibold italic border-2 border-theme-primary text-theme-primary rounded-xl hover:bg-theme-primary hover:text-theme-light transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md ${baseFocusClasses}`}
+                    className={`w-full sm:flex-1 text-center py-3 sm:py-4 text-sm sm:text-base font-serif font-semibold italic border-2 border-theme-primary text-theme-primary rounded-xl hover:bg-theme-primary hover:text-theme-light transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md ${baseFocusClasses}`}
                   >
                     Go to Cart
                   </Link>
 
                   <button
                     onClick={() => removeItem(cartItem.id)}
-                    className={`flex-1 py-3 text-xs font-serif font-semibold italic border-2 border-red-500 text-red-500 rounded-xl hover:bg-red-500 hover:text-theme-light transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md ${baseFocusClasses}`}
+                    className={`w-full sm:flex-1 py-3 sm:py-4 text-sm sm:text-base font-serif font-semibold italic border-2 border-red-500 text-red-500 rounded-xl hover:bg-red-500 hover:text-theme-light transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md ${baseFocusClasses}`}
                   >
                     Remove
                   </button>
@@ -249,29 +289,33 @@ const ProductDetailPage: React.FC = () => {
               ) : (
                 <button
                   onClick={handleAddToCart}
-                  className={`w-full mt-4 py-3 text-xs font-serif font-semibold italic border-2 border-theme-primary text-theme-primary rounded-xl hover:bg-theme-primary hover:text-theme-light transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md ${baseFocusClasses}`}
+                  className={`w-full py-3 sm:py-4 text-sm sm:text-base font-serif font-semibold italic border-2 border-theme-primary text-theme-primary rounded-xl hover:bg-theme-primary hover:text-theme-light transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md ${baseFocusClasses}`}
                   title="Add to Cart"
                 >
                   Preorder
                 </button>
               )}
+              </div>
 
-
-
-              <div className="pt-6 border-t border-theme-primary/20">
-                <div className="flex space-x-6 border-b border-theme-primary/20 mb-4 ">
+              {/* Product Details Tabs */}
+              <div className="pt-6 sm:pt-8 border-t border-theme-primary/20">
+                <div className="flex flex-wrap gap-2 sm:gap-4 lg:gap-6 border-b border-theme-primary/20 mb-4 sm:mb-6">
                   {['About', 'Details', 'Shipping', 'Reviews'].map((tab) => (
                     <button
                       key={tab}
                       onClick={() => setTab(tab as any)}
-                      className={`pb-2 italic font-semibold uppercase tracking-wide text-sm ${baseFocusClasses} ${currentTab === tab ? 'border-b-2 border-theme-primary text-theme-primary' : 'text-theme-primary/70 hover:text-theme-primary'}`}
+                      className={`pb-2 sm:pb-3 italic font-semibold uppercase tracking-wide text-xs sm:text-sm lg:text-base ${baseFocusClasses} ${
+                        currentTab === tab 
+                          ? 'border-b-2 border-theme-primary text-theme-primary' 
+                          : 'text-theme-primary/70 hover:text-theme-primary'
+                      }`}
                     >
                       {tab}
                     </button>
                   ))}
                 </div>
 
-                <div className="text-sm leading-relaxed italic">
+                <div className="text-sm sm:text-base leading-relaxed italic text-theme-primary/90">
                   {currentTab === 'About' && <p>{product.description}</p>}
                   {currentTab === 'Details' && (
                     <p>
