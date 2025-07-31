@@ -256,7 +256,7 @@ React.useEffect(() => {
                   ) : (
                     <button
                       onClick={() => setShowAddressSelector(true)}
-                      className={`btn-primary py-3 sm:py-4 rounded-lg w-full text-sm sm:text-base font-semibold ${!agreedToTerms ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      className={`bg-theme-primary text-theme-light  py-3 sm:py-4 rounded-lg w-full text-sm sm:text-base font-semibold ${!agreedToTerms ? 'opacity-50 cursor-not-allowed' : ''}`}
                       disabled={!agreedToTerms}
                     >
                       SELECT DELIVERY ADDRESS

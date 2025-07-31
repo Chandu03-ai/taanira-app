@@ -24,7 +24,7 @@ const letter = {
 };
 
 const HomePage: React.FC = () => {
-  const [,setCategories] = useState<Category[]>([]);
+  const [, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasAnimated, setHasAnimated] = useState(false);
@@ -51,7 +51,7 @@ const HomePage: React.FC = () => {
       setCategories([]);
     }
   };
-  
+
   const fetchProducts = async () => {
     try {
       const response = await apiService.getProducts();
@@ -110,13 +110,14 @@ const HomePage: React.FC = () => {
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center px-4 sm:px-6 lg:px-8 z-10 max-w-4xl mx-auto">
               <motion.h1
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif italic font-light text-sand mb-4 sm:mb-6"
+                className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-ephesis italic font-light text-sand mb-4 sm:mb-6"
                 variants={container}
                 initial="hidden"
                 animate="visible"
               >
-                {renderLetters(SITE_CONFIG.shortName)}
+                {renderLetters(SITE_CONFIG.logoName)}
               </motion.h1>
+
               <motion.div
                 className="text-sm sm:text-base md:text-lg lg:text-xl font-serif font-light italic tracking-wide text-soft-gold mx-auto leading-relaxed"
                 initial={{ opacity: 0, y: 10 }}

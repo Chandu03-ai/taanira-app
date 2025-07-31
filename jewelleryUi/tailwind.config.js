@@ -32,6 +32,7 @@ export default {
       },
       fontFamily: {
         serif: ['Merriweather', 'Georgia', 'serif'],
+        ephesis: ['Ephesis', 'cursive'],
       },
       screens: {
         'xs': '475px',

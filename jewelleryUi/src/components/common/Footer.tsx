@@ -9,10 +9,9 @@ const Footer: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         <div className="flex justify-center">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 w-full max-w-4xl text-center md:text-left">
-            
             {/* Company Info */}
             <div>
-              <h3 className="text-lg sm:text-xl lg:text-2xl font-serif italic font-semibold mb-4 sm:mb-6">
+              <h3 className="text-3xl sm:text-5xl lg:text-6xl font-ephesis italic font-semibold tracking-wide leading-tight mb-4 sm:mb-6">
                 {SITE_CONFIG.name}
               </h3>
               <p className="text-sm sm:text-base font-serif font-light italic mb-6 sm:mb-8 leading-relaxed">
@@ -60,7 +59,7 @@ const Footer: React.FC = () => {
         {/* Bottom Bar */}
         <div className="border-t border-theme-muted/30 mt-8 sm:mt-12 pt-6 sm:pt-8 flex flex-col sm:flex-row justify-between items-center text-xs sm:text-sm space-y-4 sm:space-y-0 font-serif">
           <p className="text-theme-primary/80 text-center sm:text-left italic">
-            © 2024 {SITE_CONFIG.name}. All rights reserved.
+            © 2025 {SITE_CONFIG.name}. All rights reserved.
           </p>
           <div className="flex flex-wrap justify-center sm:justify-end gap-4 sm:gap-6">
             <Link to="/privacy" className="hover:text-theme-muted font-semibold transition-colors focus:outline-none focus:ring-0">

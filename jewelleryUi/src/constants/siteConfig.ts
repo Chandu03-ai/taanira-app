@@ -3,7 +3,7 @@ export const staticImageBaseUrl = '/api/static/images/';
 
 export const SITE_CONFIG = {
   name: import.meta.env.VITE_SITE_NAME || 'Taanira',
-  shortName: import.meta.env.VITE_SITE_SHORT_NAME || '𝒯𝒶𝒶𝓃𝒾𝓇𝒶',
+  logoName: import.meta.env.VITE_SITE_SHORT_NAME || 'Taanira',
   description: import.meta.env.VITE_SITE_DESCRIPTION || 'Handmade treasures with heart, history, and harmony.',
   tagline: import.meta.env.VITE_SITE_TAGLINE || 'Each piece is made with love and care — a touch of tradition, a bit of art, and a lot of heart.',
   domain: import.meta.env.VITE_SITE_DOMAIN || 'Taanira.com',

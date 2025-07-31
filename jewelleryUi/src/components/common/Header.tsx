@@ -102,10 +102,10 @@ const Header: React.FC = () => {
                   ) : (
                     <div className="flex items-center justify-center h-8 sm:h-10 lg:h-12">
                       <span
-                        className="text-base sm:text-lg md:text-xl lg:text-2xl font-serif italic font-semibold tracking-wide whitespace-nowrap"
+                        className="text-base sm:text-lg md:text-2xl lg:text-4xl font-ephesis italic font-semibold tracking-wide whitespace-nowrap"
                         style={{ color: headerStyles.textColor, fontWeight: headerStyles.fontWeight }}
                       >
-                        {SITE_CONFIG.shortName}
+                        {SITE_CONFIG.logoName}
                       </span>
                     </div>
                   )}
