@@ -5,17 +5,26 @@ import { useCartStore } from '../store/cartStore';
 import { useAuthStore } from '../store/authStore';
 import PaymentHandler from '../components/payment/PaymentHandler';
 import AddressSelector from '../components/address/AddressSelector';
+import AddressForm from '../components/address/AddressForm';
 import { useAddressStore } from '../store/addressStore';
 import { staticImageBaseUrl } from '../constants/siteConfig';
+import { AddressFormData, Address } from '../types/address';
 
 const CartPage: React.FC = () => {
   const { items, removeItem, updateQuantity, getTotalPrice } = useCartStore();
   const { isAuthenticated } = useAuthStore();
-  const [agreedToTerms, setAgreedToTerms] = React.useState(false);
-  const { selectedAddress } = useAddressStore();
   const navigate = useNavigate();
+  const { selectedAddress, addAddress, updateAddress, loadAddresses } = useAddressStore();
+
+  const [agreedToTerms, setAgreedToTerms] = React.useState(false);
   const [showAddressSelector, setShowAddressSelector] = React.useState(false);
-  const baseFocusClasses = "focus:outline-none focus:ring-0";
+  const [isAddressFormOpen, setIsAddressFormOpen] = React.useState(false);
+  const [editingAddress, setEditingAddress] = React.useState<Address | null>(null);
+  const [formLoading, setFormLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    loadAddresses();
+  }, [loadAddresses]);
 
   if (!isAuthenticated) {
     return (
@@ -25,7 +34,7 @@ const CartPage: React.FC = () => {
         <p className="text-theme-muted mb-8">You need to be logged in to manage your cart and proceed with checkout.</p>
         <Link
           to="/login"
-          className={`bg-theme-primary text-theme-light px-8 py-3 rounded font-semibold hover:bg-theme-dark transition-colors ${baseFocusClasses}`}
+          className="bg-theme-primary text-theme-light px-8 py-3 rounded font-semibold hover:bg-theme-dark transition-colors"
         >
           Login
         </Link>
@@ -52,6 +61,33 @@ const CartPage: React.FC = () => {
     }
   };
 
+  const handleOpenAddressForm = () => {
+    setEditingAddress(null);
+    setIsAddressFormOpen(true);
+  };
+
+  const handleCloseAddressForm = () => {
+    setIsAddressFormOpen(false);
+    setEditingAddress(null);
+  };
+
+  const handleSaveAddress = async (addressData: AddressFormData) => {
+    setFormLoading(true);
+    try {
+      if (editingAddress) {
+        await updateAddress(editingAddress.id, addressData);
+      } else {
+        await addAddress(addressData);
+      }
+      handleCloseAddressForm();
+    } catch (error) {
+      console.error('Failed to save address:', error);
+      throw error;
+    } finally {
+      setFormLoading(false);
+    }
+  };
+
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-theme-background flex items-center justify-center px-4">
@@ -61,7 +97,7 @@ const CartPage: React.FC = () => {
           <p className="text-theme-muted mb-8">Add some beautiful jewelry to your cart to get started!</p>
           <Link
             to="/products"
-            className={`bg-theme-primary text-theme-light px-8 py-3 rounded font-semibold hover:bg-theme-dark transition-colors ${baseFocusClasses}`}
+            className="bg-theme-primary text-theme-light px-8 py-3 rounded font-semibold hover:bg-theme-dark transition-colors"
           >
             Continue Shopping
           </Link>
@@ -81,17 +117,17 @@ const CartPage: React.FC = () => {
               </h1>
               <button
                 onClick={() => navigate('/')}
-                className={`text-theme-primary hover:text-theme-muted p-2 rounded-xl hover:bg-theme-secondary transition-all duration-200 ease-in-out shadow-sm ${baseFocusClasses}`}
+                className="text-theme-primary hover:text-theme-muted p-2 rounded-xl hover:bg-theme-secondary transition-all shadow-sm"
                 title="Close and continue shopping"
               >
                 <X className="h-6 w-6" />
               </button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
-              <div className="order-2 lg:order-1 space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+              <div className="space-y-4">
                 {items.map((item) => (
-                  <div key={item.id} className="flex items-start space-x-4 pb-4 border-b border-theme-secondary/30 last:border-b-0">
+                  <div key={item.id} className="flex items-start space-x-4 pb-4 border-b border-theme-secondary/30">
                     <img
                       src={
                         item.product.images[0]?.startsWith('http')
@@ -99,40 +135,27 @@ const CartPage: React.FC = () => {
                           : `${staticImageBaseUrl}/${item.product.images[0]}`
                       }
                       alt={item.product.name}
-                      className="w-20 h-20 lg:w-24 lg:h-24 object-cover rounded-xl shadow-sm"
+                      className="w-20 h-20 object-cover rounded-xl"
                     />
                     <div className="flex-1 text-theme-primary">
-                      <h3 className="text-base font-serif font-semibold italic mb-1 line-clamp-2">{item.product.name}</h3>
-                      {item.selectedSize && item.product.category && (
-                        <p className="text-sm font-serif font-light text-theme-muted mb-1">Size: {item.selectedSize}</p>
+                      <h3 className="text-base font-semibold italic mb-1 line-clamp-2">{item.product.name}</h3>
+                      {item.selectedSize && (
+                        <p className="text-sm text-theme-muted mb-1">Size: {item.selectedSize}</p>
                       )}
-                      <div className="text-base font-serif font-light mb-3">
+                      <div className="text-base mb-3">
                         {item.quantity} x Rs. {item.product.price.toLocaleString()}
                       </div>
-
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                        <div className="flex items-center space-x-2">
-                          <button
-                            onClick={() => handleQuantityChange(item.id, -1)}
-                            className={`w-8 h-8 border border-theme-secondary rounded-xl flex items-center justify-center hover:bg-theme-secondary transition-all duration-200 ease-in-out shadow-sm hover:shadow-md ${baseFocusClasses}`}
-                            title="Decrease quantity"
-                          >
-                            <Minus className="h-3 w-3" />
-                          </button>
-                          <span className="w-8 text-center text-base font-serif font-semibold">{item.quantity}</span>
-                          <button
-                            onClick={() => handleQuantityChange(item.id, 1)}
-                            className={`w-8 h-8 border border-theme-secondary rounded-xl flex items-center justify-center hover:bg-theme-secondary transition-all duration-200 ease-in-out shadow-sm hover:shadow-md ${baseFocusClasses}`}
-                            title="Increase quantity"
-                          >
-                            <Plus className="h-3 w-3" />
-                          </button>
-                        </div>
-
+                      <div className="flex items-center space-x-2">
+                        <button onClick={() => handleQuantityChange(item.id, -1)} className="w-8 h-8 border rounded-xl">
+                          <Minus className="h-3 w-3" />
+                        </button>
+                        <span className="w-8 text-center">{item.quantity}</span>
+                        <button onClick={() => handleQuantityChange(item.id, 1)} className="w-8 h-8 border rounded-xl">
+                          <Plus className="h-3 w-3" />
+                        </button>
                         <button
                           onClick={() => handleRemoveItem(item.id, item.product.name)}
-                          className={`text-sm font-serif italic text-theme-primary hover:text-red-500 transition-all duration-200 ease-in-out ${baseFocusClasses}`}
-                          title={`Remove ${item.product.name} from cart`}
+                          className="text-sm italic text-theme-primary hover:text-red-500"
                         >
                           Remove
                         </button>
@@ -142,24 +165,22 @@ const CartPage: React.FC = () => {
                 ))}
               </div>
 
-              <div className="order-1 lg:order-2">
-
-                <div className="card-elegant sticky rounded-lg p-5 top-24 lg:top-28 bg-theme-surface">
-                  <h2 className="text-lg font-serif font-semibold italic text-theme-primary mb-4">Order Summary</h2>
+              <div>
+                <div className="card-elegant sticky rounded-lg p-5 bg-theme-surface">
+                  <h2 className="text-lg font-semibold italic mb-4">Order Summary</h2>
 
                   <div className="space-y-3 mb-6">
                     <div className="flex justify-between">
-                      <span className="text-sm font-serif italic text-theme-primary">SUBTOTAL:</span>
-                      <span className="text-sm font-serif font-semibold">Rs. {getTotalPrice().toLocaleString()}</span>
+                      <span className="text-sm italic">SUBTOTAL:</span>
+                      <span className="text-sm font-semibold">Rs. {getTotalPrice().toLocaleString()}</span>
                     </div>
-                    <div className="text-xs font-serif italic text-theme-muted">
+                    <div className="text-xs italic text-theme-muted">
                       Taxes and shipping will be calculated at checkout.
                     </div>
-                    <div className="flex items-start text-xs font-serif italic text-theme-primary space-x-2">
+                    <div className="flex items-start text-xs italic text-theme-primary space-x-2">
                       <input
                         type="checkbox"
                         id="terms"
-                        className={`mr-2 mt-0.5 accent-theme-secondary rounded ${baseFocusClasses}`}
                         checked={agreedToTerms}
                         onChange={(e) => setAgreedToTerms(e.target.checked)}
                       />
@@ -169,24 +190,23 @@ const CartPage: React.FC = () => {
 
                   {selectedAddress ? (
                     <>
-                      {/* ... display selected address ... */}
-                      <div className="space-y-2 mb-4 text-sm font-serif text-theme-primary">
+                      <div className="space-y-2 mb-4 text-sm text-theme-primary">
                         <div>
                           <div className="font-semibold italic">{selectedAddress.addressType}</div>
                           <div>{selectedAddress.fullName}</div>
-                          {selectedAddress.houseNumber && <div>{selectedAddress.mobileNumber}</div>}
-                          <div>{selectedAddress.streetArea}, {selectedAddress.city} - {selectedAddress.pincode}</div>
+                          <div>{selectedAddress.mobileNumber}</div>
+                          <div>
+                            {selectedAddress.streetArea}, {selectedAddress.city} - {selectedAddress.pincode}
+                          </div>
                           <div>{selectedAddress.state}</div>
                         </div>
                         <button
                           onClick={() => setShowAddressSelector(true)}
-                          className={`text-theme-muted underline text-xs hover:text-theme-primary transition-all duration-200 ease-in-out font-serif italic ${baseFocusClasses}`}
-                          title="Change delivery address"
+                          className="text-theme-muted underline text-xs hover:text-theme-primary"
                         >
                           Change Address
                         </button>
                       </div>
-
                       <PaymentHandler
                         onSuccess={(orderId) => navigate(`/order-confirmation/${orderId}`)}
                         onError={(error) => alert(`Payment failed: ${error}`)}
@@ -195,54 +215,40 @@ const CartPage: React.FC = () => {
                     </>
                   ) : (
                     <button
-                      onClick={() => navigate('/addresses')} // Correctly sets state to show AddressSelector
-                      className={`btn-primary p-2 rounded-md text-theme-light bg-theme-primary hover:bg-theme-dark w-full mt-4 ${baseFocusClasses} ${!agreedToTerms ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      onClick={() => setShowAddressSelector(true)}
+                      className={`btn-primary p-2 rounded-md w-full mt-4 ${!agreedToTerms ? 'opacity-50 cursor-not-allowed' : ''}`}
                       disabled={!agreedToTerms}
-                      title="Select delivery address"
                     >
                       SELECT DELIVERY ADDRESS
                     </button>
                   )}
-
-                  <div className="mt-6 space-y-3 text-xs font-serif text-theme-primary">
-                    <div className="flex items-center space-x-2">
-                      <span>🔄</span>
-                      <div>
-                        <div className="font-semibold italic">NO RETURNS/EXCHANGES</div>
-                        <div>ONCE SOLD</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span>🚚</span>
-                      <div className="font-semibold italic">FREE SHIPPING WITHIN INDIA</div>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
           </>
         ) : (
           <div>
-            <div className="flex items-center mb-6">
+            <div className="flex items-center justify-between mb-6">
               <button
                 onClick={() => setShowAddressSelector(false)}
-                className={`flex items-center space-x-2 text-theme-primary hover:text-theme-muted mr-4 p-2 rounded-xl hover:bg-theme-secondary transition-all duration-200 ease-in-out font-serif italic ${baseFocusClasses}`}
-                title="Back to cart"
+                className="text-theme-primary hover:text-theme-muted flex items-center space-x-2"
               >
                 <X className="h-5 w-5" />
                 <span>Back to Cart</span>
               </button>
-              <h1 className="text-xl font-serif font-semibold italic text-theme-primary">Select Delivery Address</h1>
+              <button
+                onClick={handleOpenAddressForm}
+                className="text-sm bg-theme-primary text-theme-light px-4 py-2 rounded hover:bg-theme-dark"
+              >
+                + Add New Address
+              </button>
             </div>
-
             <AddressSelector />
-
             {selectedAddress && (
               <div className="mt-6 text-center">
                 <button
                   onClick={() => setShowAddressSelector(false)}
-                  className={`btn-primary px-8 ${baseFocusClasses}`}
-                  title="Continue to payment"
+                  className="btn-primary px-8"
                 >
                   Continue to Payment
                 </button>
@@ -251,6 +257,14 @@ const CartPage: React.FC = () => {
           </div>
         )}
       </div>
+
+      <AddressForm
+        isOpen={isAddressFormOpen}
+        onClose={handleCloseAddressForm}
+        onSave={handleSaveAddress}
+        loading={formLoading}
+        address={editingAddress}
+      />
     </div>
   );
 };

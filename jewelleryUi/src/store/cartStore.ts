@@ -15,7 +15,7 @@ interface CartState {
   removeItem: (itemId: string) => Promise<void>; 
   updateQuantity: (itemId: string, delta: number) => Promise<void>; 
   updateItemSize: (itemId: string, selectedSize: string) => Promise<void>;
-  clearCart: () => void;
+  clearCart: (cartIdsToRemove?: string[]) => Promise<void>;
   getTotalPrice: () => number; 
   getItemCount: () => number; 
   getProductQuantity: (productId: string, selectedSize?: string) => number;
@@ -217,8 +217,26 @@ export const useCartStore = create<CartState>()(
       },
 
       // Action to clear the entire cart
-      clearCart: () => {
-        set({ items: [], totalItems: 0, totalPrice: 0 });
+        clearCart: async (cartIdsToRemove) => {
+        const { items } = get();
+        const filteredItems = cartIdsToRemove
+          ? items.filter(item => !cartIdsToRemove.includes(item.id))
+          : [];
+
+        set({
+          items: filteredItems,
+          totalItems: filteredItems.reduce((sum, i) => sum + i.quantity, 0),
+          totalPrice: filteredItems.reduce((sum, i) => sum + i.product.price * i.quantity, 0),
+        });
+
+        const { isAuthenticated } = useAuthStore.getState();
+        if (isAuthenticated && cartIdsToRemove?.length) {
+          try {
+            await Promise.all(cartIdsToRemove.map(id => cartService.removeFromCart(id)));
+          } catch (err) {
+            console.error('Error removing items from backend:', err);
+          }
+        }
       },
 
       // Getter: Calculates total price of items in the cart

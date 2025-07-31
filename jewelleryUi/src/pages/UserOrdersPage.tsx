@@ -192,10 +192,6 @@ const UserOrdersPage: React.FC = () => {
                     </div>
 
                     <div className="mt-4 flex gap-4 flex-wrap text-xs text-purple-600">
-                      <button className="flex items-center gap-1 hover:underline">
-                        <Download className="w-4 h-4" />
-                        Download Invoice
-                      </button>
                       {order.status === 'paid' && (
                         <button className="flex items-center gap-1 text-gray-600 hover:underline">
                           <Package className="w-4 h-4" />

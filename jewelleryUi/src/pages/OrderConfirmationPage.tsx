@@ -256,10 +256,6 @@ const OrderConfirmationPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-3">
-                  <button className="w-full flex items-center justify-center space-x-2 bg-gray-100 text-gray-700 py-3 rounded-lg hover:bg-gray-200 transition-colors">
-                    <Download className="h-4 w-4" />
-                    <span>Download Invoice</span>
-                  </button>
 
                   {isAuthenticated && (
                     <Link

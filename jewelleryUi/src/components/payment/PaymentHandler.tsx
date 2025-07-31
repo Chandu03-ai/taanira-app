@@ -123,10 +123,12 @@ const PaymentHandler: React.FC<PaymentHandlerProps> = ({ onSuccess, onError, isT
               razorpay_signature: response.razorpay_signature,
             });
 
-            if (verificationResult && verificationResult.status === 'success') {
-              clearCart();
+            if (verificationResult?.status === 'success') {
+              const cartIdsToRemove = items.map(item => item.id); // assuming `item.cartId` exists
+              await clearCart(cartIdsToRemove);
               onSuccess(orderData.id);
-            } else {
+            }
+            else {
               onError('Payment verification failed');
             }
           } catch (error) {
