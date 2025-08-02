@@ -98,19 +98,24 @@ def getProductDetails(slug: str) -> str:
 async def createProducts(client, cookies, categorySlugs, uploadedImages):
     for i in range(10):
         catSlug = categorySlugs[i % len(categorySlugs)]
+        price = 1200 + i * 100
+        isHalfPaymentAvailable = i < 2  # First 5 products = True, next 5 = False
+        halfPaymentAmount = round(price * 0.5, 2) if isHalfPaymentAvailable else 0
         product = {
             "name": f"Product {i+1}",
             "slug": f"product-{i+1}",
             "category": catSlug,
-            "description": f"Elegant handcrafted item {i+1}.",
+            "description": f"Elegant and handcrafted product #{i+1}, made with care and precision. Perfect for everyday use or as a thoughtful gift.",
             "initialPrice": 1000 + i * 100,
-            "price": 1200 + i * 100,
+            "price": price,
             "comparePrice": 1500 + i * 100,
             "images": [uploadedImages[i % len(uploadedImages)]],
             "stock": True,
             "details": getProductDetails(catSlug),
-            "review": "The product is of good quality and performs as expected. Satisfied with the purchase.",
+            "review": "This product meets our quality standards and functions reliably. Suitable for regular use and customer satisfaction.",
             "isLatest": i < 4,  # First 4 products will have isLatest = True
+            "isHalfPaymentAvailable": isHalfPaymentAvailable,
+            "halfPaymentAmount": halfPaymentAmount,
         }
         try:
             res = await client.post(PRODUCT_URL, cookies=cookies, json=product)

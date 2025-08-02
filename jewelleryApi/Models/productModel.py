@@ -9,9 +9,11 @@ class ProductImportModel(BaseModel):
     description: Optional[str] = ""
     initialPrice: float  # what admin paid
     price: float  # selling price to customer
-    comparePrice: Optional[float] = 0  # optional MRP
+    comparePrice: Optional[float] = ""  # optional MRP
     images: List[str] = Field(default_factory=list)
     stock: bool = True
     details: Optional[str] = None
     review: Optional[str] = None
     isLatest: bool = False
+    isHalfPaymentAvailable: bool = False 
+    halfPaymentAmount: Optional[int] = None  # Amount for half payment option

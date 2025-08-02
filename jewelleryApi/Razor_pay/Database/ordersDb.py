@@ -32,3 +32,13 @@ def getAllOrders(query: dict = {}):
 
 def updateOrder(query: dict, item: dict):
     return ordersCollection.update_one(query, {"$set": item})
+
+
+def getSingleOrder(query):
+    """
+    Retrieve an order by its ID.
+    """
+    order = ordersCollection.find_one(query)
+    if order and "_id" in order:
+        order["_id"] = str(order["_id"])
+    return order
