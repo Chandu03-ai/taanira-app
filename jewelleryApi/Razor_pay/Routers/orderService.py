@@ -1,5 +1,7 @@
+from bson import ObjectId
 from fastapi import APIRouter, Request
-from Razor_pay.Models.model import OrderRequest
+from pydantic import BaseModel
+from Razor_pay.Models.model import OrderRequest, RemainingPaymentRequest
 from Razor_pay.Services.razorpayClient import client
 from Razor_pay.Database.ordersDb import *
 from ReturnLog.logReturn import returnResponse
@@ -16,55 +18,94 @@ router = APIRouter(tags=["Order Service"])
 def createOrder(request: Request, payload: OrderRequest):
     try:
         logger.info("Initiating Razorpay order creation.")
-        razorpayPayload = {"amount": payload.amount, "currency": payload.currency, "receipt": payload.receipt, "notes": payload.notes or {}}
-        orderData = client.order.create(razorpayPayload)
 
+        isHalfPayment = payload.isHalfPaid is True
+        # Prepare Razorpay payload
+        razorpayPayload = {"amount": payload.amount, "currency": payload.currency, "receipt": payload.receipt, "notes": payload.notes or {}}
+
+        # Create order with Razorpay
+        orderData = client.order.create(razorpayPayload)
         orderId = orderData.get("id")
         if not orderId:
             logger.warning("Razorpay returned no order ID.")
             return returnResponse(1527)
+
+        # Prepare full order document to insert into DB
         fullOrder = {
-            **orderData,
+            "id": str(ObjectId()),
+            "orderId": orderId,
+            "secondOrderId": "",
+            "amount": orderData.get("amount"),
+            "currency": orderData.get("currency"),
+            "receipt": orderData.get("receipt"),
+            "notes": orderData.get("notes"),
             "createdAt": formatDateTime(),
             "items": [item.model_dump() for item in payload.items] if payload.items else [],
             "shippingAddress": payload.shippingAddress.model_dump() if payload.shippingAddress else None,
-            "trackingNumber":""
+            "trackingNumber": "",
+            "isHalfPaid": isHalfPayment,
+            "remainingAmount": payload.remainingAmount,
+            "halfPaymentStatus": "pending" if isHalfPayment else "not_applicable",
+            "paymentType": "half" if isHalfPayment else "full",
+            "halfPaymentDetails": (
+                {"firstPaymentAmount": payload.amount, "remainingAmount": payload.remainingAmount, "firstPaymentDate": formatDateTime(), "remainingPaymentDate": None, "remindersSent": 0}
+                if isHalfPayment
+                else None
+            ),
+            **{k: v for k, v in orderData.items() if k != "id"},  # Merge rest of Razorpay data
         }
 
+        # Store in DB
         insertOrder(fullOrder)
         fullOrder.pop("_id", None)
-        logger.info("Order created and stored successfully. orderId: %s", orderData["id"])
+
+        logger.info("Order created and stored successfully. orderId: %s", orderId)
         return returnResponse(1526, result=fullOrder)
 
     except Exception as e:
-        logger.error("Order creation failed,Error: %s", str(e))
+        logger.error("Order creation failed. Error: %s", str(e))
         return returnResponse(1527)
 
 
-@router.get("/orders/{orderId}")
-def fetchOrder(request: Request, orderId: str):
+@router.get("/orders/{id}")
+def fetchOrder(request: Request, id: str):
     try:
-        logger.info("Fetching order. orderId: %s", orderId)
+        logger.info("Fetching order. orderId: %s", id)
+        localOrder = getSingleOrder({"id": id})
+        print(localOrder)
+        if not localOrder:
+            logger.warning("Local order not found.")
+            return returnResponse(1556)
+
+        if localOrder.get("status") == "paid" and localOrder.get("halfPaymentStatus") in ["paid", "not_applicable"]:
+            logger.info("Both payments already completed. Returning local order.")
+            return returnResponse(1528, result=localOrder)
+        orderId = localOrder.get("orderId") if localOrder.get("status") != "paid" else localOrder.get("secondOrderId")
+        print(orderId)
+        # Fetch latest status from Razorpay
         orderData = client.order.fetch(orderId)
         currentStatus = orderData.get("status")
         if not currentStatus:
             logger.warning("No status found in Razorpay response.")
             return returnResponse(1555)
-        logger.debug(f"Fetched status from Razorpay: {currentStatus}")
 
-        localOrder = getOrderById(orderId)
-        if not localOrder:
-            logger.warning("Local order not found.")
-            return returnResponse(1556)
-        if localOrder.get("status") != currentStatus:
-            updateOrder({"id": orderId}, {"status": currentStatus})
-            logger.info(f"Updated local order status to: {currentStatus}")
+        logger.debug("Fetched status from Razorpay: %s", currentStatus)
 
-        updatedOrder = getOrderById(orderId)
-        logger.info("Order fetched successfully. orderId: %s", orderId)
+        # Update local order status if different
+        if localOrder.get("status") != "paid":
+            updateOrder({"id": id}, {"status": currentStatus, "updatedAt": formatDateTime()})
+            logger.info("Updated status: %s", currentStatus)
+
+        # Update half payment status if applicable
+        if localOrder.get("isHalfPaid") and localOrder.get("paymentType") == "remaining":
+            updateOrder({"id": id}, {"halfPaymentStatus": currentStatus, "updatedAt": formatDateTime()})
+            logger.info("Updated half payment status: %s", currentStatus)
+
+        updatedOrder = getSingleOrder({"id": id})
+        logger.info("Returning updated order: %s", orderId)
         return returnResponse(1528, result=updatedOrder)
     except Exception as e:
-        logger.error(f"Failed to fetch order for orderId: {orderId},Error: {str(e)}")
+        logger.error("Failed to fetch order. Error: %s", str(e))
         return returnResponse(1529)
 
 

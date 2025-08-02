@@ -45,7 +45,17 @@ class ShippingAddress(BaseModel):
 class OrderRequest(BaseModel):
     amount: Optional[int]
     currency: Optional[str] = "INR"
+    isHalfPaid: Optional[bool] = False
+    remainingAmount: Optional[int] = None
     receipt: Optional[str]
     notes: Optional[Dict[str, str]]
     items: Optional[List[Item]]
     shippingAddress: Optional[ShippingAddress]
+
+
+class RemainingPaymentRequest(BaseModel):
+    orderId: str
+    amount: int
+    currency: str
+    receipt: str
+    notes: dict

@@ -21,7 +21,7 @@ from yensiAuthentication.authenticate import KeycloakMiddleware
 import uvicorn
 from fastapi.staticfiles import StaticFiles
 from constants import staticFilesPath
-from Razor_pay.Routers import customerService, orderService, paymentService, webhookService
+from Razor_pay.Routers import customerService, orderService, paymentService, webhookService, halfPaymentService
 
 # Start the FastAPI application
 logger.info("FastAPI application starting...")
@@ -61,6 +61,7 @@ app.include_router(addressRouter.router)
 app.include_router(shipmentTrackRouter.router)
 app.include_router(emailRouter.router)
 app.include_router(reviewRouter.router)
+app.include_router(halfPaymentService.router)
 
 
 # run the FastAPI application

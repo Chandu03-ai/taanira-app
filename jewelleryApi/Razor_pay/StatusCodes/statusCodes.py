@@ -43,4 +43,18 @@ CUSTOM_STATUS_CODES = {
     1559: {"code": 1559, "message": "userId not found in request metadata"},
     1560: {"code": 1560, "message": "orders successfully fetched by Admin"},
     1561: {"code": 1561, "message": "error occured while fetcing orders by "},
+    1562: {"code": 1562, "message": "Order not found for the given orderId."},
+    1563: {"code": 1563, "message": "Order is not eligible for remaining payment or no pending half payment."},
+    1564: {"code": 1564, "message": "No remaining amount left to pay."},
+    1565: {"code": 1565, "message": "Provided amount does not match the remaining amount."},
+    1566: {"code": 1566, "message": "Remaining payment processed successfully."},
+    1567: {"code": 1567, "message": "Failed to process remaining payment. Please try again later"},
+
+
+
+
+    1568: {"code": 1568, "message": "successfully enabled remaining payment"},
+    1569: {"code": 1569, "message": "Error enabling remaining payment "},
+    1570: {"code": 1570, "message": "notification created successfully"},
+    1571: {"code": 1571, "message": "Failed to send remaining payment notification"},
 }

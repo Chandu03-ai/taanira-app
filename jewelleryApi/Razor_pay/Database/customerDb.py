@@ -35,3 +35,8 @@ def updateCustomerData(customerId, updatedCustomer):
     if result.matched_count > 0:
         return True
     return False
+
+
+
+def createNotification(Notification):
+    return customersCollection.insert_one(Notification)
