@@ -161,6 +161,10 @@ class ApiService {
     const response = await orderService.createOrder(orderData);
     return response.result;
   }
+async createSecondOrder(orderData: OrderRequest) {
+    const response = await orderService.createSecondOrder(orderData);
+    return response.result;
+  }
 
 
   async getOrder(orderId: string) {
@@ -182,6 +186,12 @@ class ApiService {
     const response = await orderService.verifyPayment(paymentData);
     return response.result;
   }
+  
+  async remainingVerifyPayment(paymentData: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) {
+    const response = await orderService.remainingVerifyPayment(paymentData);
+    return response.result;
+  }
+
 
 
 async getUserOrders(): Promise<Order[]> {

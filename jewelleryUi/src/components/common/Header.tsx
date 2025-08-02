@@ -1,7 +1,7 @@
 // Header.tsx
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Bell } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useCategoryStore } from '../../store/categoryStore';
 import { useCartStore } from '../../store/cartStore';
@@ -9,11 +9,14 @@ import SEOHead from '../seo/SEOHead';
 import { SITE_CONFIG } from '../../constants/siteConfig';
 import CartSidebar from './CartSidebar';
 import BagIcon from '../icons/BagIcon';
+import { apiService } from '../../services/api';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showCartSidebar, setShowCartSidebar] = useState(false);
   const [showText, setShowText] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [pendingPayments, setPendingPayments] = useState<any[]>([]);
 
   const { user, isAuthenticated, logout } = useAuthStore();
   const { loadCategories } = useCategoryStore();
@@ -36,6 +39,26 @@ const Header: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  // Load pending payments for authenticated users
+  useEffect(() => {
+    const loadPendingPayments = async () => {
+      if (isAuthenticated && user) {
+        try {
+          const orders = await apiService.getUserOrders();
+          const pending = orders.filter(order =>
+            order.isHalfPaid &&
+            order.halfPaymentStatus === 'pending' &&
+            order.enableRemainingPayment
+          );
+          setPendingPayments(pending);
+        } catch (error) {
+          console.error('Error loading pending payments:', error);
+        }
+      }
+    };
+
+    loadPendingPayments();
+  }, [isAuthenticated, user]);
   const handleLogout = () => {
     logout();
     navigate('/');
@@ -67,9 +90,8 @@ const Header: React.FC = () => {
                   <button
                     onClick={() => setIsMenuOpen(true)}
                     style={{ color: headerStyles.textColor, fontWeight: headerStyles.fontWeight }}
-                    className={`hover:opacity-70 transition-opacity p-2 ${baseFocusClasses} ${
-                      showText ? 'opacity-100 animate-fadeInSlow' : 'opacity-0'
-                    }`}
+                    className={`hover:opacity-70 transition-opacity p-2 ${baseFocusClasses} ${showText ? 'opacity-100 animate-fadeInSlow' : 'opacity-0'
+                      }`}
                     title="Open Menu"
                   >
                     <Menu className="h-5 w-5 sm:h-6 sm:w-6" />
@@ -91,9 +113,8 @@ const Header: React.FC = () => {
               <div className="flex-1 flex items-center justify-center mx-4">
                 <Link
                   to="/"
-                  className={`flex items-center justify-center transition-all duration-200 ease-in-out ${baseFocusClasses} ${
-                    showText ? 'opacity-100 animate-fadeInSlow' : 'opacity-0'
-                  }`}
+                  className={`flex items-center justify-center transition-all duration-200 ease-in-out ${baseFocusClasses} ${showText ? 'opacity-100 animate-fadeInSlow' : 'opacity-0'
+                    }`}
                   title={`${SITE_CONFIG.name} - Home`}
                 >
                   {/* On homepage, you probably want to display the full logo image instead of text */}
@@ -144,8 +165,8 @@ const Header: React.FC = () => {
                   </span>
                   <div className="relative flex items-center">
                     <div className="w-5 h-5 sm:w-6 sm:h-6 -mt-1 sm:-mt-1">
-  <BagIcon stroke={isHomePage ? '#F8F6F3' : '#4A3F36'} />
-</div>
+                      <BagIcon stroke={isHomePage ? '#F8F6F3' : '#4A3F36'} />
+                    </div>
 
                     {cartItemCount > 0 && (
                       <span className="absolute -top-1 -right-1 bg-red-500 text-theme-light text-[10px] sm:text-xs rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center font-medium">
@@ -186,56 +207,69 @@ const Header: React.FC = () => {
               <div className="flex flex-col gap-4 sm:gap-5 text-left">
                 {isAuthenticated ? (
                   <>
-                    <Link
-                      to="/profile"
-                      onClick={() => setIsMenuOpen(false)}
-                      className={`block text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-3 transition-opacity ${baseFocusClasses}`}
-                      title="View Profile"
-                    >
-                      PROFILE
-                    </Link>
+                    {user?.role === 'Admin' ? (
+                      <button
+                        onClick={() => {
+                          setIsMenuOpen(false);
+                          navigate('/admin');
+                        }}
+                        className={`block w-full text-left text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-3 transition-opacity ${baseFocusClasses}`}
+                        title="Admin Panel"
+                      >
+                        ADMIN PANEL
+                      </button>
+                    ) : (
+                      <Link
+                        to="/profile"
+                        onClick={() => setIsMenuOpen(false)}
+                        className={`block text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-3 transition-opacity ${baseFocusClasses}`}
+                        title="View Profile"
+                      >
+                        PROFILE
+                      </Link>
+                    )}
                     <div className="border-t border-theme-secondary/30" />
-                    <Link
-                      to="/products"
-                      onClick={() => setIsMenuOpen(false)}
-                      className={`block text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-3 transition-opacity ${baseFocusClasses}`}
-                      title="Shop Products"
-                    >
-                      SHOP
-                    </Link>
-                    <div className="border-t border-theme-secondary/30" />
-                    <Link
-                      to="/cart"
-                      onClick={() => setIsMenuOpen(false)}
-                      className={`flex items-center justify-between text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-3 transition-opacity ${baseFocusClasses}`}
-                      title={`Shopping Cart (${cartItemCount} items)`}
-                    >
-                      <span>CART</span>
-                      {cartItemCount > 0 && (
-                        <span className="bg-red-500 text-theme-light text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
-                          {cartItemCount > 99 ? '99+' : cartItemCount}
-                        </span>
-                      )}
-                    </Link>
-                    <div className="border-t border-theme-secondary/30" />
-                    <Link
-                      to="/addresses"
-                      onClick={() => setIsMenuOpen(false)}
-                      className={`block text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-3 transition-opacity ${baseFocusClasses}`}
-                      title="Manage Addresses"
-                    >
-                      ADDRESSES
-                    </Link>
-                    <div className="border-t border-theme-secondary/30" />
-                    {user?.role === 'Admin' && (
+                    {user?.role !== 'Admin' && (
                       <>
                         <Link
-                          to="/admin"
+                          to="/products"
                           onClick={() => setIsMenuOpen(false)}
                           className={`block text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-3 transition-opacity ${baseFocusClasses}`}
-                          title="Admin Panel"
+                          title="Shop Products"
                         >
-                          ADMIN PANEL
+                          SHOP
+                        </Link>
+                        <div className="border-t border-theme-secondary/30" />
+                        <Link
+                          to="/user/orders"
+                          onClick={() => setIsMenuOpen(false)}
+                          className={`block text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-3 transition-opacity ${baseFocusClasses}`}
+                          title="View Orders"
+                        >
+                          ORDERS
+                        </Link>
+                        <div className="border-t border-theme-secondary/30" />
+                        <Link
+                          to="/cart"
+                          onClick={() => setIsMenuOpen(false)}
+                          className={`flex items-center justify-between text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-3 transition-opacity ${baseFocusClasses}`}
+                          title={`Shopping Cart (${cartItemCount} items)`}
+                        >
+                          <span>CART</span>
+                          {cartItemCount > 0 && (
+                            <span className="bg-red-500 text-theme-light text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
+                              {cartItemCount > 99 ? '99+' : cartItemCount}
+                            </span>
+                          )}
+                        </Link>
+                        <div className="border-t border-theme-secondary/30" />
+                        <Link
+                          to="/addresses"
+                          onClick={() => setIsMenuOpen(false)}
+                          className={`block text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-3 transition-opacity ${baseFocusClasses}`}
+                          title="Manage Addresses"
+                        >
+                          ADDRESSES
                         </Link>
                         <div className="border-t border-theme-secondary/30" />
                       </>
@@ -256,19 +290,21 @@ const Header: React.FC = () => {
                         <div className="border-t border-theme-secondary/30" />
                       </div>
                     ))}
-                    <Link
-                      to="/cart"
-                      onClick={() => setIsMenuOpen(false)}
-                      className={`flex items-center justify-between text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-3 transition-opacity ${baseFocusClasses}`}
-                      title={`Shopping Cart (${cartItemCount} items)`}
-                    >
-                      <span>CART</span>
-                      {cartItemCount > 0 && (
-                        <span className="bg-red-500 text-theme-light text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
-                          {cartItemCount > 99 ? '99+' : cartItemCount}
-                        </span>
-                      )}
-                    </Link>
+                    <div>
+                      <Link
+                        to="/cart"
+                        onClick={() => setIsMenuOpen(false)}
+                        className={`flex items-center justify-between text-sm sm:text-base tracking-[0.15em] font-light hover:opacity-80 py-3 transition-opacity ${baseFocusClasses}`}
+                        title={`Shopping Cart (${cartItemCount} items)`}
+                      >
+                        <span>CART</span>
+                        {cartItemCount > 0 && (
+                          <span className="bg-red-500 text-theme-light text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
+                            {cartItemCount > 99 ? '99+' : cartItemCount}
+                          </span>
+                        )}
+                      </Link>
+                    </div>
                     <div className="border-t border-theme-secondary/30" />
                     <Link
                       to="/login"
@@ -302,7 +338,7 @@ const Header: React.FC = () => {
         </>
       )}
 
-      {showCartSidebar && <CartSidebar onClose={() => setShowCartSidebar(false)} />}
+      {showCartSidebar && user?.role !== 'Admin' && <CartSidebar onClose={() => setShowCartSidebar(false)} />}
     </>
   );
 };

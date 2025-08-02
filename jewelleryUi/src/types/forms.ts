@@ -11,6 +11,8 @@ export interface ProductFormData {
   stock: boolean;
   isLatest?: boolean;
   review: string;
+  isHalfPaymentAvailable?: boolean;
+  halfPaymentAmount?: number;
 }
 export interface CategoryFormData {
   name: string;

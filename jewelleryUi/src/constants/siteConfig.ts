@@ -1,5 +1,6 @@
 // Site configuration - centralized settings
 export const staticImageBaseUrl = '/api/static/images/';
+export const staticOriginalImageBaseUrl = '/api/static/originalImages/';
 
 export const SITE_CONFIG = {
   name: import.meta.env.VITE_SITE_NAME || 'Taanira',

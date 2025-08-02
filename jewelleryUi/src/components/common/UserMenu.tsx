@@ -2,13 +2,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp, UserCircle } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
-import LogoutButton from './LogoutButton';
 
 interface UserMenuProps {
   dropdownPosition?: 'top' | 'bottom';
+  onProfileClick?: () => void;
 }
 
-const UserMenu: React.FC<UserMenuProps> = ({ dropdownPosition = 'bottom' }) => {
+const UserMenu: React.FC<UserMenuProps> = ({ dropdownPosition = 'bottom', onProfileClick }) => {
   const { user, isAuthenticated, logout } = useAuthStore();
   const location = useLocation();
   const navigate = useNavigate();
@@ -34,19 +34,32 @@ const UserMenu: React.FC<UserMenuProps> = ({ dropdownPosition = 'bottom' }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const handleProfileClick = () => {
+      console.log("Admin Profile Clicked");
+    if (isAdmin && onProfileClick) {
+      // For admins, use the modal callback if provided
+      onProfileClick();
+      setIsOpen(false);
+    } else {
+      // For regular users, navigate to profile page
+      navigate('/profile');
+      setIsOpen(false);
+    }
+  };
+
   // Define menu items based on user role
 const getMenuItems = () => {
   const currentPath = location.pathname;
   const userRole = user?.role || 'User';
 
-  // Show only "Profile" for Admin
+  // For Admin, show profile option but handle it differently
   if (userRole === 'Admin') {
-    return currentPath !== '/profile' ? [{ label: 'Profile', path: '/profile' }] : [];
+    return [{ label: 'Profile', path: '/profile', onClick: handleProfileClick }];
   }
 
   // Normal user menu
   const userItems = [
-    { label: 'Profile', path: '/profile' },
+    { label: 'Profile', path: '/profile', onClick: () => navigate('/profile') },
     { label: 'Shop', path: '/products' },
     { label: 'Orders', path: '/user/orders' },
     { label: 'Addresses', path: '/addresses' },
@@ -119,15 +132,21 @@ const getMenuItems = () => {
           
           {/* Dynamic menu items based on role and current route */}
           {getMenuItems().map((item) => (
-            <Link
+            <button
               key={item.path}
-              to={item.path}
-              className={`block px-4 py-3 text-sm font-serif italic text-theme-primary hover:bg-theme-surface transition-all duration-200 ease-in-out ${baseFocusClasses}`}
+              onClick={() => {
+                if (item.onClick) {
+                  item.onClick();
+                } else {
+                  navigate(item.path);
+                  setIsOpen(false);
+                }
+              }}
+              className={`block w-full text-left px-4 py-3 text-sm font-serif italic text-theme-primary hover:bg-theme-surface transition-all duration-200 ease-in-out ${baseFocusClasses}`}
               title={item.label}
-              onClick={() => setIsOpen(false)}
             >
               {item.label}
-            </Link>
+            </button>
           ))}
           
           <div className="border-t border-theme-surface my-2"></div>

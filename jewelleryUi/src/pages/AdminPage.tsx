@@ -17,11 +17,13 @@ import OrderManagement from '../components/admin/OrderManagement';
 import UserManagement from '../components/admin/UserManagement';
 import CategoryManagement from '../components/admin/CategoryManagement';
 import UserMenu from '../components/common/UserMenu';
+import AdminProfileModal from '../components/admin/AdminProfileModal';
 
 const AdminPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
   const baseFocusClasses = "focus:outline-none focus:ring-0";
 
   useEffect(() => {
@@ -109,7 +111,7 @@ const AdminPage: React.FC = () => {
             </div>
 
             <div className="p-4 sm:p-5 lg:p-6 border-t border-theme-surface bg-theme-surface/50">
-              <UserMenu dropdownPosition="top" />
+              <UserMenu dropdownPosition="top" onProfileClick={() => setShowProfileModal(true)} />
             </div>
           </aside>
 
@@ -141,6 +143,12 @@ const AdminPage: React.FC = () => {
           </main>
         </div>
       </div>
+
+      {/* Admin Profile Modal */}
+      <AdminProfileModal 
+        isOpen={showProfileModal} 
+        onClose={() => setShowProfileModal(false)} 
+      />
     </>
   );
 };

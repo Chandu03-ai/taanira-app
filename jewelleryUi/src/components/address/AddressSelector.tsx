@@ -67,7 +67,7 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({ showTitle = true, onE
       await setDefaultAddress(addressId);
       const newlyDefaultAddress = addresses.find(addr => addr.id === addressId);
       if (newlyDefaultAddress) {
-        setSelectedAddress(newlyDefaultAddress); // ✅ Automatically select the default address
+        setSelectedAddress(newlyDefaultAddress);
       }
     } catch (error) {
       console.error('Error setting default address:', error);
@@ -75,7 +75,6 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({ showTitle = true, onE
       setIndividualActionLoadingId(null);
     }
   };
-
 
   if (loading) {
     return (
@@ -98,10 +97,10 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({ showTitle = true, onE
   return (
     <div className="space-y-6">
       {showTitle && (
-        <h2 className="text-xl font-semibold text-[#4A3F36] mb-6 font-serif italic">Select Delivery Address</h2>
+        <h2 className="text-xl sm:text-2xl font-semibold text-[#4A3F36] mb-6 font-serif italic">Select Delivery Address</h2>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {addresses.map((address) => (
           <div
             key={address.id}
@@ -135,14 +134,18 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({ showTitle = true, onE
               )}
             </div>
 
-            <p className="text-sm text-[#4A3F36] font-medium mb-1 font-serif italic">{address.fullName}</p>
-            <p className="text-sm text-gray-600 font-serif italic">
-              {address.houseNumber}, {address.streetArea}, {address.landmark && `${address.landmark}, `}
-              {address.city}, {address.state} - {address.pincode}
-            </p>
-            <p className="text-sm text-gray-600 mt-1 font-serif italic">Mobile: {address.mobileNumber}</p>
+            <div className="mb-4">
+              <p className="text-sm sm:text-base text-[#4A3F36] font-medium mb-1 font-serif italic">{address.fullName}</p>
+              <div className="text-sm text-gray-600 font-serif italic space-y-1">
+                <p>{address.houseNumber}</p>
+                <p>{address.streetArea}</p>
+                {address.landmark && <p>Landmark: {address.landmark}</p>}
+                <p>{address.city}, {address.state} - {address.pincode}</p>
+                <p>Mobile: {address.mobileNumber}</p>
+              </div>
+            </div>
 
-            <div className="flex items-center justify-end gap-3 mt-4 pt-3 border-t border-gray-100">
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-gray-100">
               {!address.isDefault && (
                 <button
                   onClick={(e) => {
@@ -151,7 +154,7 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({ showTitle = true, onE
                   }}
                   disabled={individualActionLoadingId === address.id}
                   className="
-                    flex items-center text-xs text-[#AA732F] hover:text-[#8f5c20]
+                    flex items-center text-xs sm:text-sm text-[#AA732F] hover:text-[#8f5c20]
                     transition-colors duration-200 font-serif italic
                     disabled:opacity-50 disabled:cursor-not-allowed
                   "
@@ -164,40 +167,43 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({ showTitle = true, onE
                   Set as Default
                 </button>
               )}
-              {onEditAddress && (
+              
+              <div className="flex items-center gap-3">
+                {onEditAddress && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEditAddress(address);
+                    }}
+                    className="
+                      flex items-center text-xs sm:text-sm text-[#4A3F36] hover:text-gray-700
+                      transition-colors duration-200 font-serif italic
+                    "
+                  >
+                    <Edit className="w-3 h-3 mr-1" />
+                    Edit
+                  </button>
+                )}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    onEditAddress(address);
+                    handleDeleteClick(address);
                   }}
+                  disabled={individualActionLoadingId === address.id}
                   className="
-                    flex items-center text-xs text-[#4A3F36] hover:text-gray-700
+                    flex items-center text-xs sm:text-sm text-red-500 hover:text-red-700
                     transition-colors duration-200 font-serif italic
+                    disabled:opacity-50 disabled:cursor-not-allowed
                   "
                 >
-                  <Edit className="w-3 h-3 mr-1" />
-                  Edit
+                  {individualActionLoadingId === address.id ? (
+                    <Loader className="w-3 h-3 animate-spin mr-1" />
+                  ) : (
+                    <Trash2 className="w-3 h-3 mr-1" />
+                  )}
+                  Delete
                 </button>
-              )}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDeleteClick(address);
-                }}
-                disabled={individualActionLoadingId === address.id}
-                className="
-                  flex items-center text-xs text-red-500 hover:text-red-700
-                  transition-colors duration-200 font-serif italic
-                  disabled:opacity-50 disabled:cursor-not-allowed
-                "
-              >
-                {individualActionLoadingId === address.id ? (
-                  <Loader className="w-3 h-3 animate-spin mr-1" />
-                ) : (
-                  <Trash2 className="w-3 h-3 mr-1" />
-                )}
-                Delete
-              </button>
+              </div>
             </div>
           </div>
         ))}

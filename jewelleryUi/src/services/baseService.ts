@@ -35,14 +35,14 @@ class BaseService {
       const response = await fetch(url, config);
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(`HTTP error! status: ${response.status}`, errorText);
+        console.error(`API Error [${response.status}] ${endpoint}:`, errorText);
         throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
       }
 
       const data: ApiResponse<T> = await response.json();
       return data;
     } catch (error) {
-      console.error('API request failed:', error);
+      console.error(`API request failed for ${endpoint}:`, error);
       throw error;
     }
   }

@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
+import { useAdminRouteGuard } from './useAdminRouteGuard';
 
 interface RouteConfig {
   path: string;
@@ -30,6 +31,9 @@ export const useRouteProtection = () => {
   const { user, isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
+  
+  // Use admin route guard
+  useAdminRouteGuard();
 
   useEffect(() => {
     if (!isAuthenticated) {

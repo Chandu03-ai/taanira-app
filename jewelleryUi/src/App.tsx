@@ -25,10 +25,14 @@ import NotFoundPage from './pages/NotFoundPage';
 import Footer from './components/common/Footer';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import VerifyResetPage from './pages/VerifyResetPage';
+import { useAdminRouteGuard } from './hooks/useAdminRouteGuard';
 
 function AppContent() {
   const location = useLocation();
   const { initialize } = useAuthStore();
+  
+  // Add admin route guard
+  useAdminRouteGuard();
 
   useEffect(() => {
     initialize();

@@ -73,6 +73,7 @@ export const API_ENDPOINTS = {
 
   // Order endpoints
   CREATE_ORDER: '/order',
+  CREATE_SECOND_ORDER:'/order/createSecond',
   UPDATE_ORDER_STATUS: '/admin/orders',
   GET_ORDER: '/orders',
   GET_ORDER_PAYMENTS: '/orders',
@@ -83,6 +84,7 @@ export const API_ENDPOINTS = {
   // Payment endpoints
   CREATE_PAYMENT_ORDER: '/payment/create-order',
   VERIFY_PAYMENT: '/payments/payment/verify',
+  VERIFY_REMAINING_PAYMENT: '/payments/payment/remaining-verify',
   PAYMENT_STATUS: '/payment/status',
 
   // User endpoints
@@ -108,6 +110,9 @@ export const API_ENDPOINTS = {
   BULK_CREATE_PRODUCTS: '/admin/products/bulk',
   UPDATE_PRODUCT_VISIBILITY: '/admin/products',
   BULK_UPDATE_TAGS: '/admin/products/tags/bulk',
+  ENABLE_REMAINING_PAYMENT: '/admin/orders/{orderId}/enable-remaining-payment',
+  SEND_REMAINING_PAYMENT_NOTIFICATION: '/admin/orders/{orderId}/send-remaining-payment-notification',
+  CREATE_REMAINING_PAYMENT_ORDER: '/orders/remaining-payment',
 
   // Stock endpoints
   UPDATE_STOCK: '/products',

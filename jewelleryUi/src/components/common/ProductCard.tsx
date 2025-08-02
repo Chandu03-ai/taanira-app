@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Product } from '../../types';
 import { useCartStore } from '../../store/cartStore';
 import { useAuthStore } from '../../store/authStore';
@@ -12,7 +12,7 @@ interface ProductCardProps {
   viewMode?: 'grid' | 'list';
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode}) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [showSizeSelector, setShowSizeSelector] = useState(false);
@@ -22,7 +22,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode}) => {
   const { addItem, items, guestItems, removeItem } = useCartStore();
 
   const { isAuthenticated } = useAuthStore();
-  const navigate = useNavigate();
   const baseFocusClasses = "focus:outline-none focus:ring-0";
 
   useEffect(() => {
@@ -39,10 +38,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode}) => {
   }, [product.category]);
 
   const hasSizeOptions = category?.sizeOptions?.length > 0;
-  
-  // Get active items based on authentication status
+
   const activeItems = isAuthenticated ? items : guestItems;
-  
+
   const existingCartItem = activeItems.find(
     item => item.productId === product.id
   );
@@ -51,12 +49,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode}) => {
     ? (selectedSize || existingCartItem?.selectedSize)
     : undefined;
 
-
   const cartItem = activeItems.find(
     item => item.productId === product.id &&
       (item.selectedSize ?? '') === (effectiveSelectedSize ?? '')
   );
-
 
   const inCart = !!cartItem;
 
@@ -81,7 +77,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode}) => {
     }
   };
 
-
   const handleSizeSelect = async (size: string) => {
     setSelectedSize(size);
     setShowSizeSelector(false);
@@ -98,14 +93,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode}) => {
   return (
     <>
       <article
-        className={`group rounded-xl sm:rounded-2xl p-3 sm:p-4 transition-all duration-300 hover:bg-theme-surface shadow-sm hover:shadow-md w-full ${viewMode === 'list' ? 'flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6' : ''
-          }`}
+        className={`group rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 transition-all duration-300 hover:bg-theme-surface shadow-sm hover:shadow-md w-full ${viewMode === 'list' 
+          ? 'flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 lg:gap-8 bg-white border border-theme-surface' 
+          : 'bg-white border border-theme-surface'
+        }`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <Link to={`/product/${product.slug || product.id}`} className={`block mb-3 ${baseFocusClasses}`}>
-          <div className={`relative overflow-hidden rounded-lg sm:rounded-xl bg-theme-light ${viewMode === 'list' ? 'w-full sm:w-48 aspect-square sm:flex-shrink-0' : 'aspect-square'
-            }`}>
+        <Link to={`/product/${product.slug || product.id}`} className={`block mb-3 ${viewMode === 'list' ? 'mb-0' : ''} ${baseFocusClasses}`}>
+          <div className={`relative overflow-hidden rounded-lg sm:rounded-xl bg-theme-light ${viewMode === 'list' 
+            ? 'w-full sm:w-48 lg:w-64 xl:w-72 aspect-square sm:flex-shrink-0' // Increased width for list view
+            : 'aspect-square'
+          }`}>
             <img
               src={productImages[0]}
               alt={product.name}
@@ -122,52 +121,57 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode}) => {
                 loading="lazy"
               />
             )}
-            {!product.stock && (
-              <div className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-theme-dark text-theme-light text-xs px-2 py-1 sm:px-3 sm:py-1.5 rounded-full font-medium">
-                SOLD OUT
+            {product.isHalfPaymentAvailable && (
+              <div className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-theme-dark text-theme-light text-[8px] px-2 py-1 sm:text-xs sm:px-3 sm:py-1.5 rounded-full font-normal">
+                Easy Half
               </div>
             )}
           </div>
         </Link>
 
-        <div className={`space-y-2 sm:space-y-3 ${viewMode === 'list' ? 'flex-1 text-left sm:text-left' : 'text-center'}`}>
+        <div className={`space-y-3 sm:space-y-4 ${viewMode === 'list' ? 'flex-1 text-left' : 'text-center'}`}>
           <Link to={`/product/${product.slug || product.id}`} className={baseFocusClasses}>
-            <h3 className={`font-serif text-theme-primary hover:text-theme-muted transition-colors line-clamp-2 leading-tight ${viewMode === 'list' ? 'text-lg sm:text-xl mb-2' : 'text-sm sm:text-base lg:text-lg'
-              }`}>
+            <h3 className={`font-serif text-theme-primary hover:text-theme-muted transition-colors line-clamp-2 leading-tight ${viewMode === 'list' 
+              ? 'text-lg sm:text-xl lg:text-2xl mb-2' 
+              : 'text-sm sm:text-base lg:text-lg'
+            }`}>
               {product.name}
             </h3>
           </Link>
 
           <div className={`flex items-center gap-2 sm:gap-3 ${viewMode === 'list' ? 'justify-start' : 'justify-center'}`}>
-            <span className={`font-serif text-theme-primary font-medium ${viewMode === 'list' ? 'text-lg sm:text-xl' : 'text-sm sm:text-base'
-              }`}>
+            <span className={`font-serif text-theme-primary font-medium ${viewMode === 'list' 
+              ? 'text-lg sm:text-xl lg:text-2xl' 
+              : 'text-sm sm:text-base lg:text-lg'
+            }`}>
               {SITE_CONFIG.currencySymbol}{(product.price || 0).toLocaleString()}
             </span>
+
             {typeof product.comparePrice === 'number' &&
               product.comparePrice > 0 &&
               product.comparePrice > product.price && (
-                <span className={`text-theme-muted line-through font-serif ${viewMode === 'list' ? 'text-base sm:text-lg' : 'text-xs sm:text-sm'
-                  }`}>
+                <span className={`text-theme-muted line-through font-serif ${viewMode === 'list' 
+                  ? 'text-base sm:text-lg lg:text-xl' 
+                  : 'text-xs sm:text-sm lg:text-base'
+                }`}>
                   {SITE_CONFIG.currencySymbol}{product.comparePrice.toLocaleString()}
                 </span>
               )}
-
-
           </div>
 
           <div className={`${viewMode === 'list' ? 'pt-3 sm:pt-4' : 'pt-2 sm:pt-3'}`}>
             {!product.stock ? (
               <button
                 disabled
-                className={`w-full py-2.5 sm:py-3 text-xs sm:text-sm font-serif font-semibold italic border-2 border-theme-muted text-theme-muted rounded-lg sm:rounded-xl cursor-not-allowed ${baseFocusClasses}`}
+                className={`w-full py-2.5 sm:py-3 text-xs sm:text-sm font-serif font-semibold italic border-2 border-theme-muted text-theme-muted rounded-lg sm:rounded-xl cursor-not-allowed ${baseFocusClasses} ${viewMode === 'list' ? 'max-w-xs' : ''}`}
               >
                 OUT OF STOCK
               </button>
             ) : inCart ? (
-              <div className="flex gap-2 w-full">
+              <div className={`flex gap-2 w-full ${viewMode === 'list' ? 'max-w-md' : ''}`}>
                 <Link
                   to="/cart"
-               className={`flex-[2] px-2 sm:px-3 py-2.5 sm:py-3 text-xs sm:text-sm font-serif font-semibold italic border-2 border-theme-primary text-theme-primary rounded-lg sm:rounded-xl hover:bg-theme-primary hover:text-theme-light transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md text-center ${baseFocusClasses}`}
+                  className={`flex-[2] px-2 sm:px-3 py-2.5 sm:py-3 text-xs sm:text-sm font-serif font-semibold italic border-2 border-theme-primary text-theme-primary rounded-lg sm:rounded-xl hover:bg-theme-primary hover:text-theme-light transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md text-center ${baseFocusClasses}`}
                   title="Go to Cart"
                 >
                   Go To Cart
@@ -192,12 +196,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode}) => {
                 {isUpdating ? 'Adding...' : 'Preorder'}
               </button>
             )}
-
           </div>
         </div>
       </article>
 
-      {/* Size Selector */}
+      {/* Size Selector Modal */}
       {showSizeSelector && hasSizeOptions && (
         <div className="fixed inset-0 z-50 bg-theme-dark bg-opacity-50 flex items-center justify-center p-4 sm:p-6">
           <div className="bg-theme-light rounded-xl sm:rounded-2xl p-4 sm:p-6 max-w-sm w-full mx-4">
@@ -222,7 +225,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode}) => {
           </div>
         </div>
       )}
-
     </>
   );
 };

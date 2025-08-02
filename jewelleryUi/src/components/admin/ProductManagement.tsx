@@ -224,6 +224,11 @@ const ProductManagement: React.FC = () => {
                       <td className="px-2 py-4 align-middle text-xs text-[#5f3c2c]">{product.category}</td>
                       <td className="px-2 py-4 align-middle">
                         <div className="text-sm font-medium text-[#5f3c2c]">₹{(product.price || 0).toLocaleString()}</div>
+                        {product.isHalfPaymentAvailable && (
+                          <div className="text-xs text-green-600">
+                            Half: ₹{(product.halfPaymentAmount || 0).toLocaleString()}
+                          </div>
+                        )}
                       </td>
                       <td className="px-2 py-4 align-middle text-xs text-[#5f3c2c] whitespace-nowrap">
                         {formatReadableDate(product.updatedAt)}

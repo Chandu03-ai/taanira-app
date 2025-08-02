@@ -345,10 +345,12 @@ export const useCartStore = create<CartState>()(
         const { items, guestItems } = get();
         
         const activeItems = isAuthenticated ? items : guestItems;
-        return activeItems.reduce(
-          (total, item) => total + (item.product?.price || 0) * item.quantity,
-          0
-        );
+        
+        // Calculate full total price (not considering payment type here)
+        return activeItems.reduce((total, item) => {
+          const product = item.product;
+          return total + ((product?.price || 0) * item.quantity);
+        }, 0);
       },
 
       // Getter: Calculates total count of all items (sum of quantities)

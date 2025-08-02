@@ -55,12 +55,8 @@ const HomePage: React.FC = () => {
   const fetchProducts = async () => {
     try {
       const response = await apiService.getProducts();
-
-
       const latestProducts = (response || []).filter(product => product.isLatest === true);
-
       setProducts(latestProducts.slice(0, 4));
-
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {
@@ -110,7 +106,7 @@ const HomePage: React.FC = () => {
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center px-4 sm:px-6 lg:px-8 z-10 max-w-4xl mx-auto">
               <motion.h1
-                className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-ephesis italic font-light text-sand mb-4 sm:mb-6"
+                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl font-ephesis italic font-light text-sand mb-4 sm:mb-6"
                 variants={container}
                 initial="hidden"
                 animate="visible"
@@ -128,25 +124,27 @@ const HomePage: React.FC = () => {
                 <div className="relative z-10 w-full max-w-3xl px-4 sm:px-6 pb-6 sm:pb-8 md:pb-0 text-center lg:text-left">
                   <div className="space-y-3 sm:space-y-4 md:space-y-5 lg:space-y-6">
                     <p className="text-sm sm:text-base text-center md:text-lg font-light leading-relaxed text-white">
-                      {SITE_CONFIG.name} is more than jewelry - it's a celebration of craftsmanship.
+                      {SITE_CONFIG.name} isn’t just jewelry — it’s a love affair with silver.
                     </p>
                     <p className="text-sm sm:text-base text-center md:text-lg font-light leading-relaxed text-white">
-                      Each piece is handcrafted with 92.5% pure silver, ensuring lasting quality and timeless beauty.
+                      Handcrafted with 92.5% pure silver, every piece is a timeless stunner.
                     </p>
                     <p className="text-sm sm:text-base text-center md:text-lg font-light leading-relaxed text-white">
-                      From traditional designs to contemporary styles, our collection celebrates the art of silver jewelry making.
+                      From classic charm to modern sparkle, we craft stories you’ll want to wear.
                     </p>
                   </div>
                 </div>
+
               </motion.div>
             </div>
           </div>
         </section>
 
         {/* Intro Section */}
-        <section className="py-8 sm:py-12 md:py-16 px-4 sm:px-6 lg:px-8 text-center max-w-4xl mx-auto bg-theme-background">
-          <div>
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold leading-relaxed text-burntumber italic mb-4 sm:mb-6">
+        <section className="py-8 sm:py-12 md:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 text-center bg-theme-background">
+          {/* Centered container with max-width */}
+          <div className="w-full max-w-5xl mx-auto">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-semibold leading-relaxed text-burntumber italic mb-4 sm:mb-6">
               {SITE_CONFIG.tagline}
             </p>
             <Link
@@ -161,14 +159,15 @@ const HomePage: React.FC = () => {
 
         {/* Product Cards Section */}
         <section className="py-8 sm:py-12 md:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-theme-background">
-          <div className="max-w-7xl mx-auto">
+          {/* Centered container with max-width */}
+          <div className="w-full max-w-7xl mx-auto">
             <div className="text-center mb-8 sm:mb-12 md:mb-16 font-serif italic">
               <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light text-burntumber mb-6 sm:mb-8 tracking-wide">
                 Latest Products
               </h2>
             </div>
 
-            {/* Optimized Product Grid */}
+            {/* Optimized Product Grid - Limited to 3 columns on large screens */}
             <div className="w-full">
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 max-w-6xl mx-auto"
               >
@@ -195,10 +194,10 @@ const HomePage: React.FC = () => {
 
                     {/* Product Info */}
                     <div className="text-center mt-3 sm:mt-4 px-1">
-                      <h3 className="text-xs sm:text-sm md:text-base text-[#aa732f] font-medium leading-tight mb-2 line-clamp-2 min-h-[2.5rem] sm:min-h-[3rem]">
+                      <h3 className="text-xs sm:text-sm md:text-base lg:text-lg text-[#aa732f] font-medium leading-tight mb-2 line-clamp-2 min-h-[2.5rem] sm:min-h-[3rem]">
                         {product.name}
                       </h3>
-                      <p className="text-sm sm:text-base text-[#aa732f] font-semibold">
+                      <p className="text-sm sm:text-base lg:text-lg text-[#aa732f] font-semibold">
                         ₹{product.price}
                       </p>
                     </div>

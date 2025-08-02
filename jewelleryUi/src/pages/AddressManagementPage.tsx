@@ -59,35 +59,33 @@ const AddressManagementPage: React.FC = () => {
         title={`Manage Addresses - ${SITE_CONFIG.name}`}
         description="Manage your delivery addresses for jewelry orders"
       />
-      <main className="min-h-screen pt-24 pb-10 bg-gradient-to-b from-white to-gray-50 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto mt-5">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
-            <button
-              onClick={() => navigate(-1)}
-              className="flex items-center text-[#4A3F36] hover:text-[#AA732F] transition-colors duration-200 text-sm sm:text-base font-serif italic"
-            >
-              <ArrowLeft className="w-5 h-5 mr-2" />
-              Back
-            </button>
-
-            <h1 className="text-xl sm:text-2xl font-semibold text-[#4A3F36] text-center sm:text-left">
-              Manage Addresses
-            </h1>
+      <main className="min-h-screen pt-20 sm:pt-24 pb-10 bg-gradient-to-b from-white to-gray-50 px-4 sm:px-6 lg:px-8">
+        {/* Centered container with max-width */}
+        <div className="w-full max-w-6xl mx-auto">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8">
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => navigate(-1)}
+                className="flex items-center text-[#4A3F36] hover:text-[#AA732F] transition-colors duration-200 text-sm sm:text-base font-serif italic"
+              >
+                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                Back
+              </button>
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-[#4A3F36] font-serif italic">
+                Manage Addresses
+              </h1>
+            </div>
 
             <button
               onClick={handleAddAddressClick}
-              className="
-                flex items-center px-4 py-2 bg-[#AA732F] text-white rounded-lg shadow-md
-                hover:bg-[#8f5c20] transition-colors duration-200
-                text-sm font-serif italic
-              "
+              className="w-full sm:w-auto flex items-center justify-center px-4 sm:px-6 py-2.5 sm:py-3 bg-[#AA732F] text-white rounded-lg shadow-md hover:bg-[#8f5c20] transition-colors duration-200 text-sm sm:text-base font-serif italic"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add New Address
             </button>
           </div>
 
-          <div className="bg-white/90 backdrop-blur-md border border-gray-100 rounded-2xl shadow-md p-5 sm:p-8">
+          <div className="bg-white/90 backdrop-blur-md border border-gray-100 rounded-2xl shadow-md p-4 sm:p-6 lg:p-8">
             <AddressSelector showTitle={false} onEditAddress={handleEditAddressClick} />
           </div>
         </div>

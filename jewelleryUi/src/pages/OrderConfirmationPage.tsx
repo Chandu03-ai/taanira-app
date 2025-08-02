@@ -17,18 +17,19 @@ const OrderConfirmationPage: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (orderId) {
-      loadOrder();
+    if (typeof orderId === 'string') {
+      loadOrder(orderId);
     } else {
       setError('Order ID not found');
       setLoading(false);
     }
+
   }, [orderId]);
 
-  const loadOrder = async () => {
+  const loadOrder = async (id: string) => {
     try {
       setLoading(true);
-      const response = await apiService.getOrder(orderId!);
+      const response = await apiService.getOrder(id);
       setOrder(response);
     } catch (error) {
       console.error('Error loading order:', error);
@@ -37,6 +38,7 @@ const OrderConfirmationPage: React.FC = () => {
       setLoading(false);
     }
   };
+
 
 
   const getPaymentStatusColor = (status: string) => {
@@ -238,6 +240,33 @@ const OrderConfirmationPage: React.FC = () => {
 
                   </div>
 
+                  {/* Show payment breakdown for half payments */}
+                  {order.isHalfPaid && (
+                    <>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-blue-600">Amount Paid (50%):</span>
+                        <span className="font-medium text-blue-600">
+                          {SITE_CONFIG.currencySymbol}
+                          {(order.amount / 100).toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </span>
+                      </div>
+                      {order.halfPaymentStatus === 'pending' && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-yellow-600">Remaining Due:</span>
+                          <span className="font-medium text-yellow-600">
+                            {SITE_CONFIG.currencySymbol}
+                            {((order.remainingAmount || 0) / 100).toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}
+                          </span>
+                        </div>
+                      )}
+                    </>
+                  )}
 
                   <div className="border-t border-gray-200 pt-3">
                     <div className="flex justify-between">
@@ -252,6 +281,16 @@ const OrderConfirmationPage: React.FC = () => {
                           })}
                       </span>
                     </div>
+                    {order.isHalfPaid && order.halfPaymentStatus === 'pending' && (
+                      <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <p className="text-sm text-yellow-800 font-medium">
+                          Half Payment Order
+                        </p>
+                        <p className="text-xs text-yellow-700 mt-1">
+                          You'll receive a payment link for the remaining amount after your order is shipped.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
 

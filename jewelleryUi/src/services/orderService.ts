@@ -6,8 +6,25 @@ import { ApiResponse } from '../types/api';
 
 
 class OrderService extends BaseService {
-  async createOrder(orderData: OrderRequest): Promise<ApiResponse<{ id: string; amount: number; currency: string }>> {
-    return this.post<{ id: string; amount: number; currency: string }>(API_ENDPOINTS.CREATE_ORDER, orderData, true);
+  async createOrder(orderData: OrderRequest): Promise<ApiResponse<{ 
+    id: string; 
+    orderId: string; 
+    secondOrderId?: string; 
+    amount: number; 
+    currency: string; 
+    internalOrderId?: string;
+  }>> {
+    return this.post<{ 
+      id: string; 
+      orderId: string; 
+      secondOrderId?: string; 
+      amount: number; 
+      currency: string; 
+      internalOrderId?: string;
+    }>(API_ENDPOINTS.CREATE_ORDER, orderData, true);
+  }
+  async createSecondOrder(orderData: OrderRequest): Promise<ApiResponse<{ id: string; amount: number; currency: string }>> {
+    return this.post<{ id: string; amount: number; currency: string }>(API_ENDPOINTS.CREATE_SECOND_ORDER, orderData, true);
   }
 
   async getOrder(orderId: string): Promise<ApiResponse<Order>> {
@@ -23,7 +40,10 @@ class OrderService extends BaseService {
   }
 
   async verifyPayment(paymentData: PaymentVerificationPayload): Promise<ApiResponse<{ status: string }>> {
-    return this.post<{ status: string }>(API_ENDPOINTS.VERIFY_PAYMENT, paymentData, true);
+    return this.post<{ status: string; orderId?: string }>(API_ENDPOINTS.VERIFY_PAYMENT, paymentData, true);
+  }
+  async remainingVerifyPayment(paymentData: PaymentVerificationPayload): Promise<ApiResponse<{ status: string }>> {
+    return this.post<{ status: string; orderId?: string }>(API_ENDPOINTS.VERIFY_REMAINING_PAYMENT, paymentData, true);
   }
   
   async getUserOrders(): Promise<ApiResponse<Order[]>>{

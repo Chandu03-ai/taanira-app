@@ -66,7 +66,9 @@ export const useProductManagement = () => {
             images: productData.images,
             stock: productData.stock,
             isLatest:productData.isLatest,
-            review:productData.review
+            review:productData.review,
+            isHalfPaymentAvailable: productData.isHalfPaymentAvailable,
+            halfPaymentAmount: productData.halfPaymentAmount,
           };
 
           await apiService.createProduct(productToCreate);
