@@ -108,7 +108,6 @@ const UserOrdersPage: React.FC = () => {
     try {
       setLoading(true);
       const response = await apiService.getUserOrders();
-      console.log("user orders")
       setOrders(response || []);
     } catch (error) {
       console.error('Error loading orders:', error);
@@ -322,13 +321,8 @@ const UserOrdersPage: React.FC = () => {
                                 Payment will be enabled after tracking ID is sent
                               </p>
                             )}
-                            {!order.secondOrderId && (
-                              <p className="text-xs text-red-600 mt-1">
-                                Second payment order is being prepared by admin
-                              </p>
-                            )}
                           </div>
-                          {order.enableRemainingPayment && order.secondOrderId && (
+                          {order.enableRemainingPayment && !order.secondOrderId && (
                             <button
                               onClick={() => handlePayRemaining(order.id, order.remainingAmount || 0)}
                               className="w-full sm:w-auto bg-yellow-600 text-white px-4 py-2 rounded-lg text-xs sm:text-sm font-medium hover:bg-yellow-700 transition-colors"

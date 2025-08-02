@@ -34,7 +34,7 @@ def createOrder(request: Request, payload: OrderRequest):
         fullOrder = {
             "id": str(ObjectId()),
             "orderId": orderId,
-            "secondOrderId": "",
+            "secondOrderId": None,
             "amount": orderData.get("amount"),
             "currency": orderData.get("currency"),
             "receipt": orderData.get("receipt"),
@@ -72,7 +72,6 @@ def fetchOrder(request: Request, id: str):
     try:
         logger.info("Fetching order. orderId: %s", id)
         localOrder = getSingleOrder({"id": id})
-        print(localOrder)
         if not localOrder:
             logger.warning("Local order not found.")
             return returnResponse(1556)
@@ -80,8 +79,7 @@ def fetchOrder(request: Request, id: str):
         if localOrder.get("status") == "paid" and localOrder.get("halfPaymentStatus") in ["paid", "not_applicable"]:
             logger.info("Both payments already completed. Returning local order.")
             return returnResponse(1528, result=localOrder)
-        orderId = localOrder.get("orderId") if localOrder.get("status") != "paid" else localOrder.get("secondOrderId")
-        print(orderId)
+        orderId = localOrder.get("secondOrderId") if localOrder.get("status") == "paid" and localOrder.get("secondOrderId") else localOrder.get("orderId")
         # Fetch latest status from Razorpay
         orderData = client.order.fetch(orderId)
         currentStatus = orderData.get("status")

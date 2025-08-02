@@ -66,7 +66,6 @@ const CategoryManagement: React.FC = () => {
   useEffect(() => {
     if (categoryDialog.isOpen && categoryDialog.mode === 'edit' && categoryDialog.category) {
       const category = categoryDialog.category;
-      console.log("category.image", category.image)
       setFormData({
         name: category.name,
         slug: category.slug,
@@ -113,7 +112,6 @@ const CategoryManagement: React.FC = () => {
     try {
       setLoading(true);
       const response = await apiService.getCategories();
-      console.log('Fetched categories:', response);
       setCategories(response || []);
     } catch (error) {
       console.error('Error loading categories:', error);
@@ -228,7 +226,6 @@ const CategoryManagement: React.FC = () => {
       let uploadedImages = await categoryService.uploadImage(imageFiles, formData);
       let finalImageUrl = uploadedImages[0] || '';
 
-      console.log("finalImageUrl", finalImageUrl)
 
       // Construct categoryData to send to API
       const categoryData: Omit<CategoryFormData, 'image'> & { image?: string } = {
@@ -239,10 +236,8 @@ const CategoryManagement: React.FC = () => {
         categoryType: formData.categoryType, // Directly use the string value
       };
 
-      console.log('Category data being sent to API:', categoryData); // Log for debugging
 
       if (categoryDialog.mode === 'edit' && categoryDialog.category?.id) {
-        console.log(categoryData)
         await apiService.updateCategory(categoryDialog.category.id, categoryData);
         setMessage({ type: 'success', text: 'Category updated successfully!' });
       } else {
@@ -532,7 +527,6 @@ const CategoryManagement: React.FC = () => {
               onChange={e => {
                 setInputValue(e.target.value); // Update raw input value
                 const newSizeOptions = e.target.value.split(',').map(s => s.trim()).filter(Boolean);
-                console.log('New size options:', newSizeOptions); // Added for debugging
                 setFormData(prev => ({
                   ...prev,
                   sizeOptions: newSizeOptions,
